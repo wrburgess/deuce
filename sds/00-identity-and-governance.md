@@ -169,7 +169,7 @@ chosen by the HC.
 ## Decision records
 
 An **ADR** (architecture decision record) is a short, dated, immutable document that records one
-decision and the reasoning behind it. Records live in `docs/adr/`.
+decision and the reasoning behind it. Records live in `adr/`.
 
 **The bar for writing one — all three must hold:**
 
@@ -186,7 +186,7 @@ Three mechanisms keep the live set small:
 - **The invariant/adaptive split diverts the largest source.** Platform-coupled tuning becomes dated
   configuration, not a decision record.
 - **Consolidating supersession.** One new record may supersede several stale ones at once; the
-  superseded records move to `docs/adr/archive/`. Nothing is edited or deleted, so immutability
+  superseded records move to `adr/archive/`. Nothing is edited or deleted, so immutability
   holds, but the set a reader must read stays small.
 - **The hygiene sweep audits the live set** on a cadence, rather than waiting for a cleanup effort
   nobody schedules.
@@ -218,14 +218,30 @@ For example, `TASK: Add the label sync script`.
 
 | Type | What it covers | Its rule |
 |---|---|---|
-| `EPIC:` | An umbrella over child issues. | Carries the epic brief (eight fields, enumerated in the epic issue template). Closes when its last child merges. |
+| `EPIC:` | An umbrella over child issues. | Carries the **epic brief** — the eight fields below. Closes when its last child merges. |
 | `TASK:` | One unit of work. | One branch, one pull request. |
 | `BUG:` | A defect. | Must carry a reproduction; the fix ships with the test that failed before it. |
 | `SPIKE:` | Research feeding a decision. | Its terminal artifact is a Readout (the required shape for decision-facing writing); it may produce no code. |
 | `CHORE:` | Mechanical maintenance. | Minimal ceremony. |
 
-- **The epic brief's exit test:** could an AC with no history start planning from this brief alone?
-  If not, the brief is not finished.
+**The epic brief — eight fields, in this order:**
+
+| Field | What it states |
+|---|---|
+| Problem | What is wrong or missing, stated before any solution is named. |
+| Target solution | The intended end state, in enough shape to plan against. |
+| Goals | What the work must achieve to count as done. |
+| Constraints | What the work may not do, spend, or break. |
+| Expectations | What the HC expects to be true once it ships. |
+| Risks | What could go wrong, and what it would cost if it did. |
+| Edge cases | The cases an obvious approach would miss. |
+| Punted paths | What was considered and deliberately not taken, so it is not re-proposed. |
+
+- **The brief's exit test:** could an AC with no history start planning from this brief alone? If
+  not, the brief is not finished.
+- **This table is the schema's only home.** The epic issue template transcribes these fields; it
+  never originates them. Why: a template that invents fields becomes a second, unratified schema,
+  and the two drift.
 - **Gap rule:** work that fits no type defaults to `TASK:`. A *recurring* misfit — not a single one
   — triggers a one-time amendment to the type set. Why: one awkward issue is not evidence, and a
   type set that grows on every exception stops classifying anything.

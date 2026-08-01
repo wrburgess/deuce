@@ -50,6 +50,10 @@ standards in the summons. It reviews, and never implements, commits, or pushes.
 Summary (HC), then optional and clearly labeled Technical detail (HC+AC), so the HC can judge
 without reading implementation detail.
 
+**Epic brief** — The eight-field problem statement an `EPIC:` carries: problem, target solution,
+goals, constraints, expectations, risks, edge cases, and punted paths. Its exit test is that an AC
+with no history could start planning from the brief alone.
+
 **Excellent enough** — The bar work stops at: the point past which more effort would not change a
 decision, prevent a class of defect, or change what ships. It binds review depth, issue scope, and
 the SDS itself.
