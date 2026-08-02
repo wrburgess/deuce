@@ -34,7 +34,7 @@ stage begins only when its predecessor's terminal artifact exists.
 | # | Stage | Skill | Trigger | Terminal artifact |
 |---|---|---|---|---|
 | 1 | **Assess** | `assess` | The HC points the AC at an issue. | The **Assessment** — a Readout on the issue. |
-| 2 | **Plan** | `plan` | An option is chosen at the **Direction gate**. | The **Plan** — a Readout on the issue. |
+| 2 | **Devise** | `devise` | An option is chosen at the **Direction gate**. | The **Plan** — a Readout on the issue. |
 | 3 | **Implement** | `implement` | The Plan is posted. | The **open pull request**. |
 | 4 | **Verify** | `verify` | The pull request exists. | The **Verification** — a Readout on the pull request. |
 | 5 | **Deliver** | `deliver` | Verification carries no open must-fix finding. | The **Delivery Record** — a Readout on the pull request. |
@@ -59,7 +59,7 @@ different tooling.
 - **Terminal artifact:** the Assessment, posted on the issue.
 - **Exit:** the **Direction gate** — an option is chosen.
 
-### Stage 2 — Plan
+### Stage 2 — Devise
 
 - **Trigger:** an option is chosen.
 - **The AC produces:** ordered steps concrete enough to execute without re-deciding anything; the
@@ -68,9 +68,9 @@ different tooling.
 - **The testing strategy is decided up front because deciding it during implementation decides it
   against code that already exists,** which is how a test ends up asserting what was written rather
   than what was wanted.
-- **A plan is revisable direction, not a frozen contract.** An Implement-stage discovery that the
-  plan was wrong loops back to this stage — that is the sanctioned resolution, and an expected
-  outcome rather than a failure. Improvising past a plan that is known to be wrong is not.
+- **The Plan is revisable direction, not a frozen contract.** An Implement-stage discovery that the
+  Plan was wrong loops back to this stage — that is the sanctioned resolution, and an expected
+  outcome rather than a failure. Improvising past a Plan that is known to be wrong is not.
 - **Terminal artifact:** the Plan, posted on the issue.
 - **Exit:** the Plan is posted. **There is no approval gate here** — see *The two gates*.
 
@@ -236,7 +236,7 @@ That is what makes the **queue** a dashboard rather than something maintained by
 
 **A spike is an issue type, not a lifecycle variant.** Research whose outcome is uncertain gets a
 `SPIKE:`, which ends in a Readout that feeds the decision — and the work it recommends is then a
-normal `TASK:` running all five stages. Why this and not an exploratory branch inside the Plan stage:
+normal `TASK:` running all five stages. Why this and not an exploratory branch inside Devise:
 the predecessor built the branch, and it needed a hypothesis-plan, a re-plan checkpoint, a
 no-pull-request carve-out, and an election rule about who may choose it. The type system already
 carries all of that, and carries it in one place.
@@ -247,7 +247,7 @@ carries all of that, and carries it in one place.
 |---|---|
 | Trivial change (typo, dependency bump, a value edit) | Assess (brief) → Implement → Deliver |
 | Documentation-only change | Implement → Deliver |
-| Defect with an obvious cause | Assess → Plan (brief) → Implement → Deliver |
+| Defect with an obvious cause | Assess → Devise (brief) → Implement → Deliver |
 
 - **The AC never self-selects a compressed path.** It may recommend one in the Assessment. Why: the
   AC's incentive at that moment is to reach the work, and a stage it skipped is one nobody decided to
@@ -326,7 +326,7 @@ carries over by default, and a thing ports only with its receipts.
 | Predecessor Skill | Verdict | Reason |
 |---|---|---|
 | `assess` | **Port** as `assess` | Stage 1. |
-| `devise` | **Port** as `plan` | Stage 2. The exploratory-plan machinery does not port — `SPIKE:` carries it. |
+| `devise` | **Port** as `devise` | Stage 2. The name ports too, on two independent grounds: it keeps the verb-stage/noun-artifact pattern intact (the artifact is the Plan), and `plan` collides with a reserved command on the AC's own harness. The exploratory-plan machinery does not port — `SPIKE:` carries it. |
 | `invoke` | **Port** as `implement` | Stage 3. |
 | `verify` | **Port** as `verify` | Stage 4, absorbing review response. |
 | `listen` | **Absorbed** into `verify` | It was never a stage; it straddled one. |
@@ -336,7 +336,7 @@ carries over by default, and a thing ports only with its receipts.
 | `scout`, `clip`, `follow`, `restock` | **Defer to Chapter 4** | The Learning System. Building them now would build against an unratified chapter. |
 | `create-skill` | **Defer to Chapter 5** | A Skill for authoring Skills is ceremony at this size; *What a Skill is* above is the authoring guide. Revisit when hosts author their own. |
 
-**Six Skills survive:** `assess`, `plan`, `implement`, `verify`, `deliver`, `distill`.
+**Six Skills survive:** `assess`, `devise`, `implement`, `verify`, `deliver`, `distill`.
 
 **One observation is logged rather than acted on:** the predecessor's intake pipeline had three front
 doors and a sibling refresher for one job. Chapter 4 should weigh collapsing them before porting

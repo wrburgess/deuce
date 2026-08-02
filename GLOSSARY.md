@@ -131,13 +131,13 @@ four channels: vendor, practitioner, platform observation, and findings from the
 Chapter 4.
 
 **Lifecycle** — The fixed sequence of five stages every piece of work passes through, from problem
-definition to merge: **Assess → Plan → Implement → Verify → Deliver**. The Direction gate closes
+definition to merge: **Assess → Devise → Implement → Verify → Deliver**. The Direction gate closes
 Assess and the Ship gate closes Deliver; stages communicate only through their terminal artifacts.
 
 **must-port** — The label on a change landed in a frozen repository, marking it as one that must be
 carried forward into the successor.
 
-**Plan** — The terminal artifact of the Plan stage: a Readout on the issue carrying ordered steps,
+**Plan** — The terminal artifact of the Devise stage: a Readout on the issue carrying ordered steps,
 the testing strategy decided up front, the files expected to change, and the risks accepted. It is
 revisable direction, not a frozen contract, and it carries no approval gate of its own.
 
