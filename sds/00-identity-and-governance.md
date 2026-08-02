@@ -235,7 +235,7 @@ For example, `TASK: Add the label sync script`.
 | Expectations | What the HC expects to be true once it ships. |
 | Risks | What could go wrong, and what it would cost if it did. |
 | Edge cases | The cases an obvious approach would miss. |
-| Punted paths | What was considered and deliberately not taken, so it is not re-proposed. |
+| Punted paths | What was considered and deliberately not taken, so it is not re-proposed. A punted path that also clears the ADR bar is recorded as an ADR, and the brief entry cites it. |
 
 - **The brief's exit test:** could an AC with no history start planning from this brief alone? If
   not, the brief is not finished.
