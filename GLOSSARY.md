@@ -59,8 +59,11 @@ abandoned, what is fragile, the findings and their dispositions, limitations and
 four health measures — of which it is the only home. Written for two readers who are never present
 together, so its register is split: the decision half is a Readout, the reasoning fields are prose.
 
-**Direction gate** — The first of the two gates, at the end of Assess: the HC chooses among the
-Assessment's options. It answers *what to build*. `required` today.
+**Direction gate** — The first of the two gates, at the end of Assess, answering *what to build*.
+`required` — the HC chooses among the Assessment's options — or `delegated`, where the AC proceeds on
+its own recommendation. `required` today; `delegated` is written into Chapter 1 and not yet usable.
+Neither setting reaches the floor: the Assessment is always posted before work proceeds on it, always
+carries the rejected options and why, and always states when the AC self-selected.
 
 **Dual register** — The two-audience structure required in an issue body: a required non-technical
 Summary (HC), then optional and clearly labeled Technical detail (HC+AC), so the HC can judge
@@ -99,7 +102,8 @@ is built. Only a critical fix may land during a freeze, labeled `must-port`.
 
 **Gate** — One of the two points where the HC supplies judgment: what to build, and what ships.
 Everything between the gates is the AC's to run. The two are the **Direction gate** and the **Ship
-gate**, placed in Chapter 1.
+gate**, placed in Chapter 1. Both are graduated from birth — a loosened setting and its floor are
+written before either can be used — and neither loosened setting is usable today.
 
 **Glossary** — `GLOSSARY.md`, this file: the single home for the vocabulary, extended at each
 chapter's ratification.

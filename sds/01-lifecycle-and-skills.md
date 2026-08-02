@@ -195,10 +195,14 @@ what effort, is adaptive configuration** and never canon.
 Chapter 0 fixes the count at two — what to build, and what ships. This chapter fixes where they sit
 and names them.
 
-| Gate | Where | Question the HC answers | Setting today |
-|---|---|---|---|
-| **Direction gate** | End of Assess | Which option — or none of them? | `required` |
-| **Ship gate** | End of Deliver | Does this ship? | `required` |
+| Gate | Where | Question it answers | Settings | Today |
+|---|---|---|---|---|
+| **Direction gate** | End of Assess | Which option — or none of them? | `required` · `delegated` | `required` |
+| **Ship gate** | End of Deliver | Does this ship? | `required` · `attested` | `required` |
+
+**Both gates are graduated from birth**, in the pattern Chapter 0 set for merge authority: the
+loosened setting is written now, with its floor named, while writing it is still free. Neither
+loosened setting is usable today.
 
 **The Direction gate is the option choice, not plan approval.** Chapter 0 grants the HC judgment over
 *what to build*; choosing among the Assessment's options is that decision, and reviewing the AC's own
@@ -213,17 +217,45 @@ than a failure.
 **What holds at any setting:**
 
 - **The artifacts are posted whether or not anyone waits for them.** A gate may govern whether the AC
-  pauses; it never governs whether the record exists. Under any future loosening, the Assessment is
-  the only record of what was chosen and why, which is exactly when it matters most.
+  pauses; it never governs whether the record exists. Each gate's floor states this in its own terms.
 - **The context boundary is not a gate** and is never waived with one. Every stage transition resets,
   including the ones no human is standing at.
 - **Merging on the AC's own say-so is not available at any setting** (Chapter 0, *Merge authority*).
 
-**Loosening the Direction gate is deliberately not defined here.** deuce runs it `required` until
-there is evidence about what an unattended run gets wrong; the question belongs to Chapter 6, and
-whatever it settles must name its floor the way merge authority did. Why not graduate it now, as
-merge was: merge is one-way and its precedent is expensive, while this setting is cheap to change
-once. Chapter 0's rule is to avoid foreclosing the future, not to pre-build it.
+### The Direction gate, graduated
+
+- **`required`** — the HC chooses among the Assessment's options, and the AC does not proceed without
+  a choice. This is the setting today.
+- **`delegated`** — the AC proceeds on its own recommendation. Nobody waits, and the work runs from
+  issue to Ship gate without a human in it.
+
+**The floor, which no setting reaches:**
+
+1. **The Assessment is always posted, before any work proceeds on it.** A gate governs whether the AC
+   *pauses*; it never governs whether the record exists. Under `delegated` the Assessment is the only
+   record of what was chosen, which is precisely when it matters most.
+2. **It always carries the rejected options and why they were rejected.** A recommendation with the
+   alternatives stripped out is not a choice that was made; it is a choice that was hidden.
+3. **It always states that the AC self-selected, and on what reasoning.** An artifact that reads the
+   same whether or not a human chose is an artifact that cannot be audited.
+4. **`delegated` is not licence to compress.** Skipping a *stage* stays the HC's call at every
+   setting, and so does every stop.
+
+**`delegated` is not usable today**, for the same reason `attested` is not: the mechanisms that make
+it safe do not exist yet. It becomes usable when an Assessment's option set can be independently
+reviewed — Chapter 2 — and when an unattended run has somewhere to route a stop — Chapter 6.
+
+**Why graduate it now rather than when it is wanted.** The predecessor placed this gate on plan
+approval, found it too expensive, and defaulted it off — so the gate it kept was the one it did not
+want. Naming both settings and the floor now means a later chapter can only build the machinery, never
+negotiate the floor away at the moment loosening becomes convenient. That is Chapter 0's argument for
+merge authority, and it applies here for the same reason: this gate is the HC's judgment over *what to
+build*, and a gate that can be widened on demand was never a gate.
+
+**Stated plainly, because it is the point of the whole standard:** the end state is an AC that runs
+from issue to merge with the HC away — `delegated` at one end, `attested` at the other. Neither
+removes the mechanism. Autonomy here is the HC's judgment being *replaced by something checkable*,
+never by the AC's own confidence.
 
 ## Stops
 
@@ -466,7 +498,7 @@ a real trade-off — and are recorded at ratification:
 | ADR | Decision it records |
 |---|---|
 | 0007 | Stages communicate only through terminal artifacts; every stage transition is a context boundary, decoupled from the gates. |
-| 0008 | The Direction gate is the option choice at the end of Assess, not approval of the Plan. |
+| 0008 | The Direction gate is the option choice at the end of Assess, not approval of the Plan — and it is graduated from birth, with `delegated` and its floor written before either can be used. |
 | 0009 | Review response is folded into Verify; there is no review-response stage and no `listen` Skill. |
 
 ---
