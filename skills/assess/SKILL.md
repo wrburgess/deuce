@@ -1,0 +1,55 @@
+---
+name: assess
+description: Stage 1 of the deuce lifecycle. The HC has pointed the AC at an issue; research it and post the Assessment — the options the HC chooses between at the Direction gate. Use when starting work on any issue, before any plan or code.
+---
+
+# assess — Stage 1 of the lifecycle
+
+The packaged procedure for
+[Chapter 1 → Stage 1 — Assess](../../sds/01-lifecycle-and-skills.md#stage-1--assess). This body
+carries the verbs and links the variables; the stage itself — trigger, work, terminal artifact,
+exit — is canon and is not restated here.
+
+## When it is invoked
+
+The HC points the AC at an issue —
+[the Stage 1 trigger](../../sds/01-lifecycle-and-skills.md#stage-1--assess).
+
+## Procedure
+
+1. **Read the issue from the tracker** — title, body, labels, and every existing comment. A prior
+   comment may already carry a constraint or a partial decision.
+2. **Set `status:in-progress`**
+   ([Chapter 1 → Binding to the Work Tracking System](../../sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)).
+3. **Read the stage's routing** — which model and effort runs this stage is
+   [`config/models.md`](../../config/models.md); what may be offloaded, and in what shape, is
+   [`config/delegation.md`](../../config/delegation.md).
+4. **Research what the change would touch** — the repository as it is, not as the issue describes it.
+5. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
+6. **Draft the Assessment as a Readout** — content per
+   [Stage 1](../../sds/01-lifecycle-and-skills.md#stage-1--assess), shape per
+   [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
+7. **Post the Assessment on the issue before proceeding on it**, carrying the rejected options and
+   why they were rejected —
+   [the Direction gate's floor](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated),
+   clauses 1 and 2, which hold at every gate setting.
+8. **Hold at the Direction gate per its current setting** —
+   [Chapter 1 → The Direction gate, graduated](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated).
+   The setting is read there, never from this file.
+
+## Terminal artifact
+
+The Assessment, posted on the issue
+([Stage 1](../../sds/01-lifecycle-and-skills.md#stage-1--assess)).
+
+## When it stops and asks
+
+On any of the four standing triggers —
+[Chapter 1 → Stops](../../sds/01-lifecycle-and-skills.md#stops). The question and its answer are
+recorded on the issue before the answer is acted on.
+
+## Prior art
+
+Re-authored from a reading of
+[ace's `assess`](https://github.com/wrburgess/ace/blob/main/skills/assess/SKILL.md), per
+[ADR 0006](../../adr/0006-skills-self-contained.md) — read and attributed, never vendored.
