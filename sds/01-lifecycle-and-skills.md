@@ -373,6 +373,11 @@ thing that needs it.
   changed?
 - **The hygiene sweep re-verifies `config/`**, which is the whole reason the dates and sources are
   mandatory.
+- **This chapter fixes the home and the two mandatory fields; it does not fix the file format.** The
+  schema, and the lint that checks a declaration is dated and sourced, are Chapter 3's. Why the home
+  lands here rather than there: the lifecycle is the first thing that needs one — *which model runs
+  Verify* has no answer without it — and a Skill written before the home exists has nowhere to put
+  its routing, so it puts it in its own body, which is exactly the drift the split exists to prevent.
 
 ## Where the health measures live
 
