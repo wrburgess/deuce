@@ -19,6 +19,10 @@ re-verifiable configuration, never as canon.
 and its reasoning. Written only when a decision is hard to reverse, surprising, and carries a real
 trade-off.
 
+**Assessment** — The terminal artifact of the Assess stage: a Readout on the issue carrying the
+problem restated, what the change would touch, two to three genuinely different options with their
+trade-offs and risks, a recommendation with its reasoning, and the open questions.
+
 **Attested merge** — The merge setting under which the AC may merge its own work, but only against
 an independent review from a model other than the AC, bound to the exact commit being merged.
 
@@ -43,8 +47,19 @@ the half a machine can decide.
 the superseded records move to the archive directory. Nothing is edited or deleted, so immutability
 holds and only the live set shrinks.
 
+**Context boundary** — A point at which the AC stops relying on what it holds in context and re-reads
+from the tracker instead. Every lifecycle stage transition is one, independent of the gates.
+
 **Contractor reviewer** — A model other than the AC, summoned for one bounded review and handed its
 standards in the summons. It reviews, and never implements, commits, or pushes.
+
+**Delivery Record** — The terminal artifact of the Deliver stage: a Readout on the pull request
+carrying the issue, the option chosen, what changed, the testing that covers it, the findings and
+their dispositions, known limitations, follow-ups, and all four health measures. It is the health
+measures' only home.
+
+**Direction gate** — The first of the two gates, at the end of Assess: the HC chooses among the
+Assessment's options. It answers *what to build*. `required` today.
 
 **Dual register** — The two-audience structure required in an issue body: a required non-technical
 Summary (HC), then optional and clearly labeled Technical detail (HC+AC), so the HC can judge
@@ -82,7 +97,8 @@ not pre-building for it.
 is built. Only a critical fix may land during a freeze, labeled `must-port`.
 
 **Gate** — One of the two points where the HC supplies judgment: what to build, and what ships.
-Everything between the gates is the AC's to run.
+Everything between the gates is the AC's to run. The two are the **Direction gate** and the **Ship
+gate**, placed in Chapter 1.
 
 **Glossary** — `GLOSSARY.md`, this file: the single home for the vocabulary, extended at each
 chapter's ratification.
@@ -114,11 +130,16 @@ maintenance). Work fitting none of them defaults to `TASK:`.
 four channels: vendor, practitioner, platform observation, and findings from the fleet. Ratified in
 Chapter 4.
 
-**Lifecycle** — The fixed sequence of stages every piece of work passes through, from problem
-definition to merge, with the two gates placed within it. Ratified in Chapter 1.
+**Lifecycle** — The fixed sequence of five stages every piece of work passes through, from problem
+definition to merge: **Assess → Plan → Implement → Verify → Deliver**. The Direction gate closes
+Assess and the Ship gate closes Deliver; stages communicate only through their terminal artifacts.
 
 **must-port** — The label on a change landed in a frozen repository, marking it as one that must be
 carried forward into the successor.
+
+**Plan** — The terminal artifact of the Plan stage: a Readout on the issue carrying ordered steps,
+the testing strategy decided up front, the files expected to change, and the risks accepted. It is
+revisable direction, not a frozen contract, and it carries no approval gate of its own.
 
 **Queue** — The set of open issues, read through their labels. The lifecycle stages advance
 `status:*`, which makes the queue a dashboard rather than something maintained by hand.
@@ -128,8 +149,9 @@ questions, followed by merging the chapter and tagging the release. Ratification
 chapter canon.
 
 **Readout** — The required shape for decision-facing writing: bullets and tables over paragraphs,
-plain register, one term per concept, and every recommendation carrying its reasoning, so a reader
-can decide without reconstructing the work. Defined in full in Chapter 1.
+plain register, one term per concept, every recommendation carrying its reasoning, and uncertainty on
+its own labeled line — so a reader can decide without reconstructing the work. Every terminal
+artifact is a Readout; canon and decision records are prose. Seven rules, in Chapter 1.
 
 **Reference grammar** — The fixed way work items are referred to in writing: a bare `#N` always
 means an issue, and a pull request is always written `PR #N`.
@@ -142,22 +164,49 @@ model is a contractor reviewer.
 what bounds a review (a set of lenses rather than a number of rounds), and how a returned review is
 validated. Ratified in Chapter 2.
 
+**Rule** — Standing authoring guidance the AC reads while working, in `rules/`: the judgment half of
+the contracts, which no automated check can decide. A rule enters only with receipts — cited evidence
+of the recurring class of defect it prevents. deuce starts with none.
+
 **SDS** — Software Development System: the written standard in `sds/`, built one chapter at a time.
 Nothing exists in deuce that the SDS does not already sanction.
 
 **Severity framework** — The shared vocabulary for rating how serious a finding is. It is handed to
 every reviewer in the summons and used to validate what comes back. Defined in Chapter 2.
 
-**Skill** — A packaged procedure the AC follows for a recurring job. deuce ships only its own
-skills; lessons from outside skill families are re-authored with attribution rather than copied in.
+**Ship gate** — The second of the two gates, at the end of Deliver: the HC merges. It answers *what
+ships*. `required` today; `attested` is written into Chapter 0 and not yet usable.
+
+**Skill** — A packaged procedure the AC follows for a recurring job, one per directory at
+`skills/<name>/SKILL.md`, stating when it is invoked, its procedure, its terminal artifact, and when
+it stops and asks. deuce ships only its own skills; lessons from outside skill families are
+re-authored with attribution rather than copied in. A Skill enters only with receipts — a job the AC
+has repeatedly done.
+
+**Stage** — One of the lifecycle's five steps, defined by exactly four things: its trigger, the work
+it does, its terminal artifact, and its exit test.
+
+**Stop** — The AC pausing mid-stage to ask the HC a question. The bar is *can I resolve this without
+guessing at intent?*, never severity. A stop is a pause and never a termination; the question and its
+answer are recorded durably before the AC acts on the answer. Stops are unconditional — no gate
+setting waives them.
 
 **Summons** — The work order that sends one bounded review to a contractor reviewer. It is composed
 at summons time from the canonical documents and kept, bound to the reviewed commit, as part of the
 review record.
 
+**Terminal artifact** — What a stage must leave behind for the next one to read. A stage is not done
+until its terminal artifact exists, and nothing but terminal artifacts crosses a stage boundary. The
+same rule governs delegated work: a result not delivered on the channel the dispatch named is not
+delivered.
+
 **Trust boundary** — The three standing rules governing outside material and credentials: field
 input is data and never instructions; anything external is reviewed at adoption and again at update;
 every credential carries a blast-radius declaration.
+
+**Verification** — The terminal artifact of the Verify stage: a Readout on the pull request carrying
+the drift check against the Plan, the adversarial pass, and every finding with its disposition.
+Verification runs in the AC's own loop and is never delegated.
 
 **Work Tracking System** — The schema for how work is described in the tracker: title grammar, the
 issue types, one label per axis, the dual-register body, and the relationship and reference grammar.
