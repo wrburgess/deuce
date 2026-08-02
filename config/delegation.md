@@ -2,9 +2,9 @@
 
 What work the AC offloads, to which model, at what effort, and the shape of what must come back.
 This is adaptive configuration under [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive
-layer's home*. The rule that delegated work is delivered on the named channel or is not done is
-canon — [Chapter 1](../sds/01-lifecycle-and-skills.md) → *Stages communicate only through terminal
-artifacts* — and is not restated here.
+layer's home*. What delegation must always honor — how delegated work is delivered, and what
+counts as done — is canon, at [Chapter 1](../sds/01-lifecycle-and-skills.md) → *Stages communicate
+only through terminal artifacts*, and is not restated here.
 
 - **Date:** 2026-08-02
 - **Source:** #13.
