@@ -354,6 +354,13 @@ jargon-free register "lives in the AC's authoring rules."
 - **deuce starts with none.** Not one rule ports by default. The mechanisms that fill `rules/` are
   Chapter 2's findings recurrence and Chapter 4's Learning System; until they exist, a rule enters
   one at a time, each carrying its receipt.
+- **One rule is cut with this chapter's work: the authoring rule.** Chapter 0 states that the
+  jargon-free register is judgment no lint can decide and places it in the AC's authoring rules,
+  which is a reference to a file that does not exist yet. It is written as a normal `TASK:`, against
+  its own receipts, and it is the first work deuce runs through this lifecycle. Why that ordering
+  matters: the chapter is tested by building against it, and a rule about how the AC writes is the
+  cheapest possible first test — it produces no code and touches nothing load-bearing, so what breaks
+  is the lifecycle rather than the work.
 - **Why empty rather than seeded:** the predecessor's rules files accumulated faster than the
   evidence behind them, and a file nobody can audit is a file nobody trims.
 
