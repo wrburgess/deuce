@@ -1,6 +1,6 @@
 ---
 name: assess
-description: Stage 1 of the deuce lifecycle. The HC has pointed the AC at an issue; research it and post the Assessment — the options the HC chooses between at the Direction gate. Use when starting work on any issue, before any plan or code.
+description: Stage 1 of the deuce lifecycle. The HC has pointed the AC at an issue; research it and post the Assessment — the options the HC chooses between at the Direction gate. Nothing is planned or built until that gate has an Assessment in front of it.
 ---
 
 # assess — Stage 1 of the lifecycle
@@ -17,8 +17,7 @@ The HC points the AC at an issue —
 
 ## Procedure
 
-1. **Read the issue from the tracker** — title, body, labels, and every existing comment. A prior
-   comment may already carry a constraint or a partial decision.
+1. **Read the issue from the tracker** — title, body, labels, and every existing comment.
 2. **Set `status:in-progress`**
    ([Chapter 1 → Binding to the Work Tracking System](../../sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)).
 3. **Read the stage's routing** — which model and effort runs this stage is
@@ -32,7 +31,7 @@ The HC points the AC at an issue —
 7. **Post the Assessment on the issue before proceeding on it**, carrying the rejected options and
    why they were rejected —
    [the Direction gate's floor](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated),
-   clauses 1 and 2, which hold at every gate setting.
+   clauses 1 and 2.
 8. **Hold at the Direction gate per its current setting** —
    [Chapter 1 → The Direction gate, graduated](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated).
    The setting is read there, never from this file.
