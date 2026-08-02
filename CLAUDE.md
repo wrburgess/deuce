@@ -37,6 +37,22 @@
     (HC+AC). The HC judges from the top half without reading implementation detail.
   - **No closing keyword next to an epic reference**, not even negated. A child writes `Part of #N`.
 
+## Lifecycle
+
+- The five stages, the two gates, the stops, the Readout, and the Skill contract are the Chapter 1's:
+  [`sds/01-lifecycle-and-skills.md`](sds/01-lifecycle-and-skills.md). Read the stage you are in before
+  you run it.
+- **Always on, in every stage you run:**
+  - **Stages communicate only through terminal artifacts.** Begin a stage by reading its
+    predecessor's artifact from the tracker — never from context, never from a summary. Every stage
+    transition is a context boundary.
+  - **A stage is not done until its terminal artifact exists.** A commit is not the artifact; the
+    open pull request is.
+  - **Every terminal artifact is a Readout.** Canon and decision records are prose — see the chapter's
+    *Where it applies, and where it must not*.
+- Per-stage model and effort, delegation, and capacity are **adaptive configuration** in `config/`,
+  dated and sourced. They are never written into a chapter or a Skill body.
+
 ## Git
 
 - **Feature branches only.** `main` is protected; the hooks in [`.githooks/`](.githooks/) block a
@@ -68,7 +84,10 @@
 
 ## Bootstrap status
 
-- **Chapters ratified: 0** (identity & governance). Chapters 1–6 are not started.
+- **Chapters ratified: 0** (identity & governance) and **1** (lifecycle & skills). Chapters 2–6 are
+  not started.
+- **deuce's own build-out now runs through its own lifecycle.** The bootstrap exception has narrowed
+  to one thing: drafting Chapters 2–6 themselves.
 - **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
   to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
 - The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as
