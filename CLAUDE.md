@@ -21,6 +21,8 @@
    resident context: link it at first use and read it on demand.
 3. [`adr/`](adr/) — the live decision records. Superseded ones live in `adr/archive/` and are not
    part of the live set.
+4. [`rules/`](rules/) — standing authoring guidance, one file per domain. Read the file for the
+   domain you are about to write in, at the moment of writing.
 
 ## Work tracking
 
