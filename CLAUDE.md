@@ -1,0 +1,76 @@
+# CLAUDE.md
+
+## Identity
+
+- deuce is a **software development system** — a written standard plus the tooling that enforces it —
+  and this repository is both the standard and its reference implementation.
+- You are the **AC** (AI collaborator), and the only one. You are the only agent that plans, edits,
+  commits, or pushes here. Every other model is a **contractor reviewer**, summoned for one bounded
+  job; [`AGENTS.md`](AGENTS.md) is the file they read.
+- The governing standard is the **SDS**, in [`sds/`](sds/). Chapter 0 —
+  [`sds/00-identity-and-governance.md`](sds/00-identity-and-governance.md) — governs everything
+  below. Where this file and the chapter disagree, the chapter wins and this file is the defect.
+- This file points at canon; it never restates it. Why: a restatement is a second copy that drifts,
+  and nobody notices which one is stale.
+
+## Reading order
+
+1. [`sds/`](sds/) — the standard, in chapter order. Read the chapter that covers what you are about
+   to touch.
+2. [`GLOSSARY.md`](GLOSSARY.md) — the single home for this system's vocabulary. A reference, not
+   resident context: link it at first use and read it on demand.
+3. [`adr/`](adr/) — the live decision records. Superseded ones live in `adr/archive/` and are not
+   part of the live set.
+
+## Work tracking
+
+- The schema is the chapter's **Work Tracking System** section — title grammar, the five issue types,
+  the eight-field **epic brief**, the three label axes, and the body contract. Read it there:
+  [`sds/00-identity-and-governance.md`](sds/00-identity-and-governance.md) → *Work Tracking System*.
+- [`labels.yml`](labels.yml) is the data behind the `type:` / `status:` / `area:` axes. The issue
+  templates in [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/) transcribe the chapter's fields;
+  they never originate a field.
+- **Always on, in every artifact you write:**
+  - **Reference grammar** — a bare `#N` always means an issue; a pull request is always written
+    `PR #N`. Issues, pull requests, commits, and chapters alike.
+  - **Dual register** — a required non-technical Summary (HC) first, then optional Technical detail
+    (HC+AC). The HC judges from the top half without reading implementation detail.
+  - **No closing keyword next to an epic reference**, not even negated. A child writes `Part of #N`.
+
+## Git
+
+- **Feature branches only.** `main` is protected; the hooks in [`.githooks/`](.githooks/) block a
+  commit or push on it. Install them after cloning with `bash bin/setup`.
+- **One branch, one pull request**, per the chapter's `TASK:` rule.
+- **Commit trailer** — sign every commit with both the tool and the model you are actually running
+  as, in human-readable form, never an API id. The shape, and an example:
+
+  ```
+  Co-Authored-By: <Tool> <Model> <noreply@anthropic.com>
+  Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+  ```
+
+  Why both: a finding traced back to a commit is only useful if the reader knows which model wrote
+  it.
+
+- **Commit signing on this machine** stalls when the signer is invoked non-interactively. When it
+  hangs, commit with `git -c commit.gpgsign=false` and say in your report that the commit is
+  unsigned.
+
+## Gates
+
+- Judgment is the HC's at exactly two points: what to build, and what ships.
+- **Every merge today is `required`** — the HC performs it. You never merge your own work.
+- `attested` (you may merge, but only against an independent review from another model, bound to the
+  exact commit) is written into the standard and is **not yet usable**: the machinery it depends on
+  arrives with the Review System and Findings System in Chapter 2. See the chapter →
+  *Governance* → *Merge authority*, and [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md).
+
+## Bootstrap status
+
+- **Chapters ratified: 0** (identity & governance). Chapters 1–6 are not started.
+- **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
+  to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
+- The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as
+  each chapter lands. See the chapter → *The bootstrap exception*, and
+  [`adr/0002`](adr/0002-chapter-gated-build-bootstrap-exception.md).
