@@ -115,12 +115,47 @@ different tooling.
 - **Trigger:** Verification carries no open must-fix finding.
 - **The AC does:** re-confirms the checks are green on the current head; writes the **Delivery
   Record**; links it from the issue.
-- **The Delivery Record states:** the issue; the option chosen and by whom; what changed; the testing
-  that covers it; the findings and how each was disposed of; known limitations; follow-ups; and the
-  **four health measures** (see *Where the health measures live*).
 - **Deliver never merges.** Merge is the **Ship gate**, and it is the HC's.
 - **Terminal artifact:** the Delivery Record on the pull request, plus the reference on the issue.
 - **Exit:** the HC merges.
+
+#### The Delivery Record
+
+It serves two readers who are never in the room at the same time: the HC deciding, now, whether this
+ships; and an AC in some later session that has no memory of this work and cannot ask anyone about
+it. The second reader is the one the field list is built for, because the first reader can ask.
+
+**The governing rule: carry only what the repository cannot reconstruct.** The diff records what
+changed and git keeps it forever; the tests record what is covered. Restating them is volume, not
+record. What no artifact holds is the reasoning that produced the shape — and that is what a later
+session otherwise pays for twice, first by re-deriving it and then by re-proposing what was already
+rejected.
+
+| Field | Register |
+|---|---|
+| The issue, and the option chosen | Readout |
+| **Why the other options were rejected** | Prose |
+| **What was tried and abandoned, so it is not re-proposed** | Prose |
+| What changed, and what covers it — a line each, pointing at the diff and the tests | Readout |
+| Findings and how each was disposed of | Readout |
+| **What is fragile, and what the AC was unsure about at the end** | Prose |
+| Known limitations and follow-ups | Readout |
+| The **four health measures** (see *Where the health measures live*) | Readout |
+
+- **The bolded fields are the record.** The rest is navigation. A change with nothing unrecoverable —
+  a typo, a dependency bump — has a Delivery Record of three lines, honestly, and needs no exemption
+  to get one.
+- **The register is split because the readers are.** Chapter 0's dual register, applied: the HC
+  judges the Ship gate from the scannable half without reading further. The prose fields are prose
+  for the reason decision records are — see *Where it applies, and where it must not*. An artifact
+  read by someone who cannot ask *why* has to carry its reasoning, and a table asserts a conclusion
+  where a paragraph would have shown it.
+- **The uncomfortable fields are the valuable ones,** and they are the first to go thin when a record
+  is written to look complete. A Delivery Record that restates the diff is worse than none: it
+  occupies the place a record would have gone.
+- **Why it is written here and nowhere else:** this is the only moment the whole arc is in one
+  context. The Assessment was written before the work existed; the diff shows what without why. The
+  AC will not hold this picture again, so the record is nearly free now and impossible later.
 
 ## Stages communicate only through terminal artifacts
 
@@ -285,15 +320,22 @@ as more confident than the work behind it.
 
 | Applies | Does not apply |
 |---|---|
-| Every terminal artifact: Assessment, Plan, Verification, Delivery Record, spike Readout | SDS chapters |
+| Every terminal artifact: Assessment, Plan, Verification, spike Readout, and the Delivery Record's decision half | SDS chapters |
 | Any message to the HC that asks for a decision | Decision records |
-| A stop and its question | Commit messages, code comments, pull request titles |
+| A stop and its question | The Delivery Record's reasoning fields (see *The Delivery Record*) |
+| | Commit messages, code comments, pull request titles |
 
 **The line is presence.** A Readout trades causal texture for scannability — a table asserts a
 conclusion where a paragraph would have shown the reasoning that produced it. That is the right trade
 for a reader who can ask *why* in one message, and the wrong trade for an artifact written to be read
-years later by someone who cannot ask anyone anything. Canon and decision records are on the far side
+much later by someone who cannot ask anyone anything. Canon and decision records are on the far side
 of that line, which is why this chapter is prose.
+
+**One artifact sits on both sides, and does so deliberately.** The Delivery Record is read now by an
+HC who can ask, and later by an AC that cannot — so it is split rather than compromised. Its decision
+half is a Readout; its reasoning fields are prose. Why not pick one: a Readout of the reasoning
+fields would assert conclusions to exactly the reader who most needs to see how they were reached,
+and prose across the whole thing would make the HC read the reasoning to reach the ask.
 
 *Derived from the predecessor's proposal at
 [ace #163](https://github.com/wrburgess/ace/issues/163), re-authored here. Rule 2 is added: Chapter

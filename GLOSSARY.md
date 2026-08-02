@@ -53,10 +53,11 @@ from the tracker instead. Every lifecycle stage transition is one, independent o
 **Contractor reviewer** — A model other than the AC, summoned for one bounded review and handed its
 standards in the summons. It reviews, and never implements, commits, or pushes.
 
-**Delivery Record** — The terminal artifact of the Deliver stage: a Readout on the pull request
-carrying the issue, the option chosen, what changed, the testing that covers it, the findings and
-their dispositions, known limitations, follow-ups, and all four health measures. It is the health
-measures' only home.
+**Delivery Record** — The terminal artifact of the Deliver stage, on the pull request. It carries
+only what the repository cannot reconstruct: why the other options were rejected, what was tried and
+abandoned, what is fragile, the findings and their dispositions, limitations and follow-ups, and all
+four health measures — of which it is the only home. Written for two readers who are never present
+together, so its register is split: the decision half is a Readout, the reasoning fields are prose.
 
 **Direction gate** — The first of the two gates, at the end of Assess: the HC chooses among the
 Assessment's options. It answers *what to build*. `required` today.
