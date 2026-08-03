@@ -1,6 +1,6 @@
 ---
 name: devise
-description: Stage 2 of the deuce lifecycle. An option has been chosen at the Direction gate; work out how it gets built and post the Plan — the ordered steps Implement runs from. Also the way back in when Implement discovers the Plan was wrong.
+description: Stage 2 of the deuce lifecycle. An option has been chosen at the Direction gate; work out how it gets built and post the Plan — the ordered steps Implement runs from.
 ---
 
 # devise — Stage 2 of the lifecycle
