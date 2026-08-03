@@ -24,7 +24,7 @@ restated here; this is adaptive configuration under
 
 ## Lens menu
 
-- **Six lenses**, one per class in [`findings/classes.md`](../findings/classes.md), which carries the
+- **One lens per class** in [`findings/classes.md`](../findings/classes.md), which carries the
   admission rule and the receipts behind each
   ([Chapter 2](../sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count) →
   *Bounded by lens set*).

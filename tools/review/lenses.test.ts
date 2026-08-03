@@ -42,28 +42,26 @@ test("prose lenses still respect the declared lens-set size", () => {
   assert.ok(errors.some((e) => e.includes("3")));
 });
 
-test("the live declaration's lens menu carries the derived lenses, each an interrogative", () => {
+test("every lens on the live menu is stated as an interrogative", () => {
   const menu = parseLensMenu(live);
-  assert.equal(menu.length, 6);
+  assert.ok(menu.length > 0, "the live menu carries no lenses");
   for (const lens of menu) {
     assert.ok(lens.endsWith("?"), `lens is not stated as an interrogative: ${lens}`);
   }
 });
 
-// Asserting only that the menu is non-empty would measure a proxy for the
-// invariant that matters — that the menu *derives from* the class index. That
-// substitution is itself class 1 in the index this test guards.
-test("every menu lens links to a class the index actually carries", () => {
+// Checking only that the menu is populated, or only that its links resolve,
+// measures a proxy for the invariant that matters — that the menu and the index
+// are the same set. Substituting a proxy is class 1 in the index this guards,
+// and enforcing one direction while the other leaks is class 4.
+test("the menu and the class index are one to one, in both directions", () => {
   const index = readFileSync(new URL("../../findings/classes.md", import.meta.url), "utf8");
-  const anchors = new Set(
-    [...index.matchAll(/^###\s+(.+?)\s*$/gm)].map((m) =>
-      m[1]!
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, "")
-        .trim()
-        .replace(/\s+/g, "-"),
-    ),
-  );
+  const anchor = (heading: string) =>
+    heading.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-");
+  // Scoped to Entries: every `###` in the file is not a class, and counting one
+  // that is not would be this check measuring the wrong unit.
+  const entries = index.slice(index.search(/^##\s+Entries\s*$/m)).split(/\n##\s/)[0]!;
+  const classes = [...entries.matchAll(/^###\s+(.+?)\s*$/gm)].map((m) => anchor(m[1]!));
   const section = live.slice(live.search(/^##\s+Lens menu\s*$/m)).split(/\n##\s/)[0]!;
   const links = [
     ...section.matchAll(/\]\(\.\.\/findings\/classes\.md#([^)]+)\)/g),
@@ -76,9 +74,11 @@ test("every menu lens links to a class the index actually carries", () => {
     parseLensMenu(live).length,
     "a lens entry carries no link to the class it derives from",
   );
-  for (const anchor of links) {
-    assert.ok(anchors.has(anchor), `menu lens links to a class the index does not carry: #${anchor}`);
-  }
+  assert.deepEqual(
+    [...links].sort(),
+    [...classes].sort(),
+    "menu and index disagree — every admitted class earns a lens, and every lens names a class",
+  );
 });
 
 test("the live declaration's lens-set size is 3", () => {
