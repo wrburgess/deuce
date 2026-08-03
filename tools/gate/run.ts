@@ -8,7 +8,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { parseDeclaration } from "./declaration.ts";
-import { EXIT_CANNOT_RUN, EXIT_OK, runChecks } from "./gate.ts";
+import { EXIT_CANNOT_RUN, EXIT_CHECK_FAILED, EXIT_OK, runChecks } from "./gate.ts";
 
 const DECLARATION = "config/checks.md";
 
@@ -28,29 +28,24 @@ function main(): void {
     return;
   }
 
-  let result;
-  try {
-    result = runChecks(
-      checks,
-      (argv) => {
-        const run = spawnSync(argv[0]!, argv.slice(1), { stdio: "inherit" });
-        // A binary that is not there is the gate failing to run, not a check
-        // failing. Thrown so it lands in the branch below rather than being
-        // averaged into a non-zero exit that reads as a real failure.
-        if (run.error) {
-          throw new Error(`could not execute \`${argv.join(" ")}\`: ${run.error.message}`);
-        }
-        // status is null when a signal killed the child; that is a check that
-        // did not pass, and it is reported as one.
-        return run.status ?? EXIT_CANNOT_RUN;
-      },
-      existsSync,
-    );
-  } catch (err) {
-    console.error(`the gate could not run: ${(err as Error).message}`);
-    process.exitCode = EXIT_CANNOT_RUN;
-    return;
-  }
+  // A binary that is not there is the gate failing to run, not a check
+  // failing. Thrown, and caught inside runChecks, so the outcomes already
+  // collected survive alongside the classification.
+  const result = runChecks(
+    checks,
+    (argv) => {
+      const run = spawnSync(argv[0]!, argv.slice(1), { stdio: "inherit" });
+      if (run.error) {
+        throw new Error(`could not execute \`${argv.join(" ")}\`: ${run.error.message}`);
+      }
+      // status is null only when a signal killed the child. That is a check
+      // that did not pass, so it is reported as a non-zero check result —
+      // never as EXIT_CANNOT_RUN, which is the gate's own classification and
+      // means something else.
+      return run.status ?? EXIT_CHECK_FAILED;
+    },
+    existsSync,
+  );
 
   for (const line of result.unmet) console.error(line);
   for (const outcome of result.outcomes) {

@@ -99,6 +99,29 @@ test("a declaration with no source is refused", () => {
   assert.throws(() => parseDeclaration(md), /source/i);
 });
 
+// Raised by the contractor review of cafb202, lens: does any guard fail open?
+// The entry-level vocabulary was guarded and the top level was not — the same
+// asymmetry, one scope up.
+test("an unrecognized top-level key is refused, not silently discarded", () => {
+  const md = [
+    "---", "date: 2026-08-03", "source: s", "ignored: future-value",
+    "checks:", "  - name: a", "    command: true", "---",
+  ].join("\n");
+  assert.throws(() => parseDeclaration(md), /ignored/);
+});
+
+// Raised by the adversarial pass on cafb202. Scalars and lists were separate
+// namespaces and each duplicate guard checked only its own, so one key could
+// be declared twice in two shapes and both were kept.
+test("a key used as both a scalar and a list is refused", () => {
+  const md = [
+    "---", "date: 2026-08-03", "source: s",
+    "date:", "  - name: a", "    command: true",
+    "checks:", "  - name: b", "    command: true", "---",
+  ].join("\n");
+  assert.throws(() => parseDeclaration(md), /date/);
+});
+
 test("the live declaration parses, and declares at least one check", () => {
   const live = readFileSync(new URL("../../config/checks.md", import.meta.url), "utf8");
   const d = parseDeclaration(live);

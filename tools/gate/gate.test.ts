@@ -86,6 +86,26 @@ test("declared and executed are the same set, in both directions", () => {
   assert.deepEqual(executed, declared);
 });
 
+// Raised by the contractor review of cafb202, lens: which path does this
+// invariant not cover? Resolution is all-or-nothing; execution is not, and a
+// binary can vanish between one check and the next.
+test("a check that cannot be executed is exit 2 — not a failing check", () => {
+  const r = runChecks(twoChecks, () => { throw new Error("spawn ENOENT"); }, present);
+  assert.equal(r.code, EXIT_CANNOT_RUN);
+  assert.notEqual(r.code, EXIT_CHECK_FAILED);
+});
+
+test("a check that cannot be executed still reports the checks that already ran", () => {
+  let calls = 0;
+  const r = runChecks(twoChecks, () => {
+    if (++calls === 2) throw new Error("spawn ENOENT");
+    return 0;
+  }, present);
+  assert.equal(r.code, EXIT_CANNOT_RUN);
+  assert.deepEqual(r.outcomes.map((o) => o.name), ["typecheck"], "the half that ran was discarded");
+  assert.ok(r.unmet.some((u) => u.includes("tests")), "the check that could not run is not named");
+});
+
 test("a check is executed as tokens, never through a shell", () => {
   const s = spy();
   runChecks([{ name: "tests", command: "npm test" }], s.exec, present);

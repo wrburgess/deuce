@@ -69,9 +69,22 @@ export function runChecks(
     return { outcomes, unmet, code: EXIT_CANNOT_RUN };
   }
 
+  // Resolution above is all-or-nothing; execution below cannot be, because a
+  // binary can go missing between one check and the next. When that happens
+  // the gate has partly run, and the outcomes already collected are returned
+  // alongside the failure — a report that says "could not run" while silently
+  // dropping the half that did run tells a reader less than nothing.
+  // Raised by the contractor review of cafb202.
   for (let i = 0; i < checks.length; i++) {
     const check = checks[i]!;
-    outcomes.push({ name: check.name, command: check.command, code: exec(argvs[i]!) });
+    let code: number;
+    try {
+      code = exec(argvs[i]!);
+    } catch (err) {
+      unmet.push(`check '${check.name}' could not be executed: ${(err as Error).message}`);
+      return { outcomes, unmet, code: EXIT_CANNOT_RUN };
+    }
+    outcomes.push({ name: check.name, command: check.command, code });
   }
 
   return {

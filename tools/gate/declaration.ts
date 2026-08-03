@@ -56,6 +56,10 @@ function parseFrontmatter(markdown: string): Parsed {
 
   const scalars = new Map<string, string>();
   const lists = new Map<string, Map<string, string>[]>();
+  // One namespace for both shapes. Two maps each policing only themselves let
+  // a key be declared once as a scalar and once as a list, with both kept —
+  // the duplicate guard failing open on the input it was written to catch.
+  const seen = new Set<string>();
   let openList: Map<string, string>[] | null = null;
   let openEntry: Map<string, string> | null = null;
 
@@ -93,18 +97,20 @@ function parseFrontmatter(markdown: string): Parsed {
     if (scalar) {
       openList = null;
       openEntry = null;
-      if (scalars.has(scalar[1]!)) {
+      if (seen.has(scalar[1]!)) {
         throw new Error(`frontmatter repeats the key '${scalar[1]}'`);
       }
+      seen.add(scalar[1]!);
       scalars.set(scalar[1]!, scalar[2]!);
       continue;
     }
 
     const listKey = LIST_KEY.exec(line);
     if (listKey) {
-      if (lists.has(listKey[1]!)) {
+      if (seen.has(listKey[1]!)) {
         throw new Error(`frontmatter repeats the key '${listKey[1]}'`);
       }
+      seen.add(listKey[1]!);
       openList = [];
       openEntry = null;
       lists.set(listKey[1]!, openList);
@@ -130,8 +136,25 @@ function required(scalars: Map<string, string>, key: string): string {
   return value;
 }
 
+const TOP_LEVEL = new Set(["date", "source", "checks"]);
+const CHECK_FIELDS = new Set(["name", "command", "requires"]);
+
 export function parseDeclaration(markdown: string): Declaration {
   const { scalars, lists } = parseFrontmatter(markdown);
+
+  // The vocabulary is closed at the top level, exactly as it already was
+  // inside a check entry. A key the schema does not define is far more often a
+  // misspelling than an intention, and accepting it silently means the
+  // declaration reads as configured while nothing acts on it.
+  for (const key of [...scalars.keys(), ...lists.keys()]) {
+    if (!TOP_LEVEL.has(key)) {
+      throw new Error(
+        `declaration carries an unrecognized key '${key}' — the schema defines ` +
+          `${[...TOP_LEVEL].map((k) => `'${k}'`).join(", ")} and nothing else`,
+      );
+    }
+  }
+
   const date = required(scalars, "date");
   const source = required(scalars, "source");
 
@@ -158,7 +181,7 @@ export function parseDeclaration(markdown: string): Declaration {
       throw new Error(`check '${name}' declares no command`);
     }
     for (const key of entry.keys()) {
-      if (key !== "name" && key !== "command" && key !== "requires") {
+      if (!CHECK_FIELDS.has(key)) {
         throw new Error(`check '${name}' carries an unrecognized field '${key}'`);
       }
     }

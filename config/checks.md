@@ -4,7 +4,7 @@ source: the Direction gate on #52, where Option B was chosen
 checks:
   - name: typecheck
     command: npm run typecheck
-    requires: node_modules
+    requires: node_modules/.bin/tsc
   - name: tests
     command: npm test
 ---
@@ -34,13 +34,20 @@ home*.
 |---|---|
 | `name` | What the check is called in the gate's report |
 | `command` | Executed as tokens, never through a shell — a command carrying a shell metacharacter is refused before anything runs |
-| `requires` | A path that must exist first. Absent means the check needs nothing but the repository |
+| `requires` | The path the check actually needs — the executable itself, never a directory that usually contains it. Absent means the check needs nothing but the repository |
 
 ## Why `requires` reports rather than repairs
 
 `typecheck` needs `tsc`, which arrives with `node_modules`, which is gitignored — so a fresh clone
 or a new worktree has no typechecker. That state is reported by name, with `bash bin/setup` as the
 fix, and **the gate never installs it**.
+
+`requires` names `node_modules/.bin/tsc` and not `node_modules`, because the directory is a proxy
+for the toolchain and not the toolchain. Measured on
+[PR #59](https://github.com/wrburgess/deuce/pull/59): with `node_modules` present and `tsc` removed,
+the directory probe passed, `npm run typecheck` exited 127, and the gate reported **exit 1 — a check
+failed** when the truth was that the gate could not run. Raised by the contractor review under the
+lens *does this check measure the invariant it claims, or a proxy for it?*
 
 [Chapter 2](../sds/02-review-and-findings.md) defines the readiness check as side-effect-free for
 the same reason: a gate that repairs the tree it is measuring is measuring something else, and its
