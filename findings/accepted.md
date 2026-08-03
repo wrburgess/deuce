@@ -14,5 +14,5 @@ one half of the findings home. Its contract is canon, at
 
 ## Entries
 
-None yet. An entry only ever comes from a real finding, accepted on a recorded disposition — this
-register is never seeded.
+- **Response fields accepted anywhere (PR #39):** validation checks that `Commit reviewed` and `Signed` are present, not that they close the response — position enforcement adds brittleness without adding trust; accepted as residual at <https://github.com/wrburgess/deuce/pull/39#issuecomment-5163451053>
+

@@ -71,12 +71,16 @@ test("extractSeverityFramework pulls the chapter's own section, whole", () => {
   assert.ok(!s.includes("Fix-verification"), "ran past the section boundary");
 });
 
-test("parseAcceptedRegister on the live register returns no entries yet", () => {
+test("the live register parses, and every entry is one whole line ending in its disposition link", () => {
   const md = readFileSync(
     new URL("../../findings/accepted.md", import.meta.url),
     "utf8",
   );
-  assert.deepEqual(parseAcceptedRegister(md), []);
+  const entries = parseAcceptedRegister(md);
+  for (const e of entries) {
+    assert.match(e, /^- /);
+    assert.match(e, /https:\/\/github\.com\/.+>?$/, `entry lacks its disposition link: ${e}`);
+  }
 });
 
 test("a register without its Entries section fails loudly, never as an empty list", () => {

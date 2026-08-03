@@ -16,7 +16,7 @@ import {
 } from "./compose.ts";
 import { validateReview } from "./validate.ts";
 import { checkLensSelection, parseLensMenu, parseLensSetSize } from "./lenses.ts";
-import { dispatch, runReadiness } from "./dispatch.ts";
+import { argvFromCommand, dispatch, runReadiness } from "./dispatch.ts";
 import { postComment } from "./record.ts";
 
 const MAX_POSTED_CHARS = 60_000;
@@ -114,7 +114,17 @@ postComment(
   `## Review summons — ${roster.name}\n\n- **Mechanism:** \`${roster.mechanismCommand}\`, sandboxed read-only\n- **Readiness check:** \`${roster.readinessCommand}\` passed\n- **Bound to commit:** \`${commit}\`\n\n---\n\n${elideDiffForPosting(summons, base, commit)}`,
 );
 
-const invocation = `${roster.mechanismCommand} --sandbox read-only --ephemeral --output-last-message "$REVIEW_OUT" -`;
+// Tokenized and executed without a shell — the configured command is data.
+const mechanismArgv = argvFromCommand(roster.mechanismCommand);
+const buildArgv = (outFile: string): string[] => [
+  ...mechanismArgv,
+  "--sandbox",
+  "read-only",
+  "--ephemeral",
+  "--output-last-message",
+  outFile,
+  "-",
+];
 
 interface WaveResult {
   code: number;
@@ -124,7 +134,7 @@ interface WaveResult {
 function runWave(waveSummons: string, label: string): WaveResult {
   const outcome = dispatch({
     readinessCommand: roster.readinessCommand,
-    invocation,
+    buildArgv,
     summons: waveSummons,
   });
 

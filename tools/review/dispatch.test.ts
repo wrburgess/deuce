@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { dispatch, runReadiness } from "./dispatch.ts";
+import { argvFromCommand, dispatch, runReadiness } from "./dispatch.ts";
 
 test("a passing readiness command reports reachable", () => {
   const r = runReadiness("true");
@@ -8,15 +8,28 @@ test("a passing readiness command reports reachable", () => {
 });
 
 test("a failing readiness command reports unreachable, with detail", () => {
-  const r = runReadiness("echo down; exit 3");
+  const r = runReadiness("false");
   assert.equal(r.ok, false);
-  assert.match(r.detail, /down/);
+  assert.ok(r.detail.length > 0);
+});
+
+test("shell metacharacters in a configured command are refused, never executed", () => {
+  assert.throws(() => argvFromCommand("codex exec; rm -rf /"), /metacharacter/i);
+  assert.throws(() => runReadiness("echo owned > /tmp/x"), /metacharacter/i);
+});
+
+test("a plain multi-word command tokenizes to argv", () => {
+  assert.deepEqual(argvFromCommand("codex login status"), [
+    "codex",
+    "login",
+    "status",
+  ]);
 });
 
 test("a failing readiness check is 'unreachable now' — nothing is dispatched", () => {
   const outcome = dispatch({
-    readinessCommand: "exit 1",
-    invocation: 'printf "should never run" > "$REVIEW_OUT"',
+    readinessCommand: "false",
+    buildArgv: (out) => ["sh", "-c", `printf 'should never run' > '${out}'`],
     summons: "s",
   });
   assert.equal(outcome.kind, "unreachable");
@@ -25,7 +38,7 @@ test("a failing readiness check is 'unreachable now' — nothing is dispatched",
 test("a mechanism that returns a review yields it", () => {
   const outcome = dispatch({
     readinessCommand: "true",
-    invocation: 'cat > /dev/null && printf "the review" > "$REVIEW_OUT"',
+    buildArgv: (out) => ["sh", "-c", `cat > /dev/null; printf 'the review' > '${out}'`],
     summons: "the summons",
   });
   assert.equal(outcome.kind, "review");
@@ -35,7 +48,7 @@ test("a mechanism that returns a review yields it", () => {
 test("a mechanism that writes nothing is unresponsive — a different outcome", () => {
   const outcome = dispatch({
     readinessCommand: "true",
-    invocation: "cat > /dev/null",
+    buildArgv: () => ["sh", "-c", "cat > /dev/null"],
     summons: "s",
   });
   assert.equal(outcome.kind, "unresponsive");
