@@ -1,5 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { chmodSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { formatUnpostedRecord, postComment, PostFailure } from "./record.ts";
 
 // The poster is driven with real but harmless commands, per dispatch.test.ts:
@@ -67,6 +70,36 @@ test("a failure while staging the post is a post failure too, not a raw crash", 
   } finally {
     if (saved === undefined) delete process.env.TMPDIR;
     else process.env.TMPDIR = saved;
+  }
+});
+
+test("a cleanup failure cannot replace the PostFailure it would mask", () => {
+  // An exception thrown from `finally` supersedes the one in flight, so a failing
+  // `rmSync` would swallow the PostFailure and lose the record — the defect this
+  // file exists to prevent, arriving through the cleanup path.
+  //
+  // Forced without a mock: the poster itself makes the temp parent read-only as
+  // a side effect and then exits non-zero. The post fails, and the cleanup that
+  // follows cannot remove its directory.
+  // Raised as must-fix by the contractor review of e595042 on PR #46.
+  const parent = mkdtempSync(join(tmpdir(), "deuce-cleanup-test-"));
+  const saved = process.env.TMPDIR;
+  process.env.TMPDIR = parent;
+  try {
+    assert.throws(
+      () =>
+        postComment(7, "a body", "the summons", [
+          "sh",
+          "-c",
+          `chmod 500 '${parent}'; exit 1`,
+        ]),
+      (err: unknown) => err instanceof PostFailure && err.body === "a body",
+    );
+  } finally {
+    if (saved === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = saved;
+    chmodSync(parent, 0o700);
+    rmSync(parent, { recursive: true, force: true });
   }
 });
 

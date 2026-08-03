@@ -105,7 +105,20 @@ export function postComment(
       (err instanceof Error ? err.message : String(err)).slice(0, 2_000),
     );
   } finally {
-    if (dir !== undefined) rmSync(dir, { recursive: true, force: true });
+    // An exception thrown from `finally` supersedes the one in flight, so a
+    // failing cleanup would replace the PostFailure and lose the record. Nothing
+    // may escape here. A leaked directory under the OS temp directory carries no
+    // record and no consequence; the lost record is the whole defect. The notice
+    // is deliberately omitted rather than guarded twice — writing it could throw
+    // in turn, which is the same masking hazard wearing a helpful face.
+    // Raised as must-fix by the contractor review of e595042 on PR #46.
+    if (dir !== undefined) {
+      try {
+        rmSync(dir, { recursive: true, force: true });
+      } catch {
+        // Intentionally swallowed; see above.
+      }
+    }
   }
   // The streams are captured so a failure's detail can go inside the report
   // instead of scattering to the terminal — but a successful post has always
