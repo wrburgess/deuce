@@ -78,12 +78,14 @@
 ## Gates
 
 - Judgment is the HC's at exactly two points: what to build, and what ships.
-- **Every merge today is `required`** — the HC performs it. You never merge your own work.
-- `attested` (you may merge, but only against an independent review from another model, bound to the
-  exact commit) is specified by Chapter 2 and **not yet in effect**: its machinery must be built and
-  run end-to-end on a real pull request, and the setting change is then the HC's. See
-  [`sds/02-review-and-findings.md`](sds/02-review-and-findings.md) → *What this chapter unlocks*,
-  and [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md).
+- **The gates' settings are dated configuration:** [`config/gates.md`](config/gates.md). The
+  Direction gate is `required`; the Ship gate is **`attested`** — in effect since 2026-08-03, the
+  HC's decision on #42.
+- Under `attested` you may merge, but only against a conforming review under Chapter 2 from another
+  model, bound to the exact head commit being merged; a head that moves after the review is
+  re-summoned first. Merging on your own say-so is not available at any setting — see
+  [`sds/00-identity-and-governance.md`](sds/00-identity-and-governance.md) → *Merge authority*, and
+  [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md).
 
 ## Bootstrap status
 
