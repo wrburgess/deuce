@@ -18,7 +18,13 @@ function fieldValues(review: string, field: string): string[] {
   return out;
 }
 
-export function validateReview(review: string, expectedCommit: string): Validation {
+const NO_FINDINGS = /no findings/i;
+
+export function validateReview(
+  review: string,
+  expectedCommit: string,
+  lenses: string[],
+): Validation {
   const missing: string[] = [];
 
   const commits = fieldValues(review, "Commit reviewed");
@@ -35,13 +41,25 @@ export function validateReview(review: string, expectedCommit: string): Validati
     missing.push("the review is not signed with tool and model");
   }
 
+  // Every summoned lens must be answered explicitly — a finding that names it,
+  // or a "no findings" line that names it. An unanswered lens is the incomplete
+  // review this check exists to catch.
+  const lensAnswers = fieldValues(review, "Lens");
+  for (const lens of lenses) {
+    if (!lensAnswers.some((a) => a.includes(lens))) {
+      missing.push(`the summoned lens was never answered: ${lens}`);
+    }
+  }
+
   const counts = new Map(FIELDS.map((f) => [f, fieldValues(review, f)]));
-  const n = counts.get("Severity")!.length;
+  // A "no findings" lens answer is an answer, not a finding — it owes no other fields.
+  const n = lensAnswers.filter((a) => !NO_FINDINGS.test(a)).length;
   for (const field of FIELDS) {
+    if (field === "Lens") continue;
     const seen = counts.get(field)!.length;
     if (seen !== n) {
       missing.push(
-        `field counts disagree: ${n} Severity field(s) but ${seen} ${field} field(s) — every finding carries all five fields`,
+        `field counts disagree: ${n} finding-bearing Lens field(s) but ${seen} ${field} field(s) — every finding carries all five fields`,
       );
     }
   }

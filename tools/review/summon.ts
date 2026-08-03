@@ -12,6 +12,7 @@ import {
   composeSummons,
   extractSeverityFramework,
   parseAcceptedRegister,
+  PERMANENT_LENS,
 } from "./compose.ts";
 import { validateReview } from "./validate.ts";
 import { dispatch, runReadiness } from "./dispatch.ts";
@@ -64,6 +65,8 @@ const subject =
   values.subject ??
   sh("gh", ["pr", "view", String(prNumber), "--json", "title", "-q", ".title"]).trim();
 const diff = sh("git", ["diff", `${base}...${commit}`]);
+
+const summonedLenses = [...(values.lens ?? []), PERMANENT_LENS];
 
 const summons = composeSummons({
   prNumber,
@@ -129,7 +132,7 @@ function runWave(waveSummons: string, label: string): WaveResult {
     return { code: 3, missing: [] };
   }
 
-  const validation = validateReview(outcome.output, commit);
+  const validation = validateReview(outcome.output, commit, summonedLenses);
   if (validation.conforming) {
     postComment(
       prNumber,

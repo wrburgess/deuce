@@ -31,7 +31,13 @@ export function extractSeverityFramework(chapterMarkdown: string): string {
 
 export function parseAcceptedRegister(markdown: string): string[] {
   const at = markdown.search(/^##\s+Entries\s*$/m);
-  if (at === -1) return [];
+  if (at === -1) {
+    // Fail loud, never open: an empty list from a reshaped register would tell
+    // the reviewer "none accepted to date" and re-open every settled question.
+    throw new Error(
+      "the accepted register carries no '## Entries' section — refusing to treat a malformed register as empty",
+    );
+  }
   return markdown
     .slice(at)
     .split("\n")
@@ -69,8 +75,9 @@ response rather than inventing a standard.
 
 ## Lens set
 
-Answer every lens. A lens with no findings is answered "no findings" explicitly — never
-silently skipped.
+Answer every lens. A lens with no findings is answered explicitly with a line of the shape
+\`- **Lens:** <the lens> — no findings\` — never silently skipped. An unanswered lens makes
+the review nonconforming.
 
 ${lenses.map((l, i) => `${i + 1}. ${l}`).join("\n")}
 

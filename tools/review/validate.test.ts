@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import { validateReview } from "./validate.ts";
 
 const COMMIT = "b".repeat(40);
+const LENS = "what class is not on this list?";
 
 const conforming = [
   "## Review",
   "",
-  "- **Lens:** what class is not on this list?",
+  `- **Lens:** ${LENS}`,
   "- **Type:** defect",
   "- **Severity:** should-fix",
   "- **Location:** tools/review/roster.ts:10",
@@ -19,45 +20,84 @@ const conforming = [
 ].join("\n");
 
 test("a conforming review with findings passes", () => {
-  const v = validateReview(conforming, COMMIT);
+  const v = validateReview(conforming, COMMIT, [LENS]);
   assert.equal(v.conforming, true);
   assert.deepEqual(v.missing, []);
 });
 
-test("a zero-findings review that names the commit and signs passes", () => {
+test("a zero-findings review answers every lens explicitly and passes", () => {
   const review = [
-    "No findings under any lens.",
+    `- **Lens:** ${LENS} — no findings`,
     "",
     `**Commit reviewed:** ${COMMIT}`,
     "**Signed:** Codex CLI gpt-5.2-codex",
   ].join("\n");
-  const v = validateReview(review, COMMIT);
+  const v = validateReview(review, COMMIT, [LENS]);
   assert.equal(v.conforming, true);
+});
+
+test("a review that never answers a summoned lens is nonconforming — the lens is named", () => {
+  const v = validateReview(conforming, COMMIT, [
+    LENS,
+    "does any guard fail open?",
+  ]);
+  assert.equal(v.conforming, false);
+  assert.ok(v.missing.some((m) => m.includes("does any guard fail open?")));
+});
+
+test("a review with no lens answers at all is nonconforming even when signed and bound", () => {
+  const review = [
+    "Looks fine to me.",
+    "",
+    `**Commit reviewed:** ${COMMIT}`,
+    "**Signed:** Codex CLI gpt-5.2-codex",
+  ].join("\n");
+  const v = validateReview(review, COMMIT, [LENS]);
+  assert.equal(v.conforming, false);
+  assert.ok(v.missing.some((m) => m.includes(LENS)));
+});
+
+test("a no-findings lens answer does not break the finding field parity check", () => {
+  const review = [
+    `- **Lens:** ${LENS}`,
+    "- **Type:** defect",
+    "- **Severity:** note",
+    "- **Location:** x.ts:1",
+    "- **Defect:** concrete enough",
+    "",
+    "- **Lens:** does any guard fail open? — no findings",
+    "",
+    `**Commit reviewed:** ${COMMIT}`,
+    "**Signed:** Codex CLI gpt-5.2-codex",
+  ].join("\n");
+  const v = validateReview(review, COMMIT, [LENS, "does any guard fail open?"]);
+  assert.equal(v.conforming, true);
+  assert.deepEqual(v.missing, []);
 });
 
 test("a reviewer-invented severity is nonconforming and named", () => {
   const review = conforming.replace("should-fix", "critical");
-  const v = validateReview(review, COMMIT);
+  const v = validateReview(review, COMMIT, [LENS]);
   assert.equal(v.conforming, false);
   assert.ok(v.missing.some((m) => m.includes("critical")));
 });
 
 test("a review that does not name the bound commit is nonconforming", () => {
   const review = conforming.replace(`**Commit reviewed:** ${COMMIT}`, "");
-  const v = validateReview(review, COMMIT);
+  const v = validateReview(review, COMMIT, [LENS]);
   assert.equal(v.conforming, false);
   assert.ok(v.missing.some((m) => /commit/i.test(m)));
 });
 
 test("a review naming a different commit is nonconforming", () => {
-  const v = validateReview(conforming, "c".repeat(40));
+  const v = validateReview(conforming, "c".repeat(40), [LENS]);
   assert.equal(v.conforming, false);
   assert.ok(v.missing.some((m) => /commit/i.test(m)));
 });
 
 test("an unsigned review is nonconforming", () => {
   const review = conforming.replace(/\*\*Signed:\*\*.*\n?/, "");
-  const v = validateReview(review, COMMIT);
+  const v = validateReview(review, COMMIT, [LENS]);
   assert.equal(v.conforming, false);
   assert.ok(v.missing.some((m) => /sign/i.test(m)));
 });
@@ -67,14 +107,14 @@ test("a finding missing a required field is nonconforming and the field is named
     "- **Location:** tools/review/roster.ts:10\n",
     "",
   );
-  const v = validateReview(review, COMMIT);
+  const v = validateReview(review, COMMIT, [LENS]);
   assert.equal(v.conforming, false);
   assert.ok(v.missing.some((m) => /Location/.test(m)));
 });
 
 test("a type outside the findings vocabulary is nonconforming", () => {
   const review = conforming.replace("**Type:** defect", "**Type:** bug");
-  const v = validateReview(review, COMMIT);
+  const v = validateReview(review, COMMIT, [LENS]);
   assert.equal(v.conforming, false);
   assert.ok(v.missing.some((m) => /type/i.test(m)));
 });

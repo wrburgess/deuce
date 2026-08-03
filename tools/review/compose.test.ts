@@ -79,6 +79,13 @@ test("parseAcceptedRegister on the live register returns no entries yet", () => 
   assert.deepEqual(parseAcceptedRegister(md), []);
 });
 
+test("a register without its Entries section fails loudly, never as an empty list", () => {
+  assert.throws(
+    () => parseAcceptedRegister("# The accepted register\n\nreshaped file\n"),
+    /Entries/,
+  );
+});
+
 test("parseAcceptedRegister collects entry lines once entries exist", () => {
   const md = [
     "# The accepted register",
