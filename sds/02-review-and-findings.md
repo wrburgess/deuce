@@ -301,6 +301,12 @@ takes:
 - **The order gains one step.** Drift check, adversarial pass — which now hunts the lens menu's
   standing classes instead of re-deriving its list each run — then the summons, then findings
   response over the AC's own findings and the reviewer's together, batched per *Fix-verification*.
+- **The summons runs on every pull request that runs Verify.** What scales with the change is the
+  lens set, never whether review happens: a trivial change gets a small set, not no review. A
+  change too trivial to review at all is a compression, and compression is the HC's call alone
+  (Chapter 1) — so review is only ever absent because the HC decided it, on the record. Why the
+  rule is absolute: a review that sometimes silently does not run is worse than no review, because
+  the run reports as reviewed. That failure is live field evidence, banked on #4.
 - **The Verification records the review whole:** the summons, the review, every finding with its
   type, severity, state, and disposition — and, when a reviewer could not be reached, the readiness
   check's outcome.
