@@ -1,11 +1,13 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { EXIT_CANNOT_RUN, EXIT_CHECK_FAILED, EXIT_OK, runChecks } from "./gate.ts";
+import { EXIT_CANNOT_RUN, EXIT_CHECK_FAILED, EXIT_OK, exitFor, runChecks } from "./gate.ts";
+import type { CheckResult, CheckState } from "./gate.ts";
 import type { CheckSpec } from "./declaration.ts";
 
 const present = () => true;
 const absent = () => false;
 const passing = () => 0;
+const failing = () => 1;
 
 function spy() {
   const calls: string[][] = [];
@@ -17,39 +19,127 @@ const twoChecks: CheckSpec[] = [
   { name: "tests", command: "npm test" },
 ];
 
-test("every check passing is exit 0, with every check reported", () => {
-  const r = runChecks(twoChecks, passing, present);
-  assert.equal(r.code, EXIT_OK);
-  assert.deepEqual(r.outcomes.map((o) => o.name), ["typecheck", "tests"]);
+const threeChecks: CheckSpec[] = [
+  { name: "one", command: "true" },
+  { name: "two", command: "true" },
+  { name: "three", command: "true" },
+];
+
+const stateOf = (r: { results: CheckResult[] }, name: string) =>
+  r.results.find((c) => c.name === name)?.state;
+
+// ---------------------------------------------------------------------------
+// The invariant, asserted as a whole sequence.
+//
+// Its predecessor counted, and filtered `unmet` to entries containing "could
+// not be executed" — which excluded exactly the branch that was broken. A
+// count is a proxy for a set, and the filter is where a branch goes to hide.
+// This compares the full ordered name list, so there is nothing to exclude.
+// ---------------------------------------------------------------------------
+
+const BRANCHES: [string, () => { results: CheckResult[] }][] = [
+  ["all pass", () => runChecks(threeChecks, passing, present)],
+  ["all fail", () => runChecks(threeChecks, failing, present)],
+  ["execution stops midway", () => {
+    let n = 0;
+    return runChecks(threeChecks, () => { if (++n === 2) throw new Error("boom"); return 0; }, present);
+  }],
+  ["unmet prerequisite", () => runChecks(
+    [{ name: "one", command: "true", requires: "nope" }, ...threeChecks.slice(1)], passing, absent,
+  )],
+  ["command refused", () => runChecks(
+    [{ name: "one", command: "true && rm -rf /" }, ...threeChecks.slice(1)], passing, present,
+  )],
+];
+
+for (const [label, run] of BRANCHES) {
+  test(`every declared check appears exactly once, in order — ${label}`, () => {
+    const { results } = run();
+    assert.deepEqual(
+      results.map((r) => r.name),
+      ["one", "two", "three"],
+      "results are not the declared checks, in the declared order, exactly once each",
+    );
+  });
+}
+
+test("no declared check is ever left without a state", () => {
+  for (const [label, run] of BRANCHES) {
+    for (const r of run().results) {
+      assert.ok(r.state, `${label}: check '${r.name}' carries no state`);
+    }
+  }
 });
 
-test("a failing check is exit 1, and the failing check is named", () => {
-  const r = runChecks(twoChecks, (argv) => (argv.includes("test") ? 1 : 0), present);
-  assert.equal(r.code, EXIT_CHECK_FAILED);
-  assert.deepEqual(r.outcomes.filter((o) => o.code !== 0).map((o) => o.name), ["tests"]);
+// ---------------------------------------------------------------------------
+// The exit code is one pure function of the states, tested directly. This is
+// what makes the four-return-sites defect un-recreatable: the mapping lives in
+// one place instead of being re-decided at each exit.
+// ---------------------------------------------------------------------------
+
+const r = (state: CheckState): CheckResult => ({ name: "x", command: "true", state });
+
+test("exitFor maps states to exits, and a blocked gate outranks everything", () => {
+  assert.equal(exitFor([r("passed"), r("passed")], null), EXIT_OK);
+  assert.equal(exitFor([r("passed"), r("failed")], null), EXIT_CHECK_FAILED);
+  assert.equal(exitFor([r("passed"), r("could-not-run")], null), EXIT_CANNOT_RUN);
+  assert.equal(exitFor([r("passed"), r("not-attempted")], null), EXIT_CANNOT_RUN);
+  assert.equal(exitFor([r("failed"), r("not-attempted")], null), EXIT_CANNOT_RUN);
+  assert.equal(exitFor([], "no checks declared"), EXIT_CANNOT_RUN);
+  assert.equal(exitFor([r("passed")], "something blocked the gate"), EXIT_CANNOT_RUN);
+});
+
+test("a gate that ran nothing never reports green", () => {
+  assert.notEqual(exitFor([], null), EXIT_OK);
+  assert.equal(runChecks([], passing, present).code, EXIT_CANNOT_RUN);
+});
+
+// ---------------------------------------------------------------------------
+// States, each reachable and each measured.
+// ---------------------------------------------------------------------------
+
+test("every check passing is exit 0, and every check is reported passed", () => {
+  const res = runChecks(twoChecks, passing, present);
+  assert.equal(res.code, EXIT_OK);
+  assert.deepEqual(res.results.map((c) => c.state), ["passed", "passed"]);
+});
+
+test("a failing check is exit 1, and only that check is failed", () => {
+  const res = runChecks(twoChecks, (argv) => (argv.includes("test") ? 1 : 0), present);
+  assert.equal(res.code, EXIT_CHECK_FAILED);
+  assert.equal(stateOf(res, "typecheck"), "passed");
+  assert.equal(stateOf(res, "tests"), "failed");
 });
 
 // The #40 lesson: "a check failed" and "the gate never ran" are different
 // outcomes, and a caller cannot tell them apart from a bare non-zero.
 test("an unmet prerequisite is exit 2, not exit 1 — it is not a failing check", () => {
-  const r = runChecks(twoChecks, passing, absent);
-  assert.equal(r.code, EXIT_CANNOT_RUN);
-  assert.notEqual(r.code, EXIT_CHECK_FAILED);
+  const res = runChecks(twoChecks, passing, absent);
+  assert.equal(res.code, EXIT_CANNOT_RUN);
+  assert.notEqual(res.code, EXIT_CHECK_FAILED);
+});
+
+// The double-count that ended the previous design: the check whose
+// prerequisite is unmet is could-not-run, and it is NOT also reported as
+// never attempted. One check, one state.
+test("a check with an unmet prerequisite carries could-not-run and nothing else", () => {
+  const res = runChecks(twoChecks, passing, absent);
+  assert.equal(stateOf(res, "typecheck"), "could-not-run");
+  assert.equal(stateOf(res, "tests"), "not-attempted");
+  assert.equal(res.results.filter((c) => c.name === "typecheck").length, 1, "counted twice");
 });
 
 test("an unmet prerequisite names what is missing and how to fix it", () => {
-  const r = runChecks(twoChecks, passing, absent);
-  assert.ok(r.unmet.some((u) => u.includes("node_modules")), "the missing prerequisite is not named");
-  assert.ok(r.unmet.some((u) => u.includes("bin/setup")), "the fix is not named");
+  const res = runChecks(twoChecks, passing, absent);
+  const blocked = res.results.find((c) => c.name === "typecheck");
+  assert.ok(blocked?.detail?.includes("node_modules"), "the missing prerequisite is not named");
+  assert.ok(blocked?.detail?.includes("bin/setup"), "the fix is not named");
 });
 
 // The gate reports its own unreadiness; it never repairs the tree it measures.
-// Resolved at Devise against this issue's original wording.
-//
-// Asserted differentially on purpose. "Nothing ran" is an absence, and an
-// absence passes against an implementation that never runs anything at all —
-// which is precisely how this test passed against its own stub. The control
-// arm is what makes the empty arm mean something.
+// Differential: "nothing ran" is an absence, and an absence passes against an
+// implementation that never runs anything — which is how this test's ancestor
+// passed against its own stub.
 test("an unmet prerequisite runs nothing — while the same checks do run when it is met", () => {
   const blocked = spy();
   runChecks(twoChecks, blocked.exec, absent);
@@ -57,96 +147,30 @@ test("an unmet prerequisite runs nothing — while the same checks do run when i
 
   const ready = spy();
   runChecks(twoChecks, ready.exec, present);
-  assert.equal(ready.calls.length, twoChecks.length, "the control arm ran nothing either — the empty arm proves nothing");
+  assert.equal(ready.calls.length, twoChecks.length, "the control arm ran nothing either");
 });
 
-// Defence in depth: declaration.ts already refuses this, so this asserts the
-// runner does not quietly disagree with the parser about the vacuous case.
-test("zero checks is exit 2 — a gate that ran nothing never reports green", () => {
-  const r = runChecks([], passing, present);
-  assert.equal(r.code, EXIT_CANNOT_RUN);
-  assert.notEqual(r.code, EXIT_OK);
+test("a check that cannot be executed is could-not-run, and the rest are not-attempted", () => {
+  let n = 0;
+  const res = runChecks(threeChecks, () => { if (++n === 2) throw new Error("spawn ENOENT"); return 0; }, present);
+  assert.equal(res.code, EXIT_CANNOT_RUN);
+  assert.deepEqual(res.results.map((c) => c.state), ["passed", "could-not-run", "not-attempted"]);
 });
 
 test("a command carrying a shell metacharacter is refused, and nothing runs", () => {
   const s = spy();
-  const r = runChecks([{ name: "sneaky", command: "npm test && rm -rf /" }], s.exec, present);
-  assert.equal(r.code, EXIT_CANNOT_RUN);
+  const res = runChecks([{ name: "sneaky", command: "npm test && rm -rf /" }], s.exec, present);
+  assert.equal(res.code, EXIT_CANNOT_RUN);
+  assert.equal(stateOf(res, "sneaky"), "could-not-run");
   assert.deepEqual(s.calls, []);
 });
 
-// Enforcing one direction while the other leaks is class four in the index.
-// Checking only that every declared check ran would miss a runner that also
-// ran something nobody declared.
 test("declared and executed are the same set, in both directions", () => {
   const s = spy();
   runChecks(twoChecks, s.exec, present);
-  const executed = s.calls.map((argv) => argv.join(" ")).sort();
-  const declared = twoChecks.map((c) => c.command).sort();
-  assert.deepEqual(executed, declared);
-});
-
-// Raised by the contractor review of cafb202, lens: which path does this
-// invariant not cover? Resolution is all-or-nothing; execution is not, and a
-// binary can vanish between one check and the next.
-test("a check that cannot be executed is exit 2 — not a failing check", () => {
-  const r = runChecks(twoChecks, () => { throw new Error("spawn ENOENT"); }, present);
-  assert.equal(r.code, EXIT_CANNOT_RUN);
-  assert.notEqual(r.code, EXIT_CHECK_FAILED);
-});
-
-test("a check that cannot be executed still reports the checks that already ran", () => {
-  let calls = 0;
-  const r = runChecks(twoChecks, () => {
-    if (++calls === 2) throw new Error("spawn ENOENT");
-    return 0;
-  }, present);
-  assert.equal(r.code, EXIT_CANNOT_RUN);
-  assert.deepEqual(r.outcomes.map((o) => o.name), ["typecheck"], "the half that ran was discarded");
-  assert.ok(r.unmet.some((u) => u.includes("tests")), "the check that could not run is not named");
-});
-
-// Raised by the re-summons of a451c56. The first fix returned the outcomes
-// already collected and stopped there, which still left a reader unable to
-// tell "check three passed" from "check three was never attempted" — the same
-// defect one layer down, which is the fix-verification failure Chapter 2 names.
-const threeChecks: CheckSpec[] = [
-  { name: "one", command: "true" },
-  { name: "two", command: "true" },
-  { name: "three", command: "true" },
-];
-
-test("a check that cannot be executed names the checks never attempted", () => {
-  let calls = 0;
-  const r = runChecks(threeChecks, () => {
-    if (++calls === 2) throw new Error("spawn ENOENT");
-    return 0;
-  }, present);
-  assert.equal(r.code, EXIT_CANNOT_RUN);
-  assert.deepEqual(r.outcomes.map((o) => o.name), ["one"]);
-  assert.deepEqual(r.skipped, ["three"], "the unrun remainder is not accounted for");
-});
-
-// The mechanism, stated as an invariant rather than as one more case: whatever
-// happens, every declared check is accounted for exactly once.
-test("every declared check is accounted for, in every branch", () => {
-  const accounted = (r: { outcomes: { name: string }[]; skipped: string[]; unmet: string[] }) =>
-    r.outcomes.length + r.skipped.length + r.unmet.filter((u) => u.includes("could not be executed")).length;
-
-  assert.equal(accounted(runChecks(threeChecks, passing, present)), 3, "all pass");
-  assert.equal(accounted(runChecks(threeChecks, () => 1, present)), 3, "all fail");
-  let n = 0;
-  assert.equal(
-    accounted(runChecks(threeChecks, () => { if (++n === 2) throw new Error("boom"); return 0; }, present)),
-    3,
-    "execution stopped midway",
-  );
-  assert.equal(
-    accounted(runChecks(
-      [{ name: "needs", command: "true", requires: "nope" }, ...threeChecks], passing, absent,
-    )),
-    4,
-    "unmet prerequisite — nothing ran, everything is still declared",
+  assert.deepEqual(
+    s.calls.map((argv) => argv.join(" ")).sort(),
+    twoChecks.map((c) => c.command).sort(),
   );
 });
 
@@ -156,8 +180,7 @@ test("a check is executed as tokens, never through a shell", () => {
   assert.deepEqual(s.calls, [["npm", "test"]]);
 });
 
-// Differential for the same reason as above: a stub that consults nothing
-// satisfies the negative arm by doing nothing.
+// Differential for the same reason as the unmet-prerequisite pair above.
 test("the prerequisite probe is consulted only for a check that declares one", () => {
   let withoutRequires = false;
   runChecks([{ name: "tests", command: "npm test" }], passing, () => ((withoutRequires = true), true));

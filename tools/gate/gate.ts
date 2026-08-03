@@ -1,11 +1,29 @@
 // The gate's decision logic, kept free of the filesystem and the process table
-// so every rejecting branch can be measured (ADR 0014). tools/gate/run.ts is
-// the executable that wires this to spawnSync and existsSync.
+// so every branch can be measured (ADR 0014). tools/gate/run.ts is the
+// executable that wires this to spawnSync and existsSync.
 //
 // Exit codes are classified, and the distinction that matters is between 1 and
-// 2: a check that ran and failed is not the same outcome as a gate that never
-// ran, and a caller cannot tell them apart from a bare non-zero. #40 is the
+// 2: a check that ran and failed is not the same outcome as a gate that could
+// not run, and a caller cannot tell them apart from a bare non-zero. #40 is the
 // receipt — a failed post exiting unclassified was a defect, not a detail.
+//
+// ---------------------------------------------------------------------------
+// Why the shape below, rather than the obvious one
+//
+// The first design kept three parallel arrays — what ran, what was blocked,
+// what was skipped — and the property *every declared check is accounted for
+// exactly once* had to be re-established by hand at four return sites. Two of
+// the four were wrong, each found by a separate review round: one dropped the
+// half that had already run, and the next counted a blocked check twice. The
+// defect was never in any single return. It was in a representation that made
+// the invariant something a person maintains.
+//
+// So: `results` is built from the declared checks before anything runs, every
+// entry seeded `not-attempted`, and execution only ever *mutates* a state.
+// Nothing appends. Length and membership therefore cannot drift from the
+// declaration, and the exit code is derived once by exitFor rather than being
+// decided again at each way out.
+// ---------------------------------------------------------------------------
 
 import { argvFromCommand } from "../review/dispatch.ts";
 import type { CheckSpec } from "./declaration.ts";
@@ -14,23 +32,42 @@ export const EXIT_OK = 0;
 export const EXIT_CHECK_FAILED = 1;
 export const EXIT_CANNOT_RUN = 2;
 
-export interface Outcome {
+/**
+ * What became of one declared check. `could-not-run` means this check was
+ * reached and could not be executed; `not-attempted` means it was never
+ * reached. They are deliberately distinct — collapsing them re-creates the
+ * defect this representation exists to remove.
+ */
+export type CheckState = "passed" | "failed" | "could-not-run" | "not-attempted";
+
+export interface CheckResult {
   name: string;
   command: string;
-  code: number;
+  state: CheckState;
+  /** The check's own exit code, for `passed` and `failed`. */
+  code?: number;
+  /** Why it could not run, for `could-not-run`. */
+  detail?: string;
 }
 
 export interface GateResult {
-  outcomes: Outcome[];
+  /** One entry per declared check, in declared order, always. */
+  results: CheckResult[];
+  /** A gate-level reason nothing could run at all. A scalar, not a list. */
+  blocked: string | null;
+  /** Derived from the states by exitFor; never assigned at a return site. */
   code: number;
-  unmet: string[];
-  /**
-   * Declared checks that were never attempted. The invariant every branch
-   * below holds: each declared check is accounted for exactly once, across
-   * outcomes, an unmet entry, or here. A report that says which checks ran
-   * without saying which ones did not lets a short run read as a whole one.
-   */
-  skipped: string[];
+}
+
+export function exitFor(results: CheckResult[], blocked: string | null): number {
+  if (blocked !== null) return EXIT_CANNOT_RUN;
+  // A gate with nothing to run has not passed; it has not run.
+  if (results.length === 0) return EXIT_CANNOT_RUN;
+  if (results.some((r) => r.state === "could-not-run" || r.state === "not-attempted")) {
+    return EXIT_CANNOT_RUN;
+  }
+  if (results.some((r) => r.state === "failed")) return EXIT_CHECK_FAILED;
+  return EXIT_OK;
 }
 
 export function runChecks(
@@ -38,74 +75,61 @@ export function runChecks(
   exec: (argv: string[]) => number,
   present: (path: string) => boolean,
 ): GateResult {
-  const outcomes: Outcome[] = [];
-  const unmet: string[] = [];
+  // Seeded from the declaration, once. Nothing below appends to this array.
+  const results: CheckResult[] = checks.map((c) => ({
+    name: c.name,
+    command: c.command,
+    state: "not-attempted",
+  }));
 
-  // The vacuous case. declaration.ts already refuses it; this is here so the
-  // runner cannot quietly disagree with the parser about what zero checks
-  // means, and so the guard sits on the unit being measured — checks — rather
-  // than on whatever happened to be iterated to find them.
   if (checks.length === 0) {
-    return {
-      outcomes,
-      unmet: ["no checks to run — a gate that ran nothing must never report green"],
-      skipped: [],
-      code: EXIT_CANNOT_RUN,
-    };
+    const blocked = "no checks to run — a gate that ran nothing must never report green";
+    return { results, blocked, code: exitFor(results, blocked) };
   }
 
   // Everything is resolved before anything is executed, so a malformed command
-  // or a missing prerequisite stops the gate instead of leaving it half-run
-  // with no way to say which half.
-  const argvs: string[][] = [];
-  for (const check of checks) {
+  // or a missing prerequisite stops the gate rather than leaving it half-run.
+  const argvs: (string[] | null)[] = [];
+  let resolutionFailed = false;
+  for (let i = 0; i < checks.length; i++) {
+    const check = checks[i]!;
+    const result = results[i]!;
     try {
       argvs.push(argvFromCommand(check.command));
     } catch (err) {
-      argvs.push([]);
-      unmet.push(`check '${check.name}': ${(err as Error).message}`);
+      argvs.push(null);
+      result.state = "could-not-run";
+      result.detail = (err as Error).message;
+      resolutionFailed = true;
+      continue;
     }
     if (check.requires !== undefined && !present(check.requires)) {
-      unmet.push(
-        `check '${check.name}' requires '${check.requires}', which is missing — ` +
-          "run `bash bin/setup`. The gate reports its own unreadiness and never installs: " +
-          "a gate that repairs the tree it measures is measuring something else.",
-      );
+      result.state = "could-not-run";
+      result.detail =
+        `requires '${check.requires}', which is missing — run \`bash bin/setup\`. ` +
+        "The gate reports its own unreadiness and never installs: a gate that " +
+        "repairs the tree it measures is measuring something else.";
+      resolutionFailed = true;
     }
   }
-  if (unmet.length > 0) {
-    // Nothing ran, so every declared check is unattempted — including the ones
-    // whose own prerequisites were fine.
-    return { outcomes, unmet, skipped: checks.map((c) => c.name), code: EXIT_CANNOT_RUN };
+  // The rest keep the state they were seeded with — not-attempted — which is
+  // the truth, and is set in exactly one place.
+  if (resolutionFailed) {
+    return { results, blocked: null, code: exitFor(results, null) };
   }
 
-  // Resolution above is all-or-nothing; execution below cannot be, because a
-  // binary can go missing between one check and the next. When that happens
-  // the gate has partly run, and the outcomes already collected are returned
-  // alongside the failure — a report that says "could not run" while silently
-  // dropping the half that did run tells a reader less than nothing.
-  // Raised by the contractor review of cafb202.
   for (let i = 0; i < checks.length; i++) {
-    const check = checks[i]!;
-    let code: number;
+    const result = results[i]!;
     try {
-      code = exec(argvs[i]!);
+      const code = exec(argvs[i]!);
+      result.state = code === EXIT_OK ? "passed" : "failed";
+      result.code = code;
     } catch (err) {
-      unmet.push(`check '${check.name}' could not be executed: ${(err as Error).message}`);
-      return {
-        outcomes,
-        unmet,
-        skipped: checks.slice(i + 1).map((c) => c.name),
-        code: EXIT_CANNOT_RUN,
-      };
+      result.state = "could-not-run";
+      result.detail = (err as Error).message;
+      break;
     }
-    outcomes.push({ name: check.name, command: check.command, code });
   }
 
-  return {
-    outcomes,
-    unmet,
-    skipped: [],
-    code: outcomes.some((o) => o.code !== EXIT_OK) ? EXIT_CHECK_FAILED : EXIT_OK,
-  };
+  return { results, blocked: null, code: exitFor(results, null) };
 }

@@ -47,17 +47,23 @@ function main(): void {
     existsSync,
   );
 
-  for (const line of result.unmet) console.error(line);
-  for (const outcome of result.outcomes) {
-    console.log(
-      `${outcome.code === EXIT_OK ? "pass" : "FAIL"}  ${outcome.name}  (${outcome.command})`,
-    );
+  if (result.blocked !== null) console.error(result.blocked);
+
+  // Every declared check gets a line, in declared order, whatever became of
+  // it. Reporting only what ran lets a short run read as a whole one.
+  const LABEL: Record<string, string> = {
+    passed: "pass",
+    failed: "FAIL",
+    "could-not-run": "STOP",
+    "not-attempted": "skip",
+  };
+  for (const check of result.results) {
+    const detail = check.detail ? ` — ${check.detail}` : "";
+    console.log(`${LABEL[check.state]}  ${check.name}  (${check.command})${detail}`);
   }
-  // Every declared check is named in the report, including the ones that never
-  // ran. Printing only what ran lets a short run read as a whole one.
-  for (const name of result.skipped) console.log(`skip  ${name}  (never attempted)`);
+
   if (result.code === EXIT_OK) {
-    console.log(`gate green — ${result.outcomes.length} checks, declared in ${DECLARATION}`);
+    console.log(`gate green — ${result.results.length} checks, declared in ${DECLARATION}`);
   }
   process.exitCode = result.code;
 }
