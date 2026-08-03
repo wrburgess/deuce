@@ -69,9 +69,10 @@ together, so its register is split: the decision half is a Readout, the reasonin
 
 **Direction gate** — The first of the two gates, at the end of Assess, answering *what to build*.
 `required` — the HC chooses among the Assessment's options — or `delegated`, where the AC proceeds on
-its own recommendation. `required` today; `delegated` is written into Chapter 1 and not yet usable.
-Neither setting reaches the floor: the Assessment is always posted before work proceeds on it, always
-carries the rejected options and why, and always states when the AC self-selected.
+its own recommendation. The setting in force is declared in `config/gates.md`; `delegated` and its
+floor are written into Chapter 1. Neither setting reaches the floor: the Assessment is always posted
+before work proceeds on it, always carries the rejected options and why, and always states when the
+AC self-selected.
 
 **Disposition** — What was decided about a finding at the receiving end, and the record of that
 decision: fixed in this change, refuted with the refuting evidence, promoted to tracked work, or
@@ -138,7 +139,8 @@ is built. Only a critical fix may land during a freeze, labeled `must-port`.
 **Gate** — One of the two points where the HC supplies judgment: what to build, and what ships.
 Everything between the gates is the AC's to run. The two are the **Direction gate** and the **Ship
 gate**, placed in Chapter 1. Both are graduated from birth — a loosened setting and its floor are
-written before either can be used — and neither loosened setting is usable today.
+written before either can be used — and the setting each gate runs at is dated configuration, in
+`config/gates.md`.
 
 **Glossary** — `GLOSSARY.md`, this file: the single home for the vocabulary, extended at each
 chapter's ratification.
@@ -232,8 +234,9 @@ Nothing exists in deuce that the SDS does not already sanction.
 never silently dropped), and `note` (recorded, owing nothing). Handed to every reviewer in the
 summons and used to validate what comes back. Defined in Chapter 2.
 
-**Ship gate** — The second of the two gates, at the end of Deliver: the HC merges. It answers *what
-ships*. `required` today; `attested` is written into Chapter 0 and not yet usable.
+**Ship gate** — The second of the two gates, at the end of Deliver, answering *what ships*. The
+setting in force is declared in `config/gates.md`; `attested` and its floor are written into
+Chapter 0.
 
 **Skill** — A packaged procedure the AC follows for a recurring job, one per directory at
 `skills/<name>/SKILL.md`, stating when it is invoked, its procedure, its terminal artifact, and when

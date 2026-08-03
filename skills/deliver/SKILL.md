@@ -1,6 +1,6 @@
 ---
 name: deliver
-description: Stage 5 of the deuce lifecycle. The Verification carries no open must-fix finding; re-confirm the checks are green on the current head, write the Delivery Record on the pull request with its reference on the issue, and stop — the Ship gate is the HC's.
+description: Stage 5 of the deuce lifecycle. The Verification carries no open must-fix finding; re-confirm the checks are green on the current head, write the Delivery Record on the pull request with its reference on the issue, then act on the Ship gate at its declared setting.
 ---
 
 # deliver — Stage 5 of the lifecycle
@@ -46,10 +46,11 @@ The Verification on the pull request carries no open must-fix finding —
    posting**
    ([Stage 5](../../sds/01-lifecycle-and-skills.md#stage-5--deliver);
    [Chapter 1 → Binding to the Work Tracking System](../../sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)).
-9. **Post the reference on the issue** — a link to the Record, closing with the line that the
-   Ship gate is the HC's — **and stop: Deliver never merges**
-   ([Stage 5](../../sds/01-lifecycle-and-skills.md#stage-5--deliver);
-   [Chapter 0 → Governance](../../sds/00-identity-and-governance.md#governance)).
+9. **Post the reference on the issue** — a link to the Record — then **act on the Ship gate per its
+   current setting** ([`config/gates.md`](../../config/gates.md)). The setting is read there, never
+   from this file; the floor no setting reaches is canon
+   ([Chapter 0 → Governance](../../sds/00-identity-and-governance.md#governance) → *Merge
+   authority*; [Stage 5](../../sds/01-lifecycle-and-skills.md#stage-5--deliver)).
 
 ## Terminal artifact
 

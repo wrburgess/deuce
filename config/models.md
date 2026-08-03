@@ -4,13 +4,15 @@ Which model and effort level runs each lifecycle stage. This is adaptive configu
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*; the stages themselves
 are canon and are not restated here.
 
-- **Date:** 2026-08-02
-- **Source:** the HC's session configuration, and the Direction gate on #13.
+- **Date:** 2026-08-03
+- **Source:** the HC's session configuration, and the Direction gate on #13; the removal of the
+  named model, the Direction gate on #44.
 
 ## Declaration
 
 - **Every stage — Assess, Devise, Implement, Verify, Deliver — runs on the model the HC launches the
-  session with, at that session's default effort.** Today that model is Claude Fable 5.
+  session with, at that session's default effort.** No model is named here: the session names it,
+  and a name written down is a second copy that goes stale the next time you launch a different one.
 - **No stage is routed to a different model or effort than the session's.** Differentiated routing is
   deliberately not declared: nothing can act on a per-stage declaration until unattended runs exist
   (Chapter 6), and a declaration nothing reads is aspiration, not configuration. When routing becomes
