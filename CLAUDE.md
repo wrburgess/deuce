@@ -81,7 +81,9 @@
 - **The gates' settings are dated configuration, at [`config/gates.md`](config/gates.md).** Read it
   before acting on either gate. What each setting means, and the floors no setting reaches, are
   canon: [`sds/00-identity-and-governance.md`](sds/00-identity-and-governance.md) → *Merge
-  authority*, and [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md).
+  authority* and [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md) for the Ship gate;
+  [`sds/01-lifecycle-and-skills.md`](sds/01-lifecycle-and-skills.md) → *The two gates* for both,
+  the Direction gate included.
 
 ## Bootstrap status
 
