@@ -17,9 +17,18 @@ function section(markdown: string, heading: RegExp, name: string): string {
 
 export function parseLensMenu(markdown: string): string[] {
   const body = section(markdown, MENU_HEADING, "## Lens menu");
-  if (EMPTY_MARKER.test(body)) return [];
   // Entries, when they exist, are backticked list items: - `the lens question`
   const entries = [...body.matchAll(/^\s*-\s+`([^`]+)`/gm)].map((m) => m[1]!.trim());
+  const markedEmpty = EMPTY_MARKER.test(body);
+  if (markedEmpty && entries.length > 0) {
+    // Neither side silently wins: a stale marker beside real entries is a
+    // malformed declaration, and resolving it is the declaration's job.
+    throw new Error(
+      "lens menu contradicts itself — it carries the empty marker and " +
+        `${entries.length} entr${entries.length === 1 ? "y" : "ies"}; fix the declaration`,
+    );
+  }
+  if (markedEmpty) return [];
   if (entries.length === 0) {
     throw new Error(
       "lens menu is neither the empty marker nor recognizable entries — " +

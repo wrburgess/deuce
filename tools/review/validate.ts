@@ -63,10 +63,19 @@ export function validateReview(
   const lensAnswers = blocks.map((b) => fieldValues(b, "Lens")[0]!);
 
   // Every summoned lens must be answered explicitly — a finding that names it,
-  // or a "no findings" line that names it. An unanswered lens is the incomplete
-  // review this check exists to catch.
+  // or a "no findings" line that names it. Coverage is normalized equality,
+  // never substring: an answer that merely quotes the lens inside another
+  // question is not an answer to it (raised live on PR #39).
+  const normalize = (s: string) =>
+    s
+      .replace(/[`*]/g, "")
+      .replace(/[—-]\s*no findings\s*$/i, "")
+      .replace(/\(the permanent lens\)\s*$/i, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
   for (const lens of lenses) {
-    if (!lensAnswers.some((a) => a.includes(lens))) {
+    if (!lensAnswers.some((a) => normalize(a) === normalize(lens))) {
       missing.push(`the summoned lens was never answered: ${lens}`);
     }
   }

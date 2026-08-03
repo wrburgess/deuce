@@ -13,6 +13,22 @@ test("the live declaration's lens-set size is 3", () => {
   assert.equal(parseLensSetSize(live), 3);
 });
 
+test("real entries beside a stale empty marker are a contradiction, and loud", () => {
+  const md = [
+    "## Lens menu",
+    "",
+    "- **Empty — zero lenses.**",
+    "- `does any guard fail open?`",
+    "",
+  ].join("\n");
+  assert.throws(() => parseLensMenu(md), /contradict/i);
+});
+
+test("entries parse once the menu has them", () => {
+  const md = ["## Lens menu", "", "- `does any guard fail open?`", ""].join("\n");
+  assert.deepEqual(parseLensMenu(md), ["does any guard fail open?"]);
+});
+
 test("a menu section in an unrecognized shape fails loudly", () => {
   const md = "## Lens menu\n\n- some prose that is neither the empty marker nor an entry\n";
   assert.throws(() => parseLensMenu(md), /menu/i);

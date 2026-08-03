@@ -127,6 +127,34 @@ test("a review naming a different commit is nonconforming", () => {
   assert.ok(v.missing.some((m) => /commit/i.test(m)));
 });
 
+test("an answer that merely quotes the lens inside another question does not cover it", () => {
+  const review = [
+    "- **Lens:** unrelated question that quotes: what class is not on this list?",
+    "- **Type:** defect",
+    "- **Severity:** note",
+    "- **Location:** x.ts:1",
+    "- **Defect:** concrete enough",
+    "",
+    `**Commit reviewed:** ${COMMIT}`,
+    "**Signed:** Codex CLI gpt-5.2-codex",
+  ].join("\n");
+  const v = validateReview(review, COMMIT, [LENS]);
+  assert.equal(v.conforming, false);
+  assert.ok(v.missing.some((m) => m.includes(LENS)));
+});
+
+test("harmless lens-answer variants still cover: case, no-findings suffix, permanent-lens suffix", () => {
+  const review = [
+    "- **Lens:** What class is not on this list? (the permanent lens) — no findings",
+    "",
+    `**Commit reviewed:** ${COMMIT}`,
+    "**Signed:** Codex CLI gpt-5.2-codex",
+  ].join("\n");
+  const v = validateReview(review, COMMIT, [LENS]);
+  assert.equal(v.conforming, true);
+  assert.deepEqual(v.missing, []);
+});
+
 test("a signature without both tool and model is nonconforming", () => {
   const review = conforming.replace(
     "**Signed:** Codex CLI gpt-5.2-codex",
