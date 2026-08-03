@@ -60,8 +60,8 @@ what lands; this file fixes how the session gets there.
     one branch and one pull request, each writing `Part of #N` with no closing keyword near the
     epic reference, each born `status:ready`; the set covers the brief with nothing left implicit
     ([Chapter 0 → Work Tracking System](../../sds/00-identity-and-governance.md#work-tracking-system)).
-    Ratifying, the close-out is Ratification's own — merge, record, tag, cut the work — and is
-    not run from this file.
+    Ratifying, the close-out is Ratification's own and is not run from this file
+    ([Chapter 0 → Ratification](../../sds/00-identity-and-governance.md#ratification)).
 11. **Run the exit test** — could an AC with no history start planning from the brief alone? The
     session is not finished until the answer is yes
     ([Chapter 0 → Work Tracking System](../../sds/00-identity-and-governance.md#work-tracking-system)).
