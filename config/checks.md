@@ -1,0 +1,55 @@
+---
+date: 2026-08-03
+source: the Direction gate on #52, where Option B was chosen
+checks:
+  - name: typecheck
+    command: npm run typecheck
+    requires: node_modules
+  - name: tests
+    command: npm test
+---
+
+# The quality gate
+
+What the gate runs, and in what order. The rules these values instantiate are canon, at
+[Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The quality gate* and
+[ADR 0015](../adr/0015-one-gate-one-command-local-and-ci.md), and are not restated here; this is
+adaptive configuration under [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's
+home*.
+
+## Declaration
+
+- **The gate is `npm run gate`.** The frontmatter above is its only contents.
+  [`tools/gate/run.ts`](../tools/gate/run.ts) executes what is declared there and nothing else, in
+  the order declared, so the list a reader sees and the list that runs are the same list rather than
+  two that agree by convention.
+- **A check joins the gate by being added above.** There is no second place to edit, which is the
+  whole of [ADR 0015](../adr/0015-one-gate-one-command-local-and-ci.md)'s *one definition*.
+- **Ordering is deliberate:** `typecheck` runs first, because a type error makes the test run's
+  output noise rather than signal.
+
+## Fields
+
+| Field | Meaning |
+|---|---|
+| `name` | What the check is called in the gate's report |
+| `command` | Executed as tokens, never through a shell — a command carrying a shell metacharacter is refused before anything runs |
+| `requires` | A path that must exist first. Absent means the check needs nothing but the repository |
+
+## Why `requires` reports rather than repairs
+
+`typecheck` needs `tsc`, which arrives with `node_modules`, which is gitignored — so a fresh clone
+or a new worktree has no typechecker. That state is reported by name, with `bash bin/setup` as the
+fix, and **the gate never installs it**.
+
+[Chapter 2](../sds/02-review-and-findings.md) defines the readiness check as side-effect-free for
+the same reason: a gate that repairs the tree it is measuring is measuring something else, and its
+green stops meaning what it says. The receipt is
+[PR #51](https://github.com/wrburgess/deuce/pull/51), where `npm run typecheck` reported
+`tsc: command not found` in a fresh worktree and the run had to notice by hand.
+
+## What is not here yet
+
+The checks [Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The configuration lint* owes are
+tracked under #55 and #56, and they join this list as they are built. This file growing is the
+intended mechanism, not evidence it was declared too small.

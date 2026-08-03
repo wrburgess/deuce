@@ -15,4 +15,5 @@ one half of the findings home. Its contract is canon, at
 ## Entries
 
 - **Response fields accepted anywhere (PR #39):** validation checks that `Commit reviewed` and `Signed` are present, not that they close the response — position enforcement adds brittleness without adding trust; accepted as residual at <https://github.com/wrburgess/deuce/pull/39#issuecomment-5163451053>
+- **The `attested` green claim is unverified (2026-08-03, #53):** the Ship gate runs `attested` while no independent re-run of the quality gate exists, so the green half of every merge rests on the AC's own report of it. Knowingly held rather than reverting the gate to `required`, on the grounds that the residual is bounded and recoverable; the floor and what closes it are canon at [Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The transitional state, stated plainly*, and the work is #53. Accepted by the HC at <https://github.com/wrburgess/deuce/issues/53#issuecomment-5172077943>
 
