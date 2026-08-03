@@ -210,6 +210,14 @@ whole time, and triage ran zero times
 that fits no type defaults to `lesson`, and a recurring misfit — never a single one — triggers a
 one-time amendment to the set.
 
+The type vocabulary is deliberately not the issue-type vocabulary, because a finding is not an
+issue — only a finding in state `open` becomes one. At promotion the mapping is direct: a `defect`
+becomes a `BUG:`, an `improvement` becomes a `TASK:`. Reusing `bug` for both records would put one
+word on two different things, which the Glossary's one-term rule exists to prevent. And `defect` is
+deliberately wider than a code bug: in a repository whose artifacts are mostly prose, a broken
+link, a contradiction between chapters, and a term with no Glossary entry behind it are all
+findings of type `defect`.
+
 **States, and where each lives:**
 
 | State | Meaning | Home |
