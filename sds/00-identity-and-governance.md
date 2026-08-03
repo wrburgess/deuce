@@ -338,8 +338,10 @@ question, not a tooling one.
   merged.
 - **Merging on the AC's own say-so is never an option**, at any setting. The independent review is
   what makes `attested` a gate rather than a formality.
-- **Today every merge is `required`,** performed by the HC. `attested` cannot be used until the
-  machinery it depends on exists — the Review System and Findings System, ratified in Chapter 2.
+- **The setting in force is declared in `config/gates.md`, never here.** This chapter fixes what the
+  settings mean and the floor neither reaches; which one is on is dated configuration. **At this
+  chapter's ratification every merge was `required`,** because `attested` could not be used until the
+  machinery it depends on existed — the Review System and Findings System, ratified in Chapter 2.
 - Why write the policy before it can be used: later chapters then build toward a fixed target,
   instead of renegotiating merge authority at the moment automation makes loosening it convenient.
 

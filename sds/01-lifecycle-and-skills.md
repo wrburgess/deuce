@@ -115,9 +115,11 @@ different tooling.
 - **Trigger:** Verification carries no open must-fix finding.
 - **The AC does:** re-confirms the checks are green on the current head; writes the **Delivery
   Record**; links it from the issue.
-- **Deliver never merges.** Merge is the **Ship gate**, and it is the HC's.
+- **Deliver never merges on its own authority.** Merge is the **Ship gate**; who performs it is the
+  setting in force, declared in `config/gates.md`. The floor no setting reaches is Chapter 0's —
+  never on the AC's own say-so.
 - **Terminal artifact:** the Delivery Record on the pull request, plus the reference on the issue.
-- **Exit:** the HC merges.
+- **Exit:** the merge, performed at the Ship gate's setting in force.
 
 #### The Delivery Record
 
@@ -195,14 +197,18 @@ what effort, is adaptive configuration** and never canon.
 Chapter 0 fixes the count at two — what to build, and what ships. This chapter fixes where they sit
 and names them.
 
-| Gate | Where | Question it answers | Settings | Today |
-|---|---|---|---|---|
-| **Direction gate** | End of Assess | Which option — or none of them? | `required` · `delegated` | `required` |
-| **Ship gate** | End of Deliver | Does this ship? | `required` · `attested` | `required` |
+| Gate | Where | Question it answers | Settings |
+|---|---|---|---|
+| **Direction gate** | End of Assess | Which option — or none of them? | `required` · `delegated` |
+| **Ship gate** | End of Deliver | Does this ship? | `required` · `attested` |
+
+**The setting each gate runs at is declared in `config/gates.md`, never in this table.** A chapter
+states what the settings mean; which one is on is dated configuration, and a value written in both
+places is the drift the invariant/adaptive split exists to prevent.
 
 **Both gates are graduated from birth**, in the pattern Chapter 0 set for merge authority: the
 loosened setting is written now, with its floor named, while writing it is still free. Neither
-loosened setting is usable today.
+loosened setting was usable when this chapter was ratified.
 
 **The Direction gate is the option choice, not plan approval.** Chapter 0 grants the HC judgment over
 *what to build*; choosing among the Assessment's options is that decision, and reviewing the AC's own
@@ -211,8 +217,9 @@ be wrong in ways the option choice did not reach. Three things absorb that — t
 and still readable, Verify checks the diff against it, and re-planning is a sanctioned loop rather
 than a failure.
 
-**The Ship gate is Chapter 0's, unchanged.** Every merge today is `required` and the HC performs it.
-`attested` is written into Chapter 0 and cannot be used until Chapter 2 exists.
+**The Ship gate is Chapter 0's, unchanged.** Its two settings, and the floor neither reaches, are
+Chapter 0's *Merge authority*; the setting in force is declared in `config/gates.md`. At this
+chapter's ratification `attested` could not be used, because Chapter 2 did not yet exist.
 
 **What holds at any setting:**
 
@@ -225,7 +232,7 @@ than a failure.
 ### The Direction gate, graduated
 
 - **`required`** — the HC chooses among the Assessment's options, and the AC does not proceed without
-  a choice. This is the setting today.
+  a choice.
 - **`delegated`** — the AC proceeds on its own recommendation. Nobody waits, and the work runs from
   issue to Ship gate without a human in it.
 
@@ -241,9 +248,9 @@ than a failure.
 4. **`delegated` is not licence to compress.** Skipping a *stage* stays the HC's call at every
    setting, and so does every stop.
 
-**`delegated` is not usable today**, for the same reason `attested` is not: the mechanisms that make
-it safe do not exist yet. It becomes usable when an Assessment's option set can be independently
-reviewed — Chapter 2 — and when an unattended run has somewhere to route a stop — Chapter 6.
+**`delegated` waits on mechanisms rather than on permission.** It becomes available when an
+Assessment's option set can be independently reviewed — Chapter 2 — and when an unattended run has
+somewhere to route a stop — Chapter 6. Whether it is then in force is `config/gates.md`'s to say.
 
 **Why graduate it now rather than when it is wanted.** The predecessor placed this gate on plan
 approval, found it too expensive, and defaulted it off — so the gate it kept was the one it did not
