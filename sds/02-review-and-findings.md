@@ -342,7 +342,7 @@ use can show, and recurrence catches what any single pass misses.
 
 | Setting | After this chapter |
 |---|---|
-| `attested` — Ship gate | Specified in full: the independent review it requires is a conforming review under this chapter, bound to the exact merge commit. Usable only once the summons machinery has run end-to-end on a real pull request, and the setting itself is then the HC's to change — a governance act, recorded as dated configuration. |
+| `attested` — Ship gate | Specified in full: the independent review it requires is a conforming review under this chapter, bound to the exact merge commit. Usable only once the summons machinery has run end-to-end on a real pull request, and the setting itself is then the HC's to change — a governance act, recorded as dated configuration whose source is the HC's decision. Ratifying this chapter flips nothing by itself. |
 | `delegated` — Direction gate | Half-unlocked: an option set is now a reviewable subject. Still waits on Chapter 6 for somewhere to route a stop. |
 | `rules/` growth | Unlocked: the recurrence pipeline is the entry mechanism Chapter 1 named. |
 
