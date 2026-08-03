@@ -43,13 +43,21 @@ work; everything else is configuration, record, or discussion.
 **Chapter** — One numbered part of the SDS. A chapter is drafted, ratified, merged, and tagged
 before anything it sanctions is built.
 
+**Check** — One member of the quality gate: an executable that reads named artifacts, decides a
+stated property of them, and exits zero or non-zero. *The checks* in the lifecycle stages means the
+quality gate and nothing else. Chapter 2's **readiness check** is deliberately not one — it probes a
+reviewer's reachability before a summons rather than a change, and the compound name is what keeps
+the two apart.
+
 **Class index** — `findings/classes.md`: the descriptive record of recurring finding classes —
 *this shape occurred N times, see these findings*. Descriptive, never imperative: an index entry
 that gives an order is a rule authored under another name. The lens menu is derived from it.
 
-**Configuration lint** — An automated check over the repository's own configuration and work items —
-label counts, required sections, reference grammar — covering the mechanical half of the contracts,
-the half a machine can decide.
+**Configuration lint** — The check in the quality gate whose subject is this repository's own
+configuration and work items — label counts, required sections, reference grammar, link integrity,
+declaration fields, the class index's entry grammar — covering the mechanical half of the contracts,
+the half a machine can decide. Chapter 3 fixes the full list it owes, and classifies each check by
+whether it needs a structural restatement.
 
 **Consolidating supersession** — The rule that one new ADR may supersede several stale ones at once;
 the superseded records move to the archive directory. Nothing is edited or deleted, so immutability
@@ -60,6 +68,21 @@ from the tracker instead. Every lifecycle stage transition is one, independent o
 
 **Contractor reviewer** — A model other than the AC, summoned for one bounded review and handed its
 standards in the summons. It reviews, and never implements, commits, or pushes.
+
+**Declaration** — One file in `config/` recording one set of adaptive values. Its machine-read
+fields — `date` and `source`, both required — live in YAML frontmatter; its body stays prose and
+carries why the value is what it is, what evidence set it, and when to revisit. A value a tool reads
+gets a parseable home; a value nothing reads is correct as prose.
+
+**Declared blind spot** — What a check does not reach, stated by the check itself together with
+where the residue is routed. It is the price of a structural restatement, and it is what stops a
+passing check from being read as coverage it never had. A fully decidable check declares none.
+
+**Deletion measurement** — The evidence a check over standing state ships with: the state the check
+rejects is deliberately created, the check is watched failing on it, the state is restored, and the
+measurement is recorded — one per rejecting branch, the empty input always among them. It is
+fail-first evidence applied where the defect has to be manufactured, because a check over a
+conforming repository is otherwise authored green and never observed rejecting anything.
 
 **Delivery Record** — The terminal artifact of the Deliver stage, on the pull request. It carries
 only what the repository cannot reconstruct: why the other options were rejected, what was tried and
@@ -99,7 +122,11 @@ the test is known to detect the defect rather than merely known to pass.
 
 **False green** — A check that passes without detecting the defect it exists to catch: a green
 result that would stay green if the change were reverted or quietly broken. Verify's adversarial
-pass hunts it, and a test that fails for the wrong reason is one.
+pass hunts it, and a test that fails for the wrong reason is one. Its most common shape in this
+repository is a check that passes because its inputs were empty — a derivation guard comparing two
+sets that were both nothing — which is why the deletion measurement always includes the empty input.
+Its other half is a check that reports a green narrower than it sounds, which the declared blind
+spot exists to prevent.
 
 **Field input** — Material ingested from outside the repository: vendor releases, practitioner
 writing, platform observations, findings from hosts. It may propose a change; only a reviewed pull
@@ -150,7 +177,10 @@ gates.
 
 **Health measures** — The four measures that define "better" for this system: Quality and Autonomy
 (primary), plus Throughput and Cost efficiency. All four are recorded per pull request, and
-trade-offs defer to the two primaries.
+trade-offs defer to the two primaries. Quality and Throughput are computed from facts the
+Verification and the tracker already hold; Autonomy is declared; Cost efficiency has no capture path
+and says so. A measure with no capture path is recorded as un-instrumented and never estimated,
+because an estimate enters the baseline and nothing afterwards tells it from a measurement.
 
 **Host** — A software project that adopts deuce. A host may adopt one system without the rest, and
 may extend whatever the standard marks as extensible.
@@ -190,6 +220,11 @@ carried forward into the successor.
 **Plan** — The terminal artifact of the Devise stage: a Readout on the issue carrying ordered steps,
 the testing strategy decided up front, the files expected to change, and the risks accepted. It is
 revisable direction, not a frozen contract, and it carries no approval gate of its own.
+
+**Quality gate** — The fixed set of automated checks a change must pass, run as one command with one
+definition and re-run independently on the merge candidate. A check that cannot run locally is not
+in it. It is a floor and not a review: it catches regression against properties already stated, and
+discovers nothing.
 
 **Queue** — The set of open issues, read through their labels. The lifecycle stages advance
 `status:*`, which makes the queue a dashboard rather than something maintained by hand.
@@ -250,6 +285,14 @@ because a commissioned hunt with no stopping condition does not terminate.
 
 **Stage** — One of the lifecycle's five steps, defined by exactly four things: its trigger, the work
 it does, its terminal artifact, and its exit test.
+
+**Structural restatement** — Converting an invariant about what a document *means* into one about
+what a document *contains* — a shape, a token, a link, a grammar — so that what remains can be
+decided by reading the artifact and nothing else. The move is to check for the structure whose
+absence is the violation, never to detect the violation directly. A candidate restatement is
+measured against the repository before it is adopted; one whose output is mostly false positives has
+renamed the invariant rather than converted it, and is declared undecidable and routed to review
+rather than shipped narrowed.
 
 **Stop** — The AC pausing mid-stage to ask the HC a question. The bar is *can I resolve this without
 guessing at intent?*, never severity. A stop is a pause and never a termination; the question and its

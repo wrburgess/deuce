@@ -55,6 +55,18 @@
 - Per-stage model and effort, delegation, and capacity are **adaptive configuration** in `config/`,
   dated and sourced. They are never written into a chapter or a Skill body.
 
+## Checks
+
+- **"The checks" means the quality gate**, and what it is, what a check may be asked to do, and the
+  evidence a check ships with are Chapter 3's:
+  [`sds/03-quality-gate-and-tooling.md`](sds/03-quality-gate-and-tooling.md). The gate's command and
+  its contents are dated configuration.
+- **Always on, whenever you write one:** a check is a **measured structural restatement** of its
+  invariant and **declares what it does not reach** ([`adr/0013`](adr/0013-checks-restated-structurally-with-declared-blind-spots.md));
+  a check over standing state ships with its **deletion measurement**, the empty input included
+  ([`adr/0014`](adr/0014-deletion-measurement-for-checks-over-standing-state.md)). A one-off check is
+  a reproduction, and is labelled one.
+
 ## Git
 
 - **Feature branches only.** `main` is protected; the hooks in [`.githooks/`](.githooks/) block a
@@ -87,10 +99,10 @@
 
 ## Bootstrap status
 
-- **Chapters ratified: 0** (identity & governance), **1** (lifecycle & skills), and **2** (Review
-  System & Findings System). Chapters 3–6 are not started.
+- **Chapters ratified: 0** (identity & governance), **1** (lifecycle & skills), **2** (Review System
+  & Findings System), and **3** (quality gate & tooling). Chapters 4–6 are not started.
 - **deuce's own build-out now runs through its own lifecycle.** The bootstrap exception has narrowed
-  to one thing: drafting Chapters 3–6 themselves.
+  to one thing: drafting Chapters 4–6 themselves.
 - **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
   to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
 - The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as

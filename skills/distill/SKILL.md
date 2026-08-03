@@ -41,8 +41,8 @@ what lands; this file fixes how the session gets there.
    ([Chapter 0 → Work Tracking System](../../sds/00-identity-and-governance.md#work-tracking-system)).
    Ratifying: the chapter's pull request is the surface, amended in place. File-side captures —
    Glossary entries, decision records — ride the chapter's pull request when ratifying; otherwise
-   one session, one branch, one pull request, opened at the first capture and merged by the HC
-   alongside the brief.
+   one session, one branch, one pull request, opened at the first capture and merged alongside the
+   brief at the Ship gate's current setting ([`config/gates.md`](../../config/gates.md)).
 6. **Put one question, with a recommendation and its reasoning** — settling first what other
    questions hang on. Shape every proposal against the SDS as it forms; work no chapter sanctions
    is a request for a chapter, never a workaround
