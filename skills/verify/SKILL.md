@@ -37,43 +37,32 @@ exit — is canon and is not restated here.
    [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)).
 6. **Try to break the change's own tests, hunting the false green**
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-7. **Summon the contractor review** — first declare the lens set fit for the subject: lenses from
-   the menu ([`config/review.md`](../../config/review.md)) for code, canon's prose lenses for a
-   canon subject
-   ([Chapter 2 → Verifying prose](../../sds/02-review-and-findings.md#verifying-prose)), the
-   permanent lens riding along either way. Then run the summons path
-   ([`tools/review/summon.ts`](../../tools/review/summon.ts)): the readiness check runs before any
-   dispatch, the summons is composed from the canonical documents and bound to the head commit,
-   dispatch follows the roster, the returned review
-   is validated with any missing fields named, and the summons and the review both land on the
-   pull request
-   ([Chapter 2 → The summons, completed](../../sds/02-review-and-findings.md#the-summons-completed);
-   [Chapter 2 → Validation on return](../../sds/02-review-and-findings.md#validation-on-return)).
-   **A run with no reachable reviewer stops and asks** — it never certifies unreviewed work as
-   reviewed.
-8. **Record every finding** — the AC's from the drift hunt and the refutations, the reviewer's
-   from the review, and every thread review has left. **A finding matching an accepted-register
-   entry is answered by the entry, never re-litigated**
+7. **Declare the lens set fit for the subject, then summon the contractor review** — the set per
+   [Chapter 2 → Bounded by lens set](../../sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count),
+   prose subjects per
+   [Chapter 2 → Verifying prose](../../sds/02-review-and-findings.md#verifying-prose); run the
+   summons path ([`tools/review/summon.ts`](../../tools/review/summon.ts)), whose contract is
+   [Chapter 2 → The summons, completed](../../sds/02-review-and-findings.md#the-summons-completed)
+   and [→ Validation on return](../../sds/02-review-and-findings.md#validation-on-return). **A run
+   with no reachable reviewer stops and asks.**
+8. **Record every finding, the AC's and the reviewer's together; answer an accepted-register match
+   by its entry**
    ([Chapter 2 → The findings home](../../sds/02-review-and-findings.md#the-findings-home);
    [ADR 0011](../../adr/0011-findings-type-state-one-way.md)).
-9. **Dispose of each finding; batch the accepted fixes, and re-verify the wave** — every accepted
-   fix lands before the reviewer is summoned again, one re-summons per wave, and past the declared
-   limit ([`config/review.md`](../../config/review.md)) the stop escalates back to
-   [Devise](../devise/SKILL.md)
-   ([Chapter 2 → Fix-verification, bounded separately](../../sds/02-review-and-findings.md#fix-verification-bounded-separately)).
-   Re-run the checks to green.
+9. **Dispose of each finding; batch the fixes per wave, and re-verify the wave** — bounds and
+   escalation per
+   [Chapter 2 → Fix-verification, bounded separately](../../sds/02-review-and-findings.md#fix-verification-bounded-separately),
+   the limit's value in [`config/review.md`](../../config/review.md), the escalation into
+   [Devise](../devise/SKILL.md). Re-run the checks to green.
 10. **Answer each finding on the surface it arrived on** — a pull request carries three:
     comments, inline threads, review bodies; a self-raised finding is answered in the
     Verification itself ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
 11. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
 12. **Draft the Verification as a Readout** — content per
-    [Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify) and the record Chapter 2
-    grows it to: the summons, the review, every finding with its type, severity, state, and
-    disposition — **naming the reviewer, its model, its mechanism, and the commit reviewed; and
-    when no reviewer was reachable, saying so plainly, the readiness outcome recorded and the run
-    stopped**
-    ([Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written));
-    shape per [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
+    [Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify), grown to the record
+    [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)
+    requires — the reviewer, its model, its mechanism, and the commit named in it; shape per
+    [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
 13. **Post the Verification on the pull request**
     ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
 

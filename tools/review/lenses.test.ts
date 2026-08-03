@@ -21,19 +21,24 @@ test("every prose lens is canon's own phrase — pinned against the Verifying pr
     .slice(at)
     .split(/\n##\s/)[0]!
     .replace(/\s+/g, " ");
-  assert.equal(PROSE_LENSES.length, 4);
-  for (const lens of PROSE_LENSES) {
-    assert.ok(section.includes(lens), `chapter section no longer carries: ${lens}`);
-  }
+  const declared = section.match(/lenses fit for prose: ([^.]+)\./);
+  assert.ok(declared, "chapter no longer declares the prose-lens list");
+  const canonSet = declared![1]!.split(", ").map((l) => l.trim()).sort();
+  assert.deepEqual([...PROSE_LENSES].sort(), canonSet);
 });
 
-test("a prose lens is summonable with an empty menu — canon is its source", () => {
-  const errors = checkLensSelection([PROSE_LENSES[0]!], [], 3);
+test("a prose lens is summonable for a prose subject with an empty menu", () => {
+  const errors = checkLensSelection([PROSE_LENSES[0]!], [], 3, true);
   assert.deepEqual(errors, []);
 });
 
+test("a prose lens on a code subject is refused — no menu bypass", () => {
+  const errors = checkLensSelection([PROSE_LENSES[0]!], [], 3, false);
+  assert.ok(errors.some((e) => e.includes("prose")));
+});
+
 test("prose lenses still respect the declared lens-set size", () => {
-  const errors = checkLensSelection([...PROSE_LENSES], [], 3);
+  const errors = checkLensSelection([...PROSE_LENSES], [], 3, true);
   assert.ok(errors.some((e) => e.includes("3")));
 });
 
@@ -71,21 +76,21 @@ test("a declaration without a lens-set size fails loudly", () => {
 });
 
 test("choosing no lenses is always within bounds — the permanent lens rides along", () => {
-  assert.deepEqual(checkLensSelection([], [], 3), []);
+  assert.deepEqual(checkLensSelection([], [], 3, false), []);
 });
 
 test("a lens not on the menu is refused, by name", () => {
-  const errors = checkLensSelection(["does any guard fail open?"], [], 3);
+  const errors = checkLensSelection(["does any guard fail open?"], [], 3, false);
   assert.ok(errors.some((e) => e.includes("does any guard fail open?")));
 });
 
 test("a selection over the declared size is refused, naming the bound", () => {
   const menu = ["a", "b", "c", "d"];
-  const errors = checkLensSelection(["a", "b", "c", "d"], menu, 3);
+  const errors = checkLensSelection(["a", "b", "c", "d"], menu, 3, false);
   assert.ok(errors.some((e) => e.includes("3")));
 });
 
 test("a within-bounds selection from the menu passes", () => {
   const menu = ["a", "b", "c", "d"];
-  assert.deepEqual(checkLensSelection(["a", "c"], menu, 3), []);
+  assert.deepEqual(checkLensSelection(["a", "c"], menu, 3, false), []);
 });

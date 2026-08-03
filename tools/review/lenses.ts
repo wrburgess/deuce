@@ -62,16 +62,26 @@ export function checkLensSelection(
   chosen: string[],
   menu: string[],
   size: number,
+  proseSubject: boolean,
 ): string[] {
   const errors: string[] = [];
   for (const lens of chosen) {
-    if (!menu.includes(lens) && !PROSE_LENSES.includes(lens)) {
-      errors.push(
-        `lens is not on the menu and cannot be summoned: ${lens} — ` +
-          "the menu derives from the class index and canon names the prose lenses; " +
-          "a one-off lens enters as a dated menu entry, never as a bypass",
-      );
+    if (menu.includes(lens)) continue;
+    if (PROSE_LENSES.includes(lens)) {
+      if (!proseSubject) {
+        // Prose lenses are canon-sourced for canon subjects only — accepting
+        // them everywhere would let a code review bypass the menu.
+        errors.push(
+          `prose lens summoned for a non-prose subject: ${lens} — declare the subject prose, or select from the menu`,
+        );
+      }
+      continue;
     }
+    errors.push(
+      `lens is not on the menu and cannot be summoned: ${lens} — ` +
+        "the menu derives from the class index and canon names the prose lenses; " +
+        "a one-off lens enters as a dated menu entry, never as a bypass",
+    );
   }
   if (chosen.length > size) {
     errors.push(

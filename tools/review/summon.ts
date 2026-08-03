@@ -40,6 +40,7 @@ const { values } = parseArgs({
     base: { type: "string", default: "origin/main" },
     lens: { type: "string", multiple: true, default: [] },
     subject: { type: "string" },
+    prose: { type: "boolean", default: false },
     "dry-run": { type: "boolean", default: false },
   },
 });
@@ -63,6 +64,7 @@ const lensErrors = checkLensSelection(
   values.lens ?? [],
   parseLensMenu(reviewConfig),
   parseLensSetSize(reviewConfig),
+  values.prose ?? false,
 );
 if (lensErrors.length > 0) {
   for (const e of lensErrors) console.error(e);
