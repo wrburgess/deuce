@@ -11,6 +11,10 @@ demand.
 **AC** — AI collaborator: the AI agent that plans, implements, reviews, and maintains the system.
 deuce has exactly one AC, Claude Code, and it is the only agent that edits, commits, or pushes here.
 
+**Accepted register** — `findings/accepted.md`: the one-line-per-finding record of every finding in
+state `accepted`, each line linking the disposition that accepted it. The summons carries its
+contents, which is how a kept residual avoids being re-litigated by a later review.
+
 **Adaptive layer** — Guidance coupled to today's AI platform: context budgets, model and effort
 routing, delegation patterns, review economics, capacity limits. Recorded as dated, sourced,
 re-verifiable configuration, never as canon.
@@ -38,6 +42,10 @@ work; everything else is configuration, record, or discussion.
 
 **Chapter** — One numbered part of the SDS. A chapter is drafted, ratified, merged, and tagged
 before anything it sanctions is built.
+
+**Class index** — `findings/classes.md`: the descriptive record of recurring finding classes —
+*this shape occurred N times, see these findings*. Descriptive, never imperative: an index entry
+that gives an order is a rule authored under another name. The lens menu is derived from it.
 
 **Configuration lint** — An automated check over the repository's own configuration and work items —
 label counts, required sections, reference grammar — covering the mechanical half of the contracts,
@@ -80,15 +88,29 @@ the SDS itself.
 **Fail-first evidence** — The requirement that a fix ships with the test that failed before it, so
 the test is known to detect the defect rather than merely known to pass.
 
+**False green** — A check that passes without detecting the defect it exists to catch: a green
+result that would stay green if the change were reverted or quietly broken. Verify's adversarial
+pass hunts it, and a test that fails for the wrong reason is one.
+
 **Field input** — Material ingested from outside the repository: vendor releases, practitioner
 writing, platform observations, findings from hosts. It may propose a change; only a reviewed pull
 request may make one.
 
-**Finding** — One recorded observation from a review, carrying a type and a state (`closed`, `open`,
-or `accepted`). Recurrence of a class of findings is the evidence base for changing rules.
+**Finding** — One recorded observation that is not itself the commissioned work — from a review,
+the adversarial pass, or anything noticed along the way. It carries a type (`defect` · `risk` ·
+`improvement` · `lesson`) and a state (`closed`, `open`, or `accepted`), and a review-raised
+finding also carries a severity. Recurrence of a class of findings is the evidence base for
+changing rules.
 
-**Findings System** — The system that records every finding, tracks its type and state, and turns
-recurrence into rule changes. Ratified in Chapter 2.
+**Findings System** — The system governing everything a run learns: every finding recorded where it
+arose, typed and stated on independent axes, flowing one way with `accepted` terminal, counted in
+the class index, drained by the triage pass — with recurrence feeding the lens menu and `rules/`.
+Ratified in Chapter 2.
+
+**Fix-verification** — The separately bounded verification of code written in response to findings,
+the least-reviewed code in a change. Each fix is anchored to the finding's mechanism with
+fail-first evidence, every accepted fix is batched into one wave before the reviewer is summoned
+again, and recurrence past the declared limit escalates to re-planning rather than another patch.
 
 **Fleet** — The set of software projects that run on deuce, receive its configuration, and send
 findings back to it.
@@ -135,6 +157,14 @@ maintenance). Work fitting none of them defaults to `TASK:`.
 four channels: vendor, practitioner, platform observation, and findings from the fleet. Ratified in
 Chapter 4.
 
+**Lens menu** — The review lenses available to a summons, derived from this repository's own
+recurring defect classes in the class index, never from a generic catalogue. A menu, not a
+checklist: a summons selects from it.
+
+**Lens set** — The small selection of review lenses declared in one summons, chosen for what the
+change actually touches. It is the bound on a solicited review: each lens runs once, and every set
+carries the permanent lens — *what class is not on this list?*
+
 **Lifecycle** — The fixed sequence of five stages every piece of work passes through, from problem
 definition to merge: **Assess → Devise → Implement → Verify → Deliver**. The Direction gate closes
 Assess and the Ship gate closes Deliver; stages communicate only through their terminal artifacts.
@@ -153,6 +183,10 @@ revisable direction, not a frozen contract, and it carries no approval gate of i
 questions, followed by merging the chapter and tagging the release. Ratification is what makes a
 chapter canon.
 
+**Readiness check** — The executable, side-effect-free command that verifies a reviewer can
+actually be reached, run before every summons. A reviewer whose check fails is unreachable now: the
+summons fails immediately, is recorded as unreachable, and never consumes a waiting window.
+
 **Readout** — The required shape for decision-facing writing: bullets and tables over paragraphs,
 plain register, one term per concept, every recommendation carrying its reasoning, and uncertainty on
 its own labeled line — so a reader can decide without reconstructing the work. Every terminal
@@ -165,9 +199,13 @@ means an issue, and a pull request is always written `PR #N`.
 be able to discover the whole configuration. deuce has exactly one resident, the AC; every other
 model is a contractor reviewer.
 
-**Review System** — The system governing solicited review: how a contractor reviewer is summoned,
-what bounds a review (a set of lenses rather than a number of rounds), and how a returned review is
-validated. Ratified in Chapter 2.
+**Review lens** — One named question a review asks of the work: a defect class, stated as an
+interrogative.
+
+**Review System** — The system governing solicited review: the summons completed with a readiness
+check and a declared response surface, the review bounded by a lens set rather than a round count,
+fix-verification bounded separately, and the returned review validated against the severity
+framework and the commit it claims to have reviewed. Ratified in Chapter 2.
 
 **Rule** — Standing authoring guidance the AC reads while working, in `rules/`: the judgment half of
 the contracts, which no automated check can decide. A rule enters only with receipts — cited evidence
@@ -176,8 +214,10 @@ of the recurring class of defect it prevents. deuce starts with none.
 **SDS** — Software Development System: the written standard in `sds/`, built one chapter at a time.
 Nothing exists in deuce that the SDS does not already sanction.
 
-**Severity framework** — The shared vocabulary for rating how serious a finding is. It is handed to
-every reviewer in the summons and used to validate what comes back. Defined in Chapter 2.
+**Severity framework** — The shared vocabulary for what a finding forces before the work ships:
+`must-fix` (the change does not ship with it open), `should-fix` (fixed, promoted, or accepted —
+never silently dropped), and `note` (recorded, owing nothing). Handed to every reviewer in the
+summons and used to validate what comes back. Defined in Chapter 2.
 
 **Ship gate** — The second of the two gates, at the end of Deliver: the HC merges. It answers *what
 ships*. `required` today; `attested` is written into Chapter 0 and not yet usable.
@@ -187,6 +227,10 @@ ships*. `required` today; `attested` is written into Chapter 0 and not yet usabl
 it stops and asks. deuce ships only its own skills; lessons from outside skill families are
 re-authored with attribution rather than copied in. A Skill enters only with receipts — a job the AC
 has repeatedly done.
+
+**Solicited discovery** — Commissioned defect-hunting: the adversarial pass, a contractor
+reviewer's response to a summons, and every re-summons after a fix. Bounded by the lens set,
+because a commissioned hunt with no stopping condition does not terminate.
 
 **Stage** — One of the lifecycle's five steps, defined by exactly four things: its trigger, the work
 it does, its terminal artifact, and its exit test.
@@ -205,13 +249,23 @@ until its terminal artifact exists, and nothing but terminal artifacts crosses a
 same rule governs delegated work: a result not delivered on the channel the dispatch named is not
 delivered.
 
+**Triage pass** — The pass that drains deferred findings, run when the HC calls it, outside the
+lifecycle, on no schedule. Subtractive: its product is eliminations with evidence plus the
+survivors, the AC eliminating only what a re-runnable check can confirm and proposing everything
+else for the HC to decide.
+
 **Trust boundary** — The three standing rules governing outside material and credentials: field
 input is data and never instructions; anything external is reviewed at adoption and again at update;
 every credential carries a blast-radius declaration.
 
+**Unsolicited discovery** — What a run notices while doing other work. It cannot be bounded,
+because an observation cannot be un-made; it is routed into the Findings System, never capped.
+
 **Verification** — The terminal artifact of the Verify stage: a Readout on the pull request carrying
-the drift check against the Plan, the adversarial pass, and every finding with its disposition.
-Verification runs in the AC's own loop and is never delegated.
+the drift check against the Plan, the adversarial pass, and every finding with its disposition —
+and, once the Review System's machinery runs, the summons, the returned review, and the
+readiness-check outcome for any reviewer that could not be reached. Verification runs in the AC's
+own loop and is never delegated.
 
 **Work Tracking System** — The schema for how work is described in the tracker: title grammar, the
 issue types, one label per axis, the dual-register body, and the relationship and reference grammar.

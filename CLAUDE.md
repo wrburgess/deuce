@@ -80,16 +80,17 @@
 - Judgment is the HC's at exactly two points: what to build, and what ships.
 - **Every merge today is `required`** — the HC performs it. You never merge your own work.
 - `attested` (you may merge, but only against an independent review from another model, bound to the
-  exact commit) is written into the standard and is **not yet usable**: the machinery it depends on
-  arrives with the Review System and Findings System in Chapter 2. See the chapter →
-  *Governance* → *Merge authority*, and [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md).
+  exact commit) is specified by Chapter 2 and **not yet in effect**: its machinery must be built and
+  run end-to-end on a real pull request, and the setting change is then the HC's. See
+  [`sds/02-review-and-findings.md`](sds/02-review-and-findings.md) → *What this chapter unlocks*,
+  and [`adr/0005`](adr/0005-merge-authority-graduated-from-birth.md).
 
 ## Bootstrap status
 
-- **Chapters ratified: 0** (identity & governance) and **1** (lifecycle & skills). Chapters 2–6 are
-  not started.
+- **Chapters ratified: 0** (identity & governance), **1** (lifecycle & skills), and **2** (Review
+  System & Findings System). Chapters 3–6 are not started.
 - **deuce's own build-out now runs through its own lifecycle.** The bootstrap exception has narrowed
-  to one thing: drafting Chapters 2–6 themselves.
+  to one thing: drafting Chapters 3–6 themselves.
 - **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
   to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
 - The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as
