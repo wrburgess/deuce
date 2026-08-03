@@ -60,7 +60,8 @@ function main(): void {
     console.error(
       'usage: node tools/review/summon.ts --pr <n> --commit <sha> [--base <ref>] [--lens "..."]... [--subject "..."] [--dry-run]',
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const prNumber = Number(values.pr);
@@ -79,7 +80,8 @@ function main(): void {
   );
   if (lensErrors.length > 0) {
     for (const e of lensErrors) console.error(e);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
   const severityFramework = extractSeverityFramework(
     readFileSync("sds/02-review-and-findings.md", "utf8"),
@@ -107,7 +109,8 @@ function main(): void {
 
   if (values["dry-run"]) {
     process.stdout.write(summons);
-    process.exit(0);
+    process.exitCode = 0;
+    return;
   }
 
   // Readiness before any dispatch: a failing check is unreachable now — recorded
@@ -120,7 +123,8 @@ function main(): void {
       "the readiness-failure record",
     );
     console.error(`unreachable now: ${readiness.detail}`);
-    process.exit(2);
+    process.exitCode = 2;
+    return;
   }
 
   postComment(
@@ -198,7 +202,7 @@ function main(): void {
     code = runWave(reSummons, "re-summons").code;
   }
 
-  process.exit(code);
+  process.exitCode = code;
 }
 
 // The boundary. A failed post is caught here rather than at each post site, so
@@ -206,13 +210,20 @@ function main(): void {
 // poster throws instead of returning a result somebody can ignore (#40).
 // Anything that is not a PostFailure is rethrown untouched: swallowing it here
 // would recreate the unclassified crash one layer up.
+//
+// Nothing here — or anywhere in this file — calls process.exit(). On macOS a
+// piped stdout or stderr is asynchronous, and process.exit() abandons whatever
+// has not drained: measured, a payload over the 65_536-byte pipe buffer is cut
+// off exactly there, which for this boundary would mean truncating the very
+// record it exists to hand over. Setting exitCode and returning lets the
+// streams flush first. The same hazard applied to the un-elided --dry-run
+// summons, which is why every exit in this file moved, not just this one.
+// Raised as must-fix by the contractor review of 123a1c3 on PR #46.
 try {
   main();
 } catch (err) {
-  if (err instanceof PostFailure) {
-    process.stderr.write(formatUnpostedRecord(err));
-    console.error(err.message);
-    process.exit(5);
-  }
-  throw err;
+  if (!(err instanceof PostFailure)) throw err;
+  process.stderr.write(formatUnpostedRecord(err));
+  console.error(err.message);
+  process.exitCode = 5;
 }
