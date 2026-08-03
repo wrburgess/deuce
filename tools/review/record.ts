@@ -56,6 +56,64 @@ export function formatUnpostedRecord(failure: PostFailure): string {
   ].join("\n");
 }
 
+export interface SavedRecord {
+  /** Where the record landed, when it landed. */
+  path?: string;
+  /** Why it did not, when it did not. Both are never set. */
+  error?: string;
+}
+
+/** Saves the un-posted record where the HC can find it, and **never throws** —
+ *  a delivery mechanism that can throw is the defect this file is about (#40).
+ *
+ *  Two locations, tried in order: the OS temp directory, then the working
+ *  directory. Why two: the condition that broke the post can be the same one
+ *  that breaks the temp directory, and a channel that dies alongside the failure
+ *  it is reporting is not a channel. The working directory is the repository
+ *  root for every real run, which also makes the file easy to find; `.gitignore`
+ *  keeps it out of commits. */
+export function saveUnpostedRecord(
+  failure: PostFailure,
+  locations?: readonly string[],
+): SavedRecord {
+  const report = formatUnpostedRecord(failure);
+  const name = `deuce-unposted-pr${failure.prNumber}.md`;
+  const candidates = locations ?? [tmpdir(), process.cwd()];
+  const errors: string[] = [];
+  for (const location of candidates) {
+    try {
+      const path = join(location, name);
+      writeFileSync(path, report);
+      return { path };
+    } catch (err) {
+      errors.push(
+        `${location}: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+  }
+  return { error: errors.join("; ").slice(0, 1_000) || "no location to write to" };
+}
+
+const NOTICE_LIMIT = 512;
+
+/** The one-line pointer to the saved record. Held under 512 bytes — the size a
+ *  single write is guaranteed to deliver whole — so the pointer cannot itself be
+ *  cut in half by a reader that goes away. */
+export function formatUnpostedNotice(
+  failure: PostFailure,
+  saved: SavedRecord,
+): string {
+  const head = `post failed (${failure.label}, PR #${failure.prNumber}): `;
+  const tail = saved.path
+    ? `record saved to ${saved.path}`
+    : `record NOT saved — ${saved.error}`;
+  const line = `${head}${tail}\n`;
+  if (line.length <= NOTICE_LIMIT) return line;
+  // Trim the explanation, never the fact: a reader must still learn that a
+  // record exists and roughly where, even if the detail has to go.
+  return `${line.slice(0, NOTICE_LIMIT - 5)}...\n`;
+}
+
 export function postComment(
   prNumber: number,
   body: string,

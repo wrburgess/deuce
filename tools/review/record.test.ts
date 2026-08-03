@@ -1,9 +1,15 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { chmodSync, mkdtempSync, rmSync } from "node:fs";
+import { chmodSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { formatUnpostedRecord, postComment, PostFailure } from "./record.ts";
+import {
+  formatUnpostedNotice,
+  formatUnpostedRecord,
+  postComment,
+  PostFailure,
+  saveUnpostedRecord,
+} from "./record.ts";
 
 // The poster is driven with real but harmless commands, per dispatch.test.ts:
 // `true` stands in for a post that succeeded, `false` for one that did not.
@@ -101,6 +107,61 @@ test("a cleanup failure cannot replace the PostFailure it would mask", () => {
     chmodSync(parent, 0o700);
     rmSync(parent, { recursive: true, force: true });
   }
+});
+
+// The durable channel. Four reviews on PR #46 found four ways for a stream at
+// exit time to lose the record; these cover the file that replaced it.
+
+test("the saved record is the formatted report, whole and byte-for-byte", () => {
+  const dir = mkdtempSync(join(tmpdir(), "deuce-save-test-"));
+  try {
+    const failure = new PostFailure(7, "the summons", "line one\nline two\nlast line", "gh exited 1");
+    const saved = saveUnpostedRecord(failure, [dir]);
+    assert.ok(saved.path, `expected a path, got error: ${saved.error}`);
+    assert.equal(readFileSync(saved.path, "utf8"), formatUnpostedRecord(failure));
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("saving never throws — it reports a failure instead", () => {
+  // A delivery mechanism that can throw is the defect this file is about.
+  const saved = saveUnpostedRecord(
+    new PostFailure(7, "the summons", "a body", "gh exited 1"),
+    ["/deuce-no-such-dir-a", "/deuce-no-such-dir-b"],
+  );
+  assert.equal(saved.path, undefined);
+  assert.ok(saved.error && saved.error.length > 0);
+});
+
+test("the second location is real: when the first fails, the record still lands", () => {
+  const dir = mkdtempSync(join(tmpdir(), "deuce-fallback-test-"));
+  try {
+    const saved = saveUnpostedRecord(
+      new PostFailure(7, "the summons", "a body", "gh exited 1"),
+      ["/deuce-no-such-dir-a", dir],
+    );
+    assert.ok(saved.path, `expected the fallback to take it, got: ${saved.error}`);
+    assert.ok(saved.path.startsWith(dir), `landed outside the fallback: ${saved.path}`);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the pointer line fits a single atomic write, even with an absurd path", () => {
+  // Under 512 bytes: the size the operating system delivers whole, so a reader
+  // going away cannot cut the pointer in half.
+  const failure = new PostFailure(7, "the summons", "a body", "gh exited 1");
+  const short = formatUnpostedNotice(failure, { path: "/tmp/x.md" });
+  assert.ok(short.length < 512);
+  assert.match(short, /\/tmp\/x\.md/);
+
+  const absurd = formatUnpostedNotice(failure, { path: `/${"deep/".repeat(400)}x.md` });
+  assert.ok(absurd.length < 512, `pointer ran to ${absurd.length} bytes`);
+
+  const failed = formatUnpostedNotice(failure, { error: "x".repeat(5_000) });
+  assert.ok(failed.length < 512, `pointer ran to ${failed.length} bytes`);
+  assert.match(failed, /NOT saved/);
 });
 
 test("the formatted report carries the label, the number, and the whole body", () => {

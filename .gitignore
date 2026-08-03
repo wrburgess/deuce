@@ -42,3 +42,8 @@ $RECYCLE.BIN/
 
 # === Node ===
 node_modules/
+
+# === deuce ===
+# An un-posted review record, saved by tools/review/summon.ts when a post fails.
+# It exists for the HC to place by hand; it is never committed.
+deuce-unposted-*

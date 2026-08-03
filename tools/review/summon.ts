@@ -6,8 +6,13 @@
 //
 // 5 supersedes 2, 3, and 4 when the post recording one of them is what failed:
 // it is the code that changes what the HC must do — place a record by hand —
-// and the outcome that was in flight is named inside the printed report, so
-// nothing is hidden by the precedence (#40).
+// and the outcome that was in flight is named in the saved record, so nothing
+// is hidden by the precedence (#40).
+//
+// On 5, the un-posted record is written to a file and stderr carries a one-line
+// pointer to it. The file is the delivery, not the printout: four reviews on
+// PR #46 found four separate ways for a stream at exit time to lose the record,
+// and the channel was replaced rather than patched a fifth time.
 
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -22,7 +27,13 @@ import {
 import { validateReview } from "./validate.ts";
 import { checkLensSelection, parseLensMenu, parseLensSetSize } from "./lenses.ts";
 import { argvFromCommand, dispatch, runReadiness } from "./dispatch.ts";
-import { formatUnpostedRecord, postComment, PostFailure } from "./record.ts";
+import {
+  formatUnpostedNotice,
+  formatUnpostedRecord,
+  postComment,
+  PostFailure,
+  saveUnpostedRecord,
+} from "./record.ts";
 
 const MAX_POSTED_CHARS = 60_000;
 
@@ -223,7 +234,33 @@ try {
   main();
 } catch (err) {
   if (!(err instanceof PostFailure)) throw err;
-  process.stderr.write(formatUnpostedRecord(err));
-  console.error(err.message);
+
+  // The order below is the fix, so it is worth stating: handlers, then save,
+  // then the pointer, then the convenience copy, then the code.
+  //
+  // An asynchronous EPIPE on either stream arrives after this catch has already
+  // returned, where no try/catch can reach it — unhandled, it replaces exit 5
+  // with a crash. The handlers go on first, before anything is written.
+  process.stderr.on("error", () => {});
+  process.stdout.on("error", () => {});
+
+  // The file is the delivery. Four reviews found four different ways for a
+  // stream at exit time to lose this record; a written file has none of them.
+  const saved = saveUnpostedRecord(err);
+
+  // One short line, written alone so the operating system delivers it whole.
+  try {
+    process.stderr.write(formatUnpostedNotice(err, saved));
+  } catch {
+    // Nothing further to try: the record is already on disk if it could be.
+  }
+
+  // The full record, convenience only — losing this copy costs nothing now.
+  try {
+    process.stderr.write(formatUnpostedRecord(err));
+  } catch {
+    // Ignored by design; see above.
+  }
+
   process.exitCode = 5;
 }
