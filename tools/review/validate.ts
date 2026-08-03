@@ -40,9 +40,14 @@ export function validateReview(
     );
   }
 
+  // A signature names the tool and the model — at least two words; a bare
+  // token cannot be both, and the record's naming duty fails with it.
   const signatures = fieldValues(review, "Signed");
-  if (!signatures.some((s) => s.length > 0)) {
-    missing.push("the review is not signed with tool and model");
+  const signed = signatures.some(
+    (s) => s.replace(/[`*]/g, "").trim().split(/[\s,]+/).filter(Boolean).length >= 2,
+  );
+  if (!signed) {
+    missing.push("the review is not signed with both tool and model");
   }
 
   const parts = review.split(/(?=\*\*Lens:\*\*)/);

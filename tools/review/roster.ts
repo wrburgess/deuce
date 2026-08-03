@@ -35,6 +35,14 @@ export function parseRoster(markdown: string): Reviewer {
   if (data.length === 0) {
     throw new Error("roster table carries no data row");
   }
+  if (data.length > 1) {
+    // Fail loud, never first-row-wins: silently dispatching the first reviewer
+    // would make a declared second reviewer unreachable without a trace.
+    throw new Error(
+      `roster table carries ${data.length} rows and reviewer selection is not built yet — ` +
+        "summoning is single-reviewer until selection lands",
+    );
+  }
   const cells = data[0]!
     .split("|")
     .slice(1, -1)

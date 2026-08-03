@@ -16,6 +16,19 @@ test("a file without a roster section fails loudly", () => {
   assert.throws(() => parseRoster("# nothing here\n"), /roster/i);
 });
 
+test("a multi-row roster fails loudly until reviewer selection exists", () => {
+  const md = [
+    "## Reviewer roster",
+    "",
+    "| Reviewer | Mechanism | Response | Readiness check |",
+    "|---|---|---|---|",
+    "| **A** | `a exec` | output | `a status` |",
+    "| **B** | `b exec` | output | `b status` |",
+    "",
+  ].join("\n");
+  assert.throws(() => parseRoster(md), /row/i);
+});
+
 test("a roster row missing a backticked command fails loudly", () => {
   const md = [
     "## Reviewer roster",

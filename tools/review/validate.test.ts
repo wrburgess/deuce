@@ -127,6 +127,16 @@ test("a review naming a different commit is nonconforming", () => {
   assert.ok(v.missing.some((m) => /commit/i.test(m)));
 });
 
+test("a signature without both tool and model is nonconforming", () => {
+  const review = conforming.replace(
+    "**Signed:** Codex CLI gpt-5.2-codex",
+    "**Signed:** x",
+  );
+  const v = validateReview(review, COMMIT, [LENS]);
+  assert.equal(v.conforming, false);
+  assert.ok(v.missing.some((m) => /tool and model/i.test(m)));
+});
+
 test("an unsigned review is nonconforming", () => {
   const review = conforming.replace(/\*\*Signed:\*\*.*\n?/, "");
   const v = validateReview(review, COMMIT, [LENS]);
