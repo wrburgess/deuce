@@ -73,6 +73,13 @@ its own recommendation. `required` today; `delegated` is written into Chapter 1 
 Neither setting reaches the floor: the Assessment is always posted before work proceeds on it, always
 carries the rejected options and why, and always states when the AC self-selected.
 
+**Disposition** — What was decided about a finding at the receiving end, and the record of that
+decision: fixed in this change, refuted with the refuting evidence, promoted to tracked work, or
+knowingly kept. Severity is the reviewer's claim about what a finding forces; the disposition is the
+answer to it, and every finding gets one. It is not the finding's state, which is only where the
+record is then filed — fixing files it `closed`, promoting files it `open`, keeping files it
+`accepted`.
+
 **Dual register** — The two-audience structure required in an issue body: a required non-technical
 Summary (HC), then optional and clearly labeled Technical detail (HC+AC), so the HC can judge
 without reading implementation detail.
@@ -101,6 +108,11 @@ the adversarial pass, or anything noticed along the way. It carries a type (`def
 `improvement` · `lesson`) and a state (`closed`, `open`, or `accepted`), and a review-raised
 finding also carries a severity. Recurrence of a class of findings is the evidence base for
 changing rules.
+
+**Findings home** — The two registers in `findings/` that hold what has to outlive one pull request:
+the **accepted register** and the **class index**. Findings themselves stay on the Verification that
+raised them; the pair exists because two consumers need memory spanning pull requests — the summons
+carries the accepted list, and the lens menu derives from the class index.
 
 **Findings System** — The system governing everything a run learns: every finding recorded where it
 arose, typed and stated on independent axes, flowing one way with `accepted` terminal, counted in
