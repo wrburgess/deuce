@@ -15,6 +15,7 @@ import {
   PERMANENT_LENS,
 } from "./compose.ts";
 import { validateReview } from "./validate.ts";
+import { checkLensSelection, parseLensMenu, parseLensSetSize } from "./lenses.ts";
 import { dispatch, runReadiness } from "./dispatch.ts";
 import { postComment } from "./record.ts";
 
@@ -54,7 +55,19 @@ const prNumber = Number(values.pr);
 const commit = values.commit;
 const base = values.base!;
 
-const roster = parseRoster(readFileSync("config/review.md", "utf8"));
+const reviewConfig = readFileSync("config/review.md", "utf8");
+const roster = parseRoster(reviewConfig);
+
+// The declared bounds are enforced at dispatch, not trusted to the caller.
+const lensErrors = checkLensSelection(
+  values.lens ?? [],
+  parseLensMenu(reviewConfig),
+  parseLensSetSize(reviewConfig),
+);
+if (lensErrors.length > 0) {
+  for (const e of lensErrors) console.error(e);
+  process.exit(1);
+}
 const severityFramework = extractSeverityFramework(
   readFileSync("sds/02-review-and-findings.md", "utf8"),
 );
