@@ -1,0 +1,13 @@
+{
+  "name": "deuce",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test 'tools/**/*.test.ts'",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^7.0.2"
+  }
+}

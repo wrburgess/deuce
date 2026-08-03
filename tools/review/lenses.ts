@@ -1,0 +1,70 @@
+// Enforces the declared review bounds at dispatch: the lens set is selected
+// from the menu and capped at the declared size (Chapter 2, *Bounded by lens
+// set*; values in config/review.md). The declaration is read here so a run
+// cannot exceed its bounds and still record as conforming.
+
+const MENU_HEADING = /^##\s+Lens menu\s*$/m;
+const SIZE_HEADING = /^##\s+Lens-set size\s*$/m;
+const EMPTY_MARKER = /\*\*Empty — zero lenses\.?\*\*/;
+
+function section(markdown: string, heading: RegExp, name: string): string {
+  const at = markdown.search(heading);
+  if (at === -1) {
+    throw new Error(`config carries no '${name}' section`);
+  }
+  return markdown.slice(at).split(/\n##\s/)[0]!;
+}
+
+export function parseLensMenu(markdown: string): string[] {
+  const body = section(markdown, MENU_HEADING, "## Lens menu");
+  // Entries, when they exist, are backticked list items: - `the lens question`
+  const entries = [...body.matchAll(/^\s*-\s+`([^`]+)`/gm)].map((m) => m[1]!.trim());
+  const markedEmpty = EMPTY_MARKER.test(body);
+  if (markedEmpty && entries.length > 0) {
+    // Neither side silently wins: a stale marker beside real entries is a
+    // malformed declaration, and resolving it is the declaration's job.
+    throw new Error(
+      "lens menu contradicts itself — it carries the empty marker and " +
+        `${entries.length} entr${entries.length === 1 ? "y" : "ies"}; fix the declaration`,
+    );
+  }
+  if (markedEmpty) return [];
+  if (entries.length === 0) {
+    throw new Error(
+      "lens menu is neither the empty marker nor recognizable entries — " +
+        "teach parseLensMenu the menu's shape before dispatching",
+    );
+  }
+  return entries;
+}
+
+export function parseLensSetSize(markdown: string): number {
+  const body = section(markdown, SIZE_HEADING, "## Lens-set size");
+  const m = body.match(/\*\*(\d+)\s+lens/);
+  if (!m) {
+    throw new Error("lens-set size declaration carries no '**N lens…**' value");
+  }
+  return Number(m[1]);
+}
+
+export function checkLensSelection(
+  chosen: string[],
+  menu: string[],
+  size: number,
+): string[] {
+  const errors: string[] = [];
+  for (const lens of chosen) {
+    if (!menu.includes(lens)) {
+      errors.push(
+        `lens is not on the menu and cannot be summoned: ${lens} — ` +
+          "the menu derives from the class index; a one-off lens enters as a dated menu entry, never as a bypass",
+      );
+    }
+  }
+  if (chosen.length > size) {
+    errors.push(
+      `${chosen.length} lenses chosen, over the declared lens-set size of ${size}`,
+    );
+  }
+  return errors;
+}
