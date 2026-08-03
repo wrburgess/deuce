@@ -42,8 +42,43 @@ test("prose lenses still respect the declared lens-set size", () => {
   assert.ok(errors.some((e) => e.includes("3")));
 });
 
-test("the live declaration's lens menu is empty", () => {
-  assert.deepEqual(parseLensMenu(live), []);
+test("the live declaration's lens menu carries the derived lenses, each an interrogative", () => {
+  const menu = parseLensMenu(live);
+  assert.equal(menu.length, 6);
+  for (const lens of menu) {
+    assert.ok(lens.endsWith("?"), `lens is not stated as an interrogative: ${lens}`);
+  }
+});
+
+// Asserting only that the menu is non-empty would measure a proxy for the
+// invariant that matters — that the menu *derives from* the class index. That
+// substitution is itself class 1 in the index this test guards.
+test("every menu lens links to a class the index actually carries", () => {
+  const index = readFileSync(new URL("../../findings/classes.md", import.meta.url), "utf8");
+  const anchors = new Set(
+    [...index.matchAll(/^###\s+(.+?)\s*$/gm)].map((m) =>
+      m[1]!
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-"),
+    ),
+  );
+  const section = live.slice(live.search(/^##\s+Lens menu\s*$/m)).split(/\n##\s/)[0]!;
+  const links = [
+    ...section.matchAll(/\]\(\.\.\/findings\/classes\.md#([^)]+)\)/g),
+  ].map((m) => m[1]!);
+  // Both sides are zero when the menu is empty, and equality alone would pass
+  // on it — the vacuous case is where a derivation check fails open.
+  assert.ok(links.length > 0, "no lens entry links to a class at all");
+  assert.equal(
+    links.length,
+    parseLensMenu(live).length,
+    "a lens entry carries no link to the class it derives from",
+  );
+  for (const anchor of links) {
+    assert.ok(anchors.has(anchor), `menu lens links to a class the index does not carry: #${anchor}`);
+  }
 });
 
 test("the live declaration's lens-set size is 3", () => {

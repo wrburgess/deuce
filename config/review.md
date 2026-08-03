@@ -8,7 +8,7 @@ restated here; this is adaptive configuration under
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*.
 
 - **Date:** 2026-08-03
-- **Source:** the Direction gate on #33.
+- **Source:** the Direction gate on #33; the lens menu, the Direction gate on #47.
 
 ## Reviewer roster
 
@@ -24,11 +24,19 @@ restated here; this is adaptive configuration under
 
 ## Lens menu
 
-- **Empty — zero lenses.** The menu derives from this repository's own class index
+- **Six lenses**, one per class in [`findings/classes.md`](../findings/classes.md), which carries the
+  admission rule and the receipts behind each
   ([Chapter 2](../sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count) →
-  *Bounded by lens set*), and [`findings/classes.md`](../findings/classes.md) holds no entries yet.
-- An empty menu strands no canon pull request: canon itself names the lenses fit for prose
-  subjects ([Chapter 2](../sds/02-review-and-findings.md#verifying-prose) → *Verifying prose*).
+  *Bounded by lens set*).
+- `does this check measure the invariant it claims, or a proxy for it?` — [class](../findings/classes.md#a-check-that-measures-something-other-than-the-invariant-it-claims)
+- `did this fix remove or narrow something it needed to keep?` — [class](../findings/classes.md#a-fix-that-removes-or-narrows-something-it-needed-to-keep)
+- `does any guard fail open or fail silent on input it did not expect?` — [class](../findings/classes.md#a-guard-that-fails-open-or-fails-silent-on-input-it-did-not-expect)
+- `which path does this invariant not cover?` — [class](../findings/classes.md#an-invariant-enforced-on-one-path-and-leaking-through-another)
+- `is this a restatement of content another document owns?` — [class](../findings/classes.md#restatement-of-content-another-document-owns)
+- `is any statement here true only as of when it was written?` — [class](../findings/classes.md#a-statement-true-when-written-whose-condition-has-since-passed)
+- Canon's own prose lenses remain canon-sourced and gated to prose subjects
+  ([Chapter 2](../sds/02-review-and-findings.md#verifying-prose) → *Verifying prose*). The
+  restatement lens above is this menu's, and is summonable for a code subject.
 
 ## Lens-set size
 
