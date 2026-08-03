@@ -62,9 +62,15 @@ export function postComment(
   label: string,
   command: readonly string[] = ["gh"],
 ): void {
-  const dir = mkdtempSync(join(tmpdir(), "deuce-record-"));
-  const file = join(dir, "comment.md");
+  let dir: string | undefined;
+  let posted = "";
   try {
+    // Staging counts as posting. A temp directory that cannot be made, or a body
+    // that cannot be written, loses the record exactly as surely as a rejected
+    // post — so it takes the same classified path rather than escaping raw.
+    // Raised as must-fix by the contractor review of 3d466c3 on PR #46.
+    dir = mkdtempSync(join(tmpdir(), "deuce-record-"));
+    const file = join(dir, "comment.md");
     writeFileSync(file, body);
     const argv = [
       ...command.slice(1),
@@ -89,11 +95,22 @@ export function postComment(
         `poster exited ${r.status}`;
       throw new PostFailure(prNumber, label, body, detail.slice(0, 2_000));
     }
-    // The streams are captured so a failure's detail can go inside the report
-    // instead of scattering to the terminal — but a successful post has always
-    // printed the comment's URL, and callers read it, so it is written through.
-    if (r.stdout) process.stdout.write(r.stdout);
+    posted = r.stdout ?? "";
+  } catch (err) {
+    if (err instanceof PostFailure) throw err;
+    throw new PostFailure(
+      prNumber,
+      label,
+      body,
+      (err instanceof Error ? err.message : String(err)).slice(0, 2_000),
+    );
   } finally {
-    rmSync(dir, { recursive: true, force: true });
+    if (dir !== undefined) rmSync(dir, { recursive: true, force: true });
   }
+  // The streams are captured so a failure's detail can go inside the report
+  // instead of scattering to the terminal — but a successful post has always
+  // printed the comment's URL, and callers read it, so it is written through.
+  // Written after the catch: a broken stdout pipe must not turn a post that
+  // succeeded into a report saying it failed.
+  if (posted) process.stdout.write(posted);
 }

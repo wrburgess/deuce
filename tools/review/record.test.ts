@@ -50,6 +50,26 @@ test("a poster binary that does not exist is a post failure, not a different cra
   );
 });
 
+test("a failure while staging the post is a post failure too, not a raw crash", () => {
+  // Staging is part of posting: if the temp directory cannot be made, or the
+  // body cannot be written, the record is lost exactly as surely as when `gh`
+  // rejects it. Forced without a mock by pointing the temp directory somewhere
+  // that does not exist — `tmpdir()` reads TMPDIR at call time.
+  // Raised as must-fix by the contractor review of 3d466c3 on PR #46.
+  const saved = process.env.TMPDIR;
+  process.env.TMPDIR = "/deuce-no-such-temp-dir-exists";
+  try {
+    assert.throws(
+      () => postComment(7, "a body", "the summons", ["true"]),
+      (err: unknown) =>
+        err instanceof PostFailure && err.body === "a body" && err.detail.length > 0,
+    );
+  } finally {
+    if (saved === undefined) delete process.env.TMPDIR;
+    else process.env.TMPDIR = saved;
+  }
+});
+
 test("the formatted report carries the label, the number, and the whole body", () => {
   const body = "line one\nline two\nline three";
   const report = formatUnpostedRecord(
