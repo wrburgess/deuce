@@ -63,28 +63,56 @@ export interface SavedRecord {
   error?: string;
 }
 
+const MAX_RECORDS_PER_PR = 1_000;
+
+/** Writes the report to a fresh path, **never over an existing one**. A record
+ *  already sitting here is one the HC has not placed yet, and overwriting it
+ *  would be this file's own defect wearing a third hat — a mechanism built to
+ *  stop records being lost, losing them.
+ *  Raised as must-fix by the contractor review of 002d18c on PR #46. */
+function writeWithoutOverwriting(
+  location: string,
+  prNumber: number,
+  report: string,
+): string {
+  for (let n = 1; n <= MAX_RECORDS_PER_PR; n++) {
+    const suffix = n === 1 ? "" : `-${n}`;
+    const path = join(location, `deuce-unposted-pr${prNumber}${suffix}.md`);
+    try {
+      writeFileSync(path, report, { flag: "wx" });
+      return path;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "EEXIST") throw err;
+    }
+  }
+  throw new Error(
+    `${MAX_RECORDS_PER_PR} un-posted records for PR #${prNumber} are already here`,
+  );
+}
+
 /** Saves the un-posted record where the HC can find it, and **never throws** —
  *  a delivery mechanism that can throw is the defect this file is about (#40).
  *
- *  Two locations, tried in order: the OS temp directory, then the working
- *  directory. Why two: the condition that broke the post can be the same one
- *  that breaks the temp directory, and a channel that dies alongside the failure
- *  it is reporting is not a channel. The working directory is the repository
- *  root for every real run, which also makes the file easy to find; `.gitignore`
- *  keeps it out of commits. */
+ *  Two locations, tried in order: the **working directory**, then the OS temp
+ *  directory. The working directory is the repository root for every real run,
+ *  so a predictably named file there is discoverable with no pointer at all —
+ *  which matters because the pointer travels over the same stream that can fail.
+ *  A temp directory would be tidier and is second for one reason: the operating
+ *  system may clean it up before the HC gets there, and a record whose whole job
+ *  is to survive until a human moves it must not sit somewhere that reaps it.
+ *  `.gitignore` keeps a saved record out of commits.
+ *  Order set by the HC at the second stop on PR #46, reversing this Plan's
+ *  step 2 on the reviewer's reasoning. */
 export function saveUnpostedRecord(
   failure: PostFailure,
   locations?: readonly string[],
 ): SavedRecord {
   const report = formatUnpostedRecord(failure);
-  const name = `deuce-unposted-pr${failure.prNumber}.md`;
-  const candidates = locations ?? [tmpdir(), process.cwd()];
+  const candidates = locations ?? [process.cwd(), tmpdir()];
   const errors: string[] = [];
   for (const location of candidates) {
     try {
-      const path = join(location, name);
-      writeFileSync(path, report);
-      return { path };
+      return { path: writeWithoutOverwriting(location, failure.prNumber, report) };
     } catch (err) {
       errors.push(
         `${location}: ${err instanceof Error ? err.message : String(err)}`,
@@ -94,11 +122,28 @@ export function saveUnpostedRecord(
   return { error: errors.join("; ").slice(0, 1_000) || "no location to write to" };
 }
 
-const NOTICE_LIMIT = 512;
+const NOTICE_LIMIT_BYTES = 512;
 
-/** The one-line pointer to the saved record. Held under 512 bytes — the size a
- *  single write is guaranteed to deliver whole — so the pointer cannot itself be
- *  cut in half by a reader that goes away. */
+/** Trims to a UTF-8 **byte** budget, by whole code points so nothing is split
+ *  mid-character. Measured in bytes because the guarantee is about bytes: a
+ *  string of 350 multi-byte characters is 950 bytes, and a character-counting
+ *  check waves it through.
+ *  Raised as should-fix by the contractor review of 002d18c on PR #46. */
+function fitToBytes(line: string, limit: number): string {
+  if (Buffer.byteLength(line, "utf8") <= limit) return line;
+  const points = [...line.replace(/\n$/, "")];
+  while (
+    points.length > 0 &&
+    Buffer.byteLength(`${points.join("")}...\n`, "utf8") > limit
+  ) {
+    points.pop();
+  }
+  return `${points.join("")}...\n`;
+}
+
+/** The one-line pointer to the saved record. Held to at most 512 **bytes** —
+ *  POSIX guarantees a write of PIPE_BUF bytes or fewer is atomic — so the pointer
+ *  cannot itself be cut in half by a reader that goes away. */
 export function formatUnpostedNotice(
   failure: PostFailure,
   saved: SavedRecord,
@@ -107,11 +152,9 @@ export function formatUnpostedNotice(
   const tail = saved.path
     ? `record saved to ${saved.path}`
     : `record NOT saved — ${saved.error}`;
-  const line = `${head}${tail}\n`;
-  if (line.length <= NOTICE_LIMIT) return line;
   // Trim the explanation, never the fact: a reader must still learn that a
   // record exists and roughly where, even if the detail has to go.
-  return `${line.slice(0, NOTICE_LIMIT - 5)}...\n`;
+  return fitToBytes(`${head}${tail}\n`, NOTICE_LIMIT_BYTES);
 }
 
 export function postComment(

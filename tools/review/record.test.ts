@@ -148,20 +148,61 @@ test("the second location is real: when the first fails, the record still lands"
   }
 });
 
-test("the pointer line fits a single atomic write, even with an absurd path", () => {
-  // Under 512 bytes: the size the operating system delivers whole, so a reader
-  // going away cannot cut the pointer in half.
+test("a second failed post never lands on top of the first record", () => {
+  // A record already on disk is one the HC has not placed yet. Overwriting it
+  // would be this file's own defect: a mechanism built to stop records being
+  // lost, losing them.
+  // Raised as must-fix by the contractor review of 002d18c on PR #46.
+  const dir = mkdtempSync(join(tmpdir(), "deuce-nooverwrite-test-"));
+  try {
+    const first = saveUnpostedRecord(
+      new PostFailure(46, "the summons", "FIRST RECORD", "x"),
+      [dir],
+    );
+    const second = saveUnpostedRecord(
+      new PostFailure(46, "the conforming review", "SECOND RECORD", "y"),
+      [dir],
+    );
+    assert.ok(first.path && second.path);
+    assert.notEqual(first.path, second.path, "the second record reused the first path");
+    assert.match(readFileSync(first.path, "utf8"), /FIRST RECORD/);
+    assert.match(readFileSync(second.path, "utf8"), /SECOND RECORD/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("the pointer fits a single atomic write, measured in bytes and not characters", () => {
+  // At most 512 *bytes*: POSIX guarantees a write of PIPE_BUF bytes or fewer is
+  // atomic, so a reader going away cannot cut the pointer in half. Characters are
+  // the wrong unit — 350 multi-byte characters are 950 bytes, and a character
+  // check waves them through.
+  // Raised as should-fix by the contractor review of 002d18c on PR #46.
+  const bytes = (s: string) => Buffer.byteLength(s, "utf8");
   const failure = new PostFailure(7, "the summons", "a body", "gh exited 1");
+
   const short = formatUnpostedNotice(failure, { path: "/tmp/x.md" });
-  assert.ok(short.length < 512);
+  assert.ok(bytes(short) <= 512);
   assert.match(short, /\/tmp\/x\.md/);
 
   const absurd = formatUnpostedNotice(failure, { path: `/${"deep/".repeat(400)}x.md` });
-  assert.ok(absurd.length < 512, `pointer ran to ${absurd.length} bytes`);
+  assert.ok(bytes(absurd) <= 512, `pointer ran to ${bytes(absurd)} bytes`);
 
   const failed = formatUnpostedNotice(failure, { error: "x".repeat(5_000) });
-  assert.ok(failed.length < 512, `pointer ran to ${failed.length} bytes`);
+  assert.ok(bytes(failed) <= 512, `pointer ran to ${bytes(failed)} bytes`);
   assert.match(failed, /NOT saved/);
+
+  // The case a character count misses entirely.
+  const multibyte = formatUnpostedNotice(
+    new PostFailure(7, "—".repeat(300), "a body", "gh exited 1"),
+    { path: "/tmp/x.md" },
+  );
+  assert.ok(
+    bytes(multibyte) <= 512,
+    `multi-byte pointer ran to ${bytes(multibyte)} bytes (${multibyte.length} characters)`,
+  );
+  // Trimming by whole code points: no character was cut in half.
+  assert.ok(!multibyte.includes("�"), "trimming split a character");
 });
 
 test("the formatted report carries the label, the number, and the whole body", () => {
