@@ -1,9 +1,41 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { parseLensMenu, parseLensSetSize, checkLensSelection } from "./lenses.ts";
+import {
+  PROSE_LENSES,
+  checkLensSelection,
+  parseLensMenu,
+  parseLensSetSize,
+} from "./lenses.ts";
 
 const live = readFileSync(new URL("../../config/review.md", import.meta.url), "utf8");
+
+test("every prose lens is canon's own phrase — pinned against the Verifying prose section", () => {
+  const chapter = readFileSync(
+    new URL("../../sds/02-review-and-findings.md", import.meta.url),
+    "utf8",
+  );
+  const at = chapter.search(/^##\s+Verifying prose\s*$/m);
+  assert.notEqual(at, -1, "chapter carries no Verifying prose section");
+  const section = chapter
+    .slice(at)
+    .split(/\n##\s/)[0]!
+    .replace(/\s+/g, " ");
+  assert.equal(PROSE_LENSES.length, 4);
+  for (const lens of PROSE_LENSES) {
+    assert.ok(section.includes(lens), `chapter section no longer carries: ${lens}`);
+  }
+});
+
+test("a prose lens is summonable with an empty menu — canon is its source", () => {
+  const errors = checkLensSelection([PROSE_LENSES[0]!], [], 3);
+  assert.deepEqual(errors, []);
+});
+
+test("prose lenses still respect the declared lens-set size", () => {
+  const errors = checkLensSelection([...PROSE_LENSES], [], 3);
+  assert.ok(errors.some((e) => e.includes("3")));
+});
 
 test("the live declaration's lens menu is empty", () => {
   assert.deepEqual(parseLensMenu(live), []);

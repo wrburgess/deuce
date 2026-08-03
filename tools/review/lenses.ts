@@ -47,6 +47,17 @@ export function parseLensSetSize(markdown: string): number {
   return Number(m[1]);
 }
 
+// Canon's own lenses for prose subjects — pinned copies of the phrases in
+// Chapter 2 → *Verifying prose*, drift-guarded by the test that asserts each
+// against the section. A canon pull request is summoned with these; they are
+// canon-sourced, not menu-derived, so an empty menu strands no canon subject.
+export const PROSE_LENSES: readonly string[] = [
+  "restatement of content another document owns",
+  "contradiction with ratified canon",
+  "a term used with no Glossary entry behind it",
+  "drift between a copy and its source",
+];
+
 export function checkLensSelection(
   chosen: string[],
   menu: string[],
@@ -54,10 +65,11 @@ export function checkLensSelection(
 ): string[] {
   const errors: string[] = [];
   for (const lens of chosen) {
-    if (!menu.includes(lens)) {
+    if (!menu.includes(lens) && !PROSE_LENSES.includes(lens)) {
       errors.push(
         `lens is not on the menu and cannot be summoned: ${lens} — ` +
-          "the menu derives from the class index; a one-off lens enters as a dated menu entry, never as a bypass",
+          "the menu derives from the class index and canon names the prose lenses; " +
+          "a one-off lens enters as a dated menu entry, never as a bypass",
       );
     }
   }

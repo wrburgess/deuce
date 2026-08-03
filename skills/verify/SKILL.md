@@ -37,10 +37,14 @@ exit — is canon and is not restated here.
    [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)).
 6. **Try to break the change's own tests, hunting the false green**
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-7. **Summon the contractor review** — run the summons path
+7. **Summon the contractor review** — first declare the lens set fit for the subject: lenses from
+   the menu ([`config/review.md`](../../config/review.md)) for code, canon's prose lenses for a
+   canon subject
+   ([Chapter 2 → Verifying prose](../../sds/02-review-and-findings.md#verifying-prose)), the
+   permanent lens riding along either way. Then run the summons path
    ([`tools/review/summon.ts`](../../tools/review/summon.ts)): the readiness check runs before any
    dispatch, the summons is composed from the canonical documents and bound to the head commit,
-   dispatch follows the roster ([`config/review.md`](../../config/review.md)), the returned review
+   dispatch follows the roster, the returned review
    is validated with any missing fields named, and the summons and the review both land on the
    pull request
    ([Chapter 2 → The summons, completed](../../sds/02-review-and-findings.md#the-summons-completed);
