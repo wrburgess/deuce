@@ -230,20 +230,29 @@ function main(): void {
 // streams flush first. The same hazard applied to the un-elided --dry-run
 // summons, which is why every exit in this file moved, not just this one.
 // Raised as must-fix by the contractor review of 123a1c3 on PR #46.
+// Output errors must never become the outcome, on any path. An asynchronous
+// EPIPE — a reader that went away, which `| head` does routinely — surfaces as
+// an unhandled 'error' event and replaces a classified exit with a crash. No
+// try/catch reaches it, because it arrives after the write returned.
+//
+// Installed once, here, before anything writes. Earlier these sat inside the
+// failure branch, which left the *success* path — printing each comment's URL,
+// with minutes between posts for a reader to disappear — with no guard at all.
+// Measured: 200 short writes to a closed stdout pipe exit 1 unhandled without
+// these, and 0 with them.
+// Raised as must-fix by the contractor review of a161318 on PR #46.
+process.stdout.on("error", () => {});
+process.stderr.on("error", () => {});
+
 try {
   main();
 } catch (err) {
   if (!(err instanceof PostFailure)) throw err;
 
-  // The order below is the fix, so it is worth stating: handlers, then save,
-  // then the pointer, then the convenience copy, then the code.
+  // The order below is the fix, so it is worth stating: save, then the pointer,
+  // then the convenience copy, then the code. The stream guards are already on,
+  // above.
   //
-  // An asynchronous EPIPE on either stream arrives after this catch has already
-  // returned, where no try/catch can reach it — unhandled, it replaces exit 5
-  // with a crash. The handlers go on first, before anything is written.
-  process.stderr.on("error", () => {});
-  process.stdout.on("error", () => {});
-
   // The file is the delivery. Four reviews found four different ways for a
   // stream at exit time to lose this record; a written file has none of them.
   const saved = saveUnpostedRecord(err);
