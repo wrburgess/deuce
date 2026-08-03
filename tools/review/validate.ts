@@ -9,7 +9,6 @@ export interface Validation {
 
 const SEVERITIES = new Set(["must-fix", "should-fix", "note"]);
 const TYPES = new Set(["defect", "risk", "improvement", "lesson"]);
-const FIELDS = ["Lens", "Type", "Severity", "Location", "Defect"] as const;
 
 function fieldValues(review: string, field: string): string[] {
   const re = new RegExp(`\\*\\*${field}:\\*\\*\\s*(.*)`, "g");
@@ -19,7 +18,12 @@ function fieldValues(review: string, field: string): string[] {
 }
 
 const NO_FINDINGS = /no findings/i;
+const BODY_FIELDS = ["Type", "Severity", "Location", "Defect"] as const;
 
+// A finding is validated as its own block — from one **Lens:** field to the
+// next — never by counting fields in aggregate across the review. Aggregate
+// counts certified a review whose findings were individually incomplete
+// (raised live on PR #39, wave 2).
 export function validateReview(
   review: string,
   expectedCommit: string,
@@ -41,46 +45,58 @@ export function validateReview(
     missing.push("the review is not signed with tool and model");
   }
 
+  const parts = review.split(/(?=\*\*Lens:\*\*)/);
+  const preamble = parts[0]!;
+  const blocks = parts.slice(1);
+
+  for (const field of BODY_FIELDS) {
+    if (fieldValues(preamble, field).length > 0) {
+      missing.push(`a ${field} field appears outside any finding block`);
+    }
+  }
+
+  const lensAnswers = blocks.map((b) => fieldValues(b, "Lens")[0]!);
+
   // Every summoned lens must be answered explicitly — a finding that names it,
   // or a "no findings" line that names it. An unanswered lens is the incomplete
   // review this check exists to catch.
-  const lensAnswers = fieldValues(review, "Lens");
   for (const lens of lenses) {
     if (!lensAnswers.some((a) => a.includes(lens))) {
       missing.push(`the summoned lens was never answered: ${lens}`);
     }
   }
 
-  const counts = new Map(FIELDS.map((f) => [f, fieldValues(review, f)]));
-  // A "no findings" lens answer is an answer, not a finding — it owes no other fields.
-  const n = lensAnswers.filter((a) => !NO_FINDINGS.test(a)).length;
-  for (const field of FIELDS) {
-    if (field === "Lens") continue;
-    const seen = counts.get(field)!.length;
-    if (seen !== n) {
-      missing.push(
-        `field counts disagree: ${n} finding-bearing Lens field(s) but ${seen} ${field} field(s) — every finding carries all five fields`,
-      );
+  blocks.forEach((block, i) => {
+    const lens = lensAnswers[i]!;
+    if (NO_FINDINGS.test(lens)) {
+      // An explicit no-findings answer owes nothing further.
+      return;
     }
-  }
-
-  for (const sev of counts.get("Severity")!) {
-    const value = sev.replace(/[`*]/g, "").trim();
-    if (!SEVERITIES.has(value)) {
-      missing.push(
-        `severity "${value}" is not in the framework's vocabulary (must-fix | should-fix | note)`,
-      );
+    for (const field of BODY_FIELDS) {
+      const seen = fieldValues(block, field).length;
+      if (seen !== 1) {
+        missing.push(
+          `finding ${i + 1} (lens: ${lens}) carries ${seen} ${field} field(s) — exactly one required`,
+        );
+      }
     }
-  }
-
-  for (const t of counts.get("Type")!) {
-    const value = t.replace(/[`*]/g, "").trim();
-    if (!TYPES.has(value)) {
-      missing.push(
-        `type "${value}" is not in the findings vocabulary (defect | risk | improvement | lesson)`,
-      );
+    for (const sev of fieldValues(block, "Severity")) {
+      const value = sev.replace(/[`*]/g, "").trim();
+      if (!SEVERITIES.has(value)) {
+        missing.push(
+          `severity "${value}" is not in the framework's vocabulary (must-fix | should-fix | note)`,
+        );
+      }
     }
-  }
+    for (const t of fieldValues(block, "Type")) {
+      const value = t.replace(/[`*]/g, "").trim();
+      if (!TYPES.has(value)) {
+        missing.push(
+          `type "${value}" is not in the findings vocabulary (defect | risk | improvement | lesson)`,
+        );
+      }
+    }
+  });
 
   return { conforming: missing.length === 0, missing };
 }

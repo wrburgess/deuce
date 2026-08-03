@@ -75,6 +75,38 @@ test("a no-findings lens answer does not break the finding field parity check", 
   assert.deepEqual(v.missing, []);
 });
 
+test("two findings collapsed into one block cannot balance their way to conforming", () => {
+  // The wave-2 exploit: two consecutive Lens lines, then two of each remaining
+  // field — aggregate counts balance, but neither finding is whole.
+  const review = [
+    `- **Lens:** ${LENS}`,
+    `- **Lens:** ${LENS}`,
+    "- **Type:** defect",
+    "- **Type:** defect",
+    "- **Severity:** note",
+    "- **Severity:** note",
+    "- **Location:** a.ts:1",
+    "- **Location:** b.ts:2",
+    "- **Defect:** first",
+    "- **Defect:** second",
+    "",
+    `**Commit reviewed:** ${COMMIT}`,
+    "**Signed:** Codex CLI gpt-5.2-codex",
+  ].join("\n");
+  const v = validateReview(review, COMMIT, [LENS]);
+  assert.equal(v.conforming, false);
+  assert.ok(v.missing.some((m) => /finding/i.test(m)));
+});
+
+test("a field repeated inside one finding block is nonconforming", () => {
+  const review = conforming.replace(
+    "- **Severity:** should-fix",
+    "- **Severity:** should-fix\n- **Severity:** note",
+  );
+  const v = validateReview(review, COMMIT, [LENS]);
+  assert.equal(v.conforming, false);
+});
+
 test("a reviewer-invented severity is nonconforming and named", () => {
   const review = conforming.replace("should-fix", "critical");
   const v = validateReview(review, COMMIT, [LENS]);

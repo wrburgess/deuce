@@ -38,8 +38,10 @@ export function parseAcceptedRegister(markdown: string): string[] {
       "the accepted register carries no '## Entries' section — refusing to treat a malformed register as empty",
     );
   }
-  return markdown
-    .slice(at)
+  // Bounded to the Entries section — a bullet in any later section is not an
+  // accepted finding, and carrying it would suppress unrelated review findings.
+  const section = markdown.slice(at).split(/\n##\s/)[0]!;
+  return section
     .split("\n")
     .filter((l) => /^\s*-\s/.test(l))
     .map((l) => l.trim());

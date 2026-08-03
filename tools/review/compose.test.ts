@@ -98,3 +98,19 @@ test("parseAcceptedRegister collects entry lines once entries exist", () => {
   ].join("\n");
   assert.equal(parseAcceptedRegister(md).length, 2);
 });
+
+test("parseAcceptedRegister never reads past its own section", () => {
+  const md = [
+    "# The accepted register",
+    "",
+    "## Entries",
+    "",
+    "- the one real entry",
+    "",
+    "## Some later section",
+    "",
+    "- a bullet that is not an accepted finding",
+    "",
+  ].join("\n");
+  assert.deepEqual(parseAcceptedRegister(md), ["- the one real entry"]);
+});
