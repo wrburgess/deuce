@@ -346,17 +346,26 @@ for the same reason.
 Chapter 0 fixed that all four measures are recorded once per pull request; Chapter 1 fixed the
 Delivery Record as their home and left the capture here.
 
-| Measure | Capture |
-|---|---|
-| **Quality** | Computed from the Verification's findings record — raised, and how many must-fix |
-| **Autonomy** | Declared by the AC; HC interventions beyond the two gates are not a fact any artifact holds |
-| Throughput | Computed from the tracker — issue opened to Delivery Record posted |
-| Cost efficiency | **Un-instrumented.** No capture path exists |
+**Chapter 1's requirement is unchanged: all four are recorded on every Delivery Record.** What this
+chapter fixes is *how each is obtained*, which is a different question from whether it appears.
 
-- **A measure with no capture path says so, and is never estimated.** An estimated number enters the
-  baseline and nothing afterwards distinguishes it from a measured one, which loses the baseline
-  Chapter 0 says to define at birth or lose forever. Both Delivery Records written so far state cost
-  efficiency as un-instrumented, which is the behaviour this rule makes canon rather than optional.
+| Measure | How it is obtained |
+|---|---|
+| **Quality** | **Computed** — from the Verification's findings record: raised, and how many must-fix |
+| **Autonomy** | **Declared** — HC interventions beyond the two gates are not a fact any artifact holds |
+| Throughput | **Computed** — from the tracker: issue opened to Delivery Record posted |
+| Cost efficiency | **Computed** where the platform exposes usage; **recorded as un-instrumented** where it does not |
+
+- **A measure with no capture path says so, and is never estimated.** Recording *un-instrumented*
+  satisfies Chapter 1 — the row is present and honest — and an estimate does not, because an estimate
+  enters the baseline and nothing afterwards distinguishes it from a measurement. That loses the
+  baseline Chapter 0 says to define at birth or lose forever. Both Delivery Records written so far
+  record cost efficiency as un-instrumented, which is the behaviour this rule makes canon rather than
+  optional.
+- **Which measures are instrumented at any moment is configuration, not canon.** Whether the AI
+  platform exposes usage per session is exactly the kind of statement Chapter 0's sorting test sends
+  out of canon: it would become false the month the platform changed. The rule above holds on any
+  platform; the current answer is dated and sourced in `config/`.
 - **A computed measure is computed, not eyeballed.** Two of the four are facts the tracker and the
   Verification already hold; reading them by hand into a record is a transcription step with a
   transcription step's error rate.
@@ -378,6 +387,42 @@ themselves:
   all, and it is what Chapter 5 will need when a host runs a check over its own files.
 - **The tools are subject to the gate they implement.** They are TypeScript in this repository,
   tested by this repository's tests, and their own checks are checks.
+
+## The transitional state, stated plainly
+
+Ratifying this chapter sanctions building what it describes; it does not conjure it. Chapter 2 said
+the same about its own machinery, and the reason to repeat it here is that this chapter is the first
+whose rules the repository does not already satisfy on the day it is ratified. Two gaps, both named
+rather than discovered:
+
+**The `attested` floor is unmet.** `config/gates.md` declares the Ship gate `attested`, and no
+independent re-run of the gate exists — so the green half of every merge claim currently rests on
+the AC's word. This chapter does not create that gap; it names one that was already there and states
+what closes it.
+
+- **The floor binds from the moment the mechanism exists**, and building it is this chapter's first
+  work.
+- **Until then the gap is a live residual, and it is never a silent one.** Whatever the HC decides
+  below, the decision lands where Chapter 2 puts a kept risk — the accepted register, one line, dated,
+  linking the disposition — so a later reader finds it without archaeology.
+- **Whether to hold `attested` in the meantime or return the Ship gate to `required` until the
+  mechanism lands is the HC's**, at the Ship gate, as a governance act recorded in dated
+  configuration. It is not the AC's to decide and this chapter does not decide it.
+
+**No declaration yet carries the schema.** All six files in `config/` predate it. The transition
+rule, so that ratification does not make the repository retroactively nonconforming:
+
+- **The schema binds a declaration when that declaration is migrated,** and migrating the six is this
+  chapter's cut work.
+- **Until a declaration is migrated, its date and source are read from its prose form,** which is the
+  shape every existing declaration already uses consistently.
+- **A new declaration written after ratification carries the schema from birth.** The transition is
+  for what exists, never a standing exemption.
+
+Why say both plainly rather than writing the chapter to match today: a chapter amended to fit the
+repository's current state is a chapter that has stopped governing it. The alternative Chapter 0
+already rejected for merge authority — negotiate the floor at the moment meeting it is inconvenient —
+is the one being refused again here.
 
 ## What this chapter unlocks, and what it does not
 

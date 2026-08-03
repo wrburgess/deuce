@@ -57,15 +57,14 @@
 
 ## Checks
 
-- **"The checks" means the quality gate**, and what it is, what a check may be asked to do, and the
-  evidence a check ships with are Chapter 3's:
+- **"The checks" means the quality gate**, and what a check may be asked to decide and what evidence
+  it ships with are Chapter 3's:
   [`sds/03-quality-gate-and-tooling.md`](sds/03-quality-gate-and-tooling.md). The gate's command and
   its contents are dated configuration.
-- **Always on, whenever you write one:** a check is a **measured structural restatement** of its
-  invariant and **declares what it does not reach** ([`adr/0013`](adr/0013-checks-restated-structurally-with-declared-blind-spots.md));
-  a check over standing state ships with its **deletion measurement**, the empty input included
-  ([`adr/0014`](adr/0014-deletion-measurement-for-checks-over-standing-state.md)). A one-off check is
-  a reproduction, and is labelled one.
+- **Always on, whenever you write a check:** read the chapter's *What a check may be asked to do* and
+  *The evidence a check ships with* first — [`adr/0013`](adr/0013-checks-restated-structurally-with-declared-blind-spots.md)
+  and [`adr/0014`](adr/0014-deletion-measurement-for-checks-over-standing-state.md) are what they
+  settle, and neither is restated here.
 
 ## Git
 
