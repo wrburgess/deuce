@@ -1,6 +1,6 @@
 ---
 name: implement
-description: Stage 3 of the deuce lifecycle. The Plan is posted on the issue; carry it out and open the pull request — the artifact every later stage reads.
+description: Stage 3 of the deuce lifecycle. The Plan is posted on the issue; carry it out and open the pull request linked to the issue.
 ---
 
 # implement — Stage 3 of the lifecycle
