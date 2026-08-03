@@ -13,7 +13,7 @@ already sanction.
 |---|---|---|---|
 | 0 — Identity & governance | Who acts, who reviews, governing principles, decision records, work tracking | `ratified` | [#2](https://github.com/wrburgess/deuce/issues/2) |
 | 1 — Lifecycle & skills | The five stages every piece of work passes through (Assess → Devise → Implement → Verify → Deliver), the two gates within them, the Readout format, and the Skills that run the stages | `ratified` | [#3](https://github.com/wrburgess/deuce/issues/3) |
-| 2 — Review System & Findings System | How review is summoned, bounded, validated, and recorded | `not started` | [#4](https://github.com/wrburgess/deuce/issues/4) |
+| 2 — Review System & Findings System | How solicited review is summoned, bounded, and validated, and how everything a run learns is recorded, drained, and turned into rules | `ratified` | [#4](https://github.com/wrburgess/deuce/issues/4) |
 | 3 — Quality gate & TypeScript tooling | The checks a change must pass, and the tooling that runs them | `not started` | [#5](https://github.com/wrburgess/deuce/issues/5) |
 | 4 — Learning System | How outside material becomes reviewed configuration | `not started` | [#6](https://github.com/wrburgess/deuce/issues/6) |
 | 5 — Distribution & fleet cutover | How other projects adopt deuce | `not started` | [#7](https://github.com/wrburgess/deuce/issues/7) |
