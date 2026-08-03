@@ -76,8 +76,9 @@ carries the rejected options and why, and always states when the AC self-selecte
 **Disposition** — What was decided about a finding at the receiving end, and the record of that
 decision: fixed in this change, refuted with the refuting evidence, promoted to tracked work, or
 knowingly kept. Severity is the reviewer's claim about what a finding forces; the disposition is the
-answer to it, and every finding gets one. It is not the finding's state, which is only where the
-record is then filed — fixing files it `closed`, promoting files it `open`, keeping files it
+answer to it, and every finding gets one. It is not the finding's state — the state is one of three
+fixed values for what happens to the finding next, and the disposition is the particular decision
+that produced that value: fixing here yields `closed`, promoting yields `open`, keeping yields
 `accepted`.
 
 **Dual register** — The two-audience structure required in an issue body: a required non-technical
