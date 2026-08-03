@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Stage 4 of the deuce lifecycle. The pull request exists, or review has left findings on it; examine the whole diff against the Plan, try to refute the change, answer every finding, and post the Verification on the pull request.
+description: Stage 4 of the deuce lifecycle. The pull request exists, or review has left findings on it; examine the whole diff against the Plan, try to refute the change, summon the contractor review, answer every finding — the AC's and the reviewer's together — and post the Verification on the pull request.
 ---
 
 # verify — Stage 4 of the lifecycle
@@ -31,25 +31,39 @@ exit — is canon and is not restated here.
 4. **Hunt drift in both directions** — the diff against the Plan for the unplanned, the Plan
    against the diff for the missing
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-5. **Try to refute the change**
-   ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
+5. **Try to refute the change, hunting the lens menu's standing classes** — the adversarial pass
+   hunts the recorded classes instead of re-deriving its list each run
+   ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify);
+   [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)).
 6. **Try to break the change's own tests, hunting the false green**
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-7. **Record every finding** — from the drift hunt, the refutations, and every thread review has
-   left; how a finding is rated, and its record beyond this pull request, are Chapter 2's
-   ([Chapter 1 → What this chapter does not cover](../../sds/01-lifecycle-and-skills.md#what-this-chapter-does-not-cover)).
-8. **Dispose of each finding; fix what is accepted and re-run the checks to green**
-   ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-9. **Answer each finding on the surface it arrived on** — a pull request carries three:
-   comments, inline threads, review bodies; a self-raised finding is answered in the
-   Verification itself ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-10. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
-11. **Draft the Verification as a Readout** — content per
-    [Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify), shape per
-    [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout) — **stating
-    plainly that it is self-review and the adversarial pass, and that no independent review
-    happened** ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-12. **Post the Verification on the pull request**
+7. **Declare the lens set fit for the subject, then summon the contractor review** — the set per
+   [Chapter 2 → Bounded by lens set](../../sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count),
+   prose subjects per
+   [Chapter 2 → Verifying prose](../../sds/02-review-and-findings.md#verifying-prose); run the
+   summons path ([`tools/review/summon.ts`](../../tools/review/summon.ts)), whose contract is
+   [Chapter 2 → The summons, completed](../../sds/02-review-and-findings.md#the-summons-completed)
+   and [→ Validation on return](../../sds/02-review-and-findings.md#validation-on-return). **A run
+   with no reachable reviewer stops and asks.**
+8. **Record every finding, the AC's and the reviewer's together; answer an accepted-register match
+   by its entry**
+   ([Chapter 2 → The findings home](../../sds/02-review-and-findings.md#the-findings-home);
+   [ADR 0011](../../adr/0011-findings-type-state-one-way.md)).
+9. **Dispose of each finding; batch the fixes per wave, and re-summon the reviewer once on the
+   whole wave** — bounds and escalation per
+   [Chapter 2 → Fix-verification, bounded separately](../../sds/02-review-and-findings.md#fix-verification-bounded-separately),
+   the limit's value in [`config/review.md`](../../config/review.md), the escalation into
+   [Devise](../devise/SKILL.md). Re-run the checks to green.
+10. **Answer each finding on the surface it arrived on** — a pull request carries three:
+    comments, inline threads, review bodies; a self-raised finding is answered in the
+    Verification itself ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
+11. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
+12. **Draft the Verification as a Readout** — content per
+    [Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify), grown to the record
+    [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)
+    requires — the reviewer, its model, its mechanism, and the commit named in it; shape per
+    [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
+13. **Post the Verification on the pull request**
     ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
 
 ## Terminal artifact
