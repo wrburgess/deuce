@@ -24,6 +24,13 @@ export interface GateResult {
   outcomes: Outcome[];
   code: number;
   unmet: string[];
+  /**
+   * Declared checks that were never attempted. The invariant every branch
+   * below holds: each declared check is accounted for exactly once, across
+   * outcomes, an unmet entry, or here. A report that says which checks ran
+   * without saying which ones did not lets a short run read as a whole one.
+   */
+  skipped: string[];
 }
 
 export function runChecks(
@@ -42,6 +49,7 @@ export function runChecks(
     return {
       outcomes,
       unmet: ["no checks to run — a gate that ran nothing must never report green"],
+      skipped: [],
       code: EXIT_CANNOT_RUN,
     };
   }
@@ -66,7 +74,9 @@ export function runChecks(
     }
   }
   if (unmet.length > 0) {
-    return { outcomes, unmet, code: EXIT_CANNOT_RUN };
+    // Nothing ran, so every declared check is unattempted — including the ones
+    // whose own prerequisites were fine.
+    return { outcomes, unmet, skipped: checks.map((c) => c.name), code: EXIT_CANNOT_RUN };
   }
 
   // Resolution above is all-or-nothing; execution below cannot be, because a
@@ -82,7 +92,12 @@ export function runChecks(
       code = exec(argvs[i]!);
     } catch (err) {
       unmet.push(`check '${check.name}' could not be executed: ${(err as Error).message}`);
-      return { outcomes, unmet, code: EXIT_CANNOT_RUN };
+      return {
+        outcomes,
+        unmet,
+        skipped: checks.slice(i + 1).map((c) => c.name),
+        code: EXIT_CANNOT_RUN,
+      };
     }
     outcomes.push({ name: check.name, command: check.command, code });
   }
@@ -90,6 +105,7 @@ export function runChecks(
   return {
     outcomes,
     unmet,
+    skipped: [],
     code: outcomes.some((o) => o.code !== EXIT_OK) ? EXIT_CHECK_FAILED : EXIT_OK,
   };
 }

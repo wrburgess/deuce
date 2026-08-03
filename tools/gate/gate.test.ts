@@ -106,6 +106,50 @@ test("a check that cannot be executed still reports the checks that already ran"
   assert.ok(r.unmet.some((u) => u.includes("tests")), "the check that could not run is not named");
 });
 
+// Raised by the re-summons of a451c56. The first fix returned the outcomes
+// already collected and stopped there, which still left a reader unable to
+// tell "check three passed" from "check three was never attempted" — the same
+// defect one layer down, which is the fix-verification failure Chapter 2 names.
+const threeChecks: CheckSpec[] = [
+  { name: "one", command: "true" },
+  { name: "two", command: "true" },
+  { name: "three", command: "true" },
+];
+
+test("a check that cannot be executed names the checks never attempted", () => {
+  let calls = 0;
+  const r = runChecks(threeChecks, () => {
+    if (++calls === 2) throw new Error("spawn ENOENT");
+    return 0;
+  }, present);
+  assert.equal(r.code, EXIT_CANNOT_RUN);
+  assert.deepEqual(r.outcomes.map((o) => o.name), ["one"]);
+  assert.deepEqual(r.skipped, ["three"], "the unrun remainder is not accounted for");
+});
+
+// The mechanism, stated as an invariant rather than as one more case: whatever
+// happens, every declared check is accounted for exactly once.
+test("every declared check is accounted for, in every branch", () => {
+  const accounted = (r: { outcomes: { name: string }[]; skipped: string[]; unmet: string[] }) =>
+    r.outcomes.length + r.skipped.length + r.unmet.filter((u) => u.includes("could not be executed")).length;
+
+  assert.equal(accounted(runChecks(threeChecks, passing, present)), 3, "all pass");
+  assert.equal(accounted(runChecks(threeChecks, () => 1, present)), 3, "all fail");
+  let n = 0;
+  assert.equal(
+    accounted(runChecks(threeChecks, () => { if (++n === 2) throw new Error("boom"); return 0; }, present)),
+    3,
+    "execution stopped midway",
+  );
+  assert.equal(
+    accounted(runChecks(
+      [{ name: "needs", command: "true", requires: "nope" }, ...threeChecks], passing, absent,
+    )),
+    4,
+    "unmet prerequisite — nothing ran, everything is still declared",
+  );
+});
+
 test("a check is executed as tokens, never through a shell", () => {
   const s = spy();
   runChecks([{ name: "tests", command: "npm test" }], s.exec, present);

@@ -53,6 +53,9 @@ function main(): void {
       `${outcome.code === EXIT_OK ? "pass" : "FAIL"}  ${outcome.name}  (${outcome.command})`,
     );
   }
+  // Every declared check is named in the report, including the ones that never
+  // ran. Printing only what ran lets a short run read as a whole one.
+  for (const name of result.skipped) console.log(`skip  ${name}  (never attempted)`);
   if (result.code === EXIT_OK) {
     console.log(`gate green — ${result.outcomes.length} checks, declared in ${DECLARATION}`);
   }
