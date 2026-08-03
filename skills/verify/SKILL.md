@@ -1,6 +1,6 @@
 ---
 name: verify
-description: Stage 4 of the deuce lifecycle. The pull request exists, or review has left findings on it; examine the whole diff against the Plan, try to break the change, answer every finding, and post the Verification on the pull request.
+description: Stage 4 of the deuce lifecycle. The pull request exists, or review has left findings on it; examine the whole diff against the Plan, try to refute the change, answer every finding, and post the Verification on the pull request.
 ---
 
 # verify — Stage 4 of the lifecycle
@@ -21,7 +21,7 @@ exit — is canon and is not restated here.
 
 1. **Read the pull request from the tracker** — description, labels, the whole diff, and every
    comment and thread ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-2. **Read the final posted Plan from the issue the pull request links** — where a re-plan
+2. **Read the posted Plan from the issue the pull request links** — where a re-plan
    superseded one, the latest posted Plan is the Plan
    ([Stops](../../sds/01-lifecycle-and-skills.md#stops), trigger 2).
 3. **Read the stage's routing** — which model and effort runs this stage is
@@ -33,7 +33,7 @@ exit — is canon and is not restated here.
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
 5. **Try to refute the change**
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-6. **Attack the change's own tests, hunting the false green**
+6. **Try to break the change's own tests, hunting the false green**
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
 7. **Record every finding** — from the drift hunt, the refutations, and every thread review has
    left; how a finding is rated, and its record beyond this pull request, are Chapter 2's
