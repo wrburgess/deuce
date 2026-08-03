@@ -42,8 +42,43 @@ test("prose lenses still respect the declared lens-set size", () => {
   assert.ok(errors.some((e) => e.includes("3")));
 });
 
-test("the live declaration's lens menu is empty", () => {
-  assert.deepEqual(parseLensMenu(live), []);
+test("every lens on the live menu is stated as an interrogative", () => {
+  const menu = parseLensMenu(live);
+  assert.ok(menu.length > 0, "the live menu carries no lenses");
+  for (const lens of menu) {
+    assert.ok(lens.endsWith("?"), `lens is not stated as an interrogative: ${lens}`);
+  }
+});
+
+// Checking only that the menu is populated, or only that its links resolve,
+// measures a proxy for the invariant that matters — that the menu and the index
+// are the same set. Substituting a proxy is class 1 in the index this guards,
+// and enforcing one direction while the other leaks is class 4.
+test("the menu and the class index are one to one, in both directions", () => {
+  const index = readFileSync(new URL("../../findings/classes.md", import.meta.url), "utf8");
+  const anchor = (heading: string) =>
+    heading.toLowerCase().replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-");
+  // Scoped to Entries: every `###` in the file is not a class, and counting one
+  // that is not would be this check measuring the wrong unit.
+  const entries = index.slice(index.search(/^##\s+Entries\s*$/m)).split(/\n##\s/)[0]!;
+  const classes = [...entries.matchAll(/^###\s+(.+?)\s*$/gm)].map((m) => anchor(m[1]!));
+  const section = live.slice(live.search(/^##\s+Lens menu\s*$/m)).split(/\n##\s/)[0]!;
+  const links = [
+    ...section.matchAll(/\]\(\.\.\/findings\/classes\.md#([^)]+)\)/g),
+  ].map((m) => m[1]!);
+  // Both sides are zero when the menu is empty, and equality alone would pass
+  // on it — the vacuous case is where a derivation check fails open.
+  assert.ok(links.length > 0, "no lens entry links to a class at all");
+  assert.equal(
+    links.length,
+    parseLensMenu(live).length,
+    "a lens entry carries no link to the class it derives from",
+  );
+  assert.deepEqual(
+    [...links].sort(),
+    [...classes].sort(),
+    "menu and index disagree — every admitted class earns a lens, and every lens names a class",
+  );
 });
 
 test("the live declaration's lens-set size is 3", () => {
