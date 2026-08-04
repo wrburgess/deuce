@@ -74,8 +74,10 @@ exit — is canon and is not restated here.
    by its entry**
    ([Chapter 2 → The findings home](../../sds/02-review-and-findings.md#the-findings-home);
    [ADR 0011](../../adr/0011-findings-type-state-one-way.md)).
-10. **Dispose of each finding; batch the fixes per wave, and re-summon the reviewer once on the
-   whole wave** — bounds and escalation per
+10. **Dispose of each finding; batch the fixes into one wave, and verify the wave yourself** —
+   for each accepted finding the mechanism restated in one sentence and the failing test that
+   exercises it, then steps 4–6 re-run on the wave's diff; the reviewer is never re-summoned —
+   bounds and escalation per
    [Chapter 2 → Fix-verification, bounded separately](../../sds/02-review-and-findings.md#fix-verification-bounded-separately),
    the limit's value in [`config/review.md`](../../config/review.md), the escalation into
    [Devise](../devise/SKILL.md). Re-run the checks to green.

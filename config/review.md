@@ -48,9 +48,9 @@ restated here; this is adaptive configuration under
 
 ## Fix-verification limit
 
-- **1 wave.** One summons, one batched fix wave, one re-review of the whole wave. A defect the
-  re-review finds in a fix escalates straight to Devise, per the chapter — there is never a second
-  fix round.
+- **1 wave.** One summons, one batched fix wave, verified by the AC's own fix-verification — the
+  reviewer is never re-summoned, per the chapter. A defect fix-verification finds in a fix
+  escalates straight to Devise — there is never a second fix round.
 - Evidence behind the number: the predecessor's costliest defect family was symptom-level fixes
   re-opening one finding across as many as fifteen rounds
   ([ace #164](https://github.com/wrburgess/ace/issues/164)); its efficient successor workflow
