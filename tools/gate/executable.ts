@@ -13,6 +13,30 @@
 // every entry under node_modules/.bin is one.
 //
 // Raised by the contractor review of 4576409.
+//
+// ---------------------------------------------------------------------------
+// Declared blind spot (Chapter 3, *Every check declares its blind spot*)
+//
+// This probe reaches: a missing path, a dangling symlink, a directory, and a
+// present file without execute permission.
+//
+// It does not reach: a file that is executable and still cannot run — a 0755
+// file of the wrong binary format, or a shebang naming an interpreter that is
+// not installed. Nothing short of executing the file decides that, so no probe
+// closes it; a deeper probe would only move the proxy, which is the trap
+// ADR 0013 exists to name rather than to keep chasing.
+//
+// What the residue costs, exactly: such a prerequisite passes resolution, so
+// checks declared before it may run first. It is not misclassified — spawnSync
+// reports the failure, run.ts turns it into a throw, and gate.ts records that
+// check `could-not-run` and the rest `not-attempted`, exiting 2. The loss is
+// the resolve-everything-before-executing property for this one case, not the
+// classification. gate.test.ts covers that path directly.
+//
+// Raised by the contractor review of ba62c8a, and dispositioned as a declared
+// blind spot rather than a deeper probe. That disposition is the HC's to
+// confirm — it is recorded as a stop on #52.
+// ---------------------------------------------------------------------------
 
 import { accessSync, constants, statSync } from "node:fs";
 

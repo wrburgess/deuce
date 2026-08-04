@@ -55,6 +55,21 @@ green stops meaning what it says. The receipt is
 [PR #51](https://github.com/wrburgess/deuce/pull/51), where `npm run typecheck` reported
 `tsc: command not found` in a fresh worktree and the run had to notice by hand.
 
+## What the prerequisite probe does not reach
+
+`requires` is checked by [`tools/gate/executable.ts`](../tools/gate/executable.ts), and that check
+has a **declared blind spot** ([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *Every check
+declares its blind spot*).
+
+| Reached | Not reached |
+|---|---|
+| Missing path · dangling symlink · directory · present file without execute permission | A file that is executable and still cannot run — wrong binary format, or a shebang naming an absent interpreter |
+
+Nothing short of executing a file decides the second column, so no probe closes it and a deeper one
+would only move the proxy. The residue is not misclassified: such a prerequisite passes resolution,
+the spawn fails, and the gate records that check `could-not-run`, the rest `not-attempted`, and
+exits 2. What is lost is only the resolve-everything-before-executing property, for that one case.
+
 ## What is not here yet
 
 The checks [Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The configuration lint* owes are

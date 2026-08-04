@@ -81,10 +81,10 @@ test("a symlink to an executable is executable, and a dangling one is not", () =
   }
 });
 
-test("the live declaration's prerequisite is actually executable", () => {
-  assert.equal(
-    isExecutable(new URL("../../node_modules/.bin/tsc", import.meta.url).pathname),
-    true,
-    "the prerequisite config/checks.md declares is not an executable",
-  );
-});
+// There is deliberately no test here asserting that the live declaration's
+// prerequisite exists on this machine. Such a test gave the `tests` check —
+// which declares no `requires` — a hidden dependency on node_modules, so a
+// fresh worktree would fail it for a reason the declaration does not state.
+// The gate already checks the live prerequisite at run time, loudly and with
+// the fix named; asserting it again in a test only smuggles it in undeclared.
+// Raised by the contractor review of ba62c8a.
