@@ -7,8 +7,9 @@ itself is questioned. The rules these values instantiate are canon, at
 restated here; this is adaptive configuration under
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*.
 
-- **Date:** 2026-08-03
-- **Source:** the Direction gate on #33; the lens menu, the Direction gate on #47.
+- **Date:** 2026-08-04
+- **Source:** the Direction gate on #33; the lens menu, the Direction gate on #47; the
+  fix-verification limit and findings batching, the HC's loop-once direction on #62.
 
 ## Reviewer roster
 
@@ -47,8 +48,21 @@ restated here; this is adaptive configuration under
 
 ## Fix-verification limit
 
-- **2 waves.** Past the second wave of defects found in fixes, the stop escalates back to Devise,
-  per the chapter.
+- **1 wave.** One summons, one batched fix wave, one re-review of the whole wave. A defect the
+  re-review finds in a fix escalates straight to Devise, per the chapter — there is never a second
+  fix round.
 - Evidence behind the number: the predecessor's costliest defect family was symptom-level fixes
   re-opening one finding across as many as fifteen rounds
-  ([ace #164](https://github.com/wrburgess/ace/issues/164)).
+  ([ace #164](https://github.com/wrburgess/ace/issues/164)); its efficient successor workflow
+  capped every review loop at one round with no exceptions, with the AC's own full-strength
+  fix-verification carrying the load — the HC's direction of 2026-08-04, recorded on #62.
+
+## Findings batching
+
+- **Non-urgent accepted findings batch.** A finding accepted after its pull request's wave closes
+  — or surfaced outside any pull request — accumulates in the findings home and ships several to
+  one `TASK:`, at the HC's cadence, never one pull request per finding. Urgency never waits, per
+  [Chapter 2](../sds/02-review-and-findings.md#urgency-never-waits).
+- Evidence behind the rule: five of this repository's first twenty-six commits were single-finding
+  fix pull requests, each paying the full stage ceremony — the HC's direction of 2026-08-04,
+  recorded on #62.

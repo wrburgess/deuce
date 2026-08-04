@@ -31,13 +31,31 @@ exit — is canon and is not restated here.
 4. **Hunt drift in both directions** — the diff against the Plan for the unplanned, the Plan
    against the diff for the missing
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-5. **Try to refute the change, hunting the lens menu's standing classes** — the adversarial pass
-   hunts the recorded classes instead of re-deriving its list each run
+5. **Try to refute the change — construct the case where it breaks.** Hunt the lens menu's
+   standing classes first, then attack beyond them; the recorded classes are where defects have
+   been, not the only places they are
    ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify);
    [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)).
-6. **Try to break the change's own tests, hunting the false green**
-   ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-7. **Declare the lens set fit for the subject, then summon the contractor review** — the set per
+   For code, build the input or state that breaks it: off-by-one, empty or missing value, boundary
+   value, duplicate, concurrent operation, unauthorized path. For prose, build the reading that
+   breaks it: the claim false in an edge case, the pointer that resolves to the wrong place, the
+   statement true only as of when it was written, the instruction two readers would follow
+   differently. A breaking case actually constructed is a finding; **a concern that could not be
+   confirmed is recorded as a finding, never dropped** — "I couldn't prove it" resolves to
+   *record*, not *dismiss*.
+6. **Attack the change's own tests — don't count them.** For each test ask: *if this passed but
+   the change were broken, would I know?* Hunt the false green that would still pass if the change
+   were reverted, the missing sad path, and the assertion that checks "it ran" instead of "it is
+   correct" ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
+7. **Assume the reviewer's posture, and fix now what it would flag.** Before summoning, ask: *what
+   is the single most likely finding the contractor reviewer returns on this diff?* — incomplete
+   coverage, a missing edge or error path, a requirement from the issue not fully addressed, a
+   restatement of content another document owns. Fix it before the summons, so the review
+   *confirms* rather than *corrects*. Why the step exists: run at full strength under the
+   predecessor, this pass cut contractor findings by roughly 80% — the measurement behind the
+   one-wave limit in [`config/review.md`](../../config/review.md), which this step is what makes
+   affordable.
+8. **Declare the lens set fit for the subject, then summon the contractor review** — the set per
    [Chapter 2 → Bounded by lens set](../../sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count),
    prose subjects per
    [Chapter 2 → Verifying prose](../../sds/02-review-and-findings.md#verifying-prose); run the
@@ -45,25 +63,25 @@ exit — is canon and is not restated here.
    [Chapter 2 → The summons, completed](../../sds/02-review-and-findings.md#the-summons-completed)
    and [→ Validation on return](../../sds/02-review-and-findings.md#validation-on-return). **A run
    with no reachable reviewer stops and asks.**
-8. **Record every finding, the AC's and the reviewer's together; answer an accepted-register match
+9. **Record every finding, the AC's and the reviewer's together; answer an accepted-register match
    by its entry**
    ([Chapter 2 → The findings home](../../sds/02-review-and-findings.md#the-findings-home);
    [ADR 0011](../../adr/0011-findings-type-state-one-way.md)).
-9. **Dispose of each finding; batch the fixes per wave, and re-summon the reviewer once on the
+10. **Dispose of each finding; batch the fixes per wave, and re-summon the reviewer once on the
    whole wave** — bounds and escalation per
    [Chapter 2 → Fix-verification, bounded separately](../../sds/02-review-and-findings.md#fix-verification-bounded-separately),
    the limit's value in [`config/review.md`](../../config/review.md), the escalation into
    [Devise](../devise/SKILL.md). Re-run the checks to green.
-10. **Answer each finding on the surface it arrived on** — a pull request carries three:
+11. **Answer each finding on the surface it arrived on** — a pull request carries three:
     comments, inline threads, review bodies; a self-raised finding is answered in the
     Verification itself ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
-11. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
-12. **Draft the Verification as a Readout** — content per
+12. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
+13. **Draft the Verification as a Readout** — content per
     [Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify), grown to the record
     [Chapter 2 → Verify's external half, now written](../../sds/02-review-and-findings.md#verifys-external-half-now-written)
     requires — the reviewer, its model, its mechanism, and the commit named in it; shape per
     [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
-13. **Post the Verification on the pull request**
+14. **Post the Verification on the pull request**
     ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
 
 ## Terminal artifact
