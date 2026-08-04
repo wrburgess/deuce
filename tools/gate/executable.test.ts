@@ -52,7 +52,12 @@ test("a present but non-executable file is not executable", () => {
 });
 
 test("a missing path is not executable", () => {
-  assert.equal(isExecutable(join(sandbox(), "nothing-here")), false);
+  const dir = sandbox();
+  try {
+    assert.equal(isExecutable(join(dir, "nothing-here")), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 // node_modules/.bin entries are symlinks, so the probe must resolve them
