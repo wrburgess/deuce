@@ -144,6 +144,34 @@ rejected.
 | Known limitations and follow-ups | Readout |
 | The **four health measures** (see *Where the health measures live*) | Readout |
 
+**The shape it reads in** — set by the HC (#63): the Record renders in the order the HC reviews an
+application, so the Ship gate is judged in the reader's own vocabulary. The field list above still
+governs what is carried; this governs only its arrangement.
+
+```markdown
+### Summary (HC)
+**Problem** — [what the issue set out to solve, plainly]
+**Solution** — [the option chosen, and what shipped]
+
+### Changes
+[one group per area touched, a line per change pointing at the diff and its tests]
+**Model** · **View** · **Controller** · **Tests** · **Documentation** · **Config**
+
+### Findings
+[each finding and how it was disposed of; then the four health measures]
+
+### Description (AC + HC)
+[the prose fields, in full sentences: why the other options were rejected · what was tried and
+abandoned · what is fragile, and what the AC was unsure about at the end]
+[known limitations and follow-ups]
+```
+
+The **Changes** groups are the architectural map the HC reads the repository through. An
+application host groups by Model · View · Controller · Tests · Documentation · Config; this
+repository's own map is Canon · Decisions · Config · Skills · Rules · Tools · Tests ·
+Documentation. A group with no changes is omitted, never padded — the three-line Record for a
+trivial change survives this shape untouched.
+
 - **The bolded fields are the record.** The rest is navigation. A change with nothing unrecoverable —
   a typo, a dependency bump — has a Delivery Record of three lines, honestly, and needs no exemption
   to get one.

@@ -37,11 +37,14 @@ The Verification on the pull request carries no open must-fix finding —
    and abandoned, so it is not re-proposed; what is fragile, and what the AC was unsure about at
    the end — each carrying only what the repository cannot reconstruct
    ([Chapter 1 → The Delivery Record](../../sds/01-lifecycle-and-skills.md#the-delivery-record)).
-7. **Assemble the decision half around them as a Readout** — content per
+7. **Assemble the Record in its declared shape** — Summary (HC) with Problem then Solution;
+   Changes grouped by the architectural map the HC reads the repository through, empty groups
+   omitted; Findings with the four health measures; Description (AC + HC) carrying the prose
+   fields and the limitations — content and shape per
    [The Delivery Record](../../sds/01-lifecycle-and-skills.md#the-delivery-record), the four
    health measures per
    [Chapter 1 → Where the health measures live](../../sds/01-lifecycle-and-skills.md#where-the-health-measures-live),
-   shape per [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
+   the scannable half's rules per [Chapter 1 → The Readout](../../sds/01-lifecycle-and-skills.md#the-readout).
 8. **Post the Delivery Record on the pull request and set `status:done-pending-merge` on
    posting**
    ([Stage 5](../../sds/01-lifecycle-and-skills.md#stage-5--deliver);
