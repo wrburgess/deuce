@@ -36,7 +36,8 @@ The Plan is posted on the issue —
 7. **Self-review the diff before anything is committed** — the cheap pass, minutes over the whole
    diff: every Plan step present; every test the strategy named, written; each assertion answering
    *if this test passed but the change were broken, would I know?*; no debug residue, no
-   deferred-work markers. Fix it now — the same defect found in [Verify](../verify/SKILL.md) costs
+   deferred-work marker (a TODO, a "needs manual testing"). Fix it now — the same defect found in
+   [Verify](../verify/SKILL.md) costs
    a recorded finding and the fix wave. This pass narrows Verify's noise; it never replaces it.
 8. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
 9. **Commit and push the feature branch**

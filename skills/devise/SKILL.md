@@ -26,7 +26,7 @@ exit — is canon and is not restated here.
    [`config/delegation.md`](../../config/delegation.md).
 3. **Right-size the Plan to what is actually known.** The tell that a Plan is being written
    against unknowns: steps that cannot be made concrete without guessing. The move is canon's —
-   recommend a `SPIKE:`
+   stop, and recommend a `SPIKE:`
    ([Chapter 1 → Binding to the Work Tracking System](../../sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system))
    carrying the **single named question** the work must answer, and write the real Plan after its
    Readout answers it. A full ordered plan over a guess is a guess in a Plan's shape.
