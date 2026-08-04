@@ -16,7 +16,7 @@ Named here so the seams are visible rather than discovered:
 
 | Not here | Where | What this chapter does instead |
 |---|---|---|
-| How a contractor reviewer is summoned, bounded, and validated | Chapter 2 — Review System | Verify is written at full shape, with the external half marked **not yet usable** |
+| How a contractor reviewer is summoned, bounded, and validated | Chapter 2 — Review System | Verify is written at full shape, with the external half **deferred to Chapter 2** → *Verify's external half, now written* |
 | The severity framework; how findings are recorded and how recurrence changes rules | Chapter 2 — Findings System | Verify names *that* findings are recorded and disposed, never *how* they are rated |
 | The automated checks a change must pass, and the tooling that runs them | Chapter 3 — Quality gate | Stages refer to "the checks"; their content is Chapter 3's |
 | How outside material becomes reviewed configuration | Chapter 4 — Learning System | The rules layer gets a home and an entry bar; it is seeded empty |
@@ -103,10 +103,10 @@ different tooling.
 - **Review response lives here, and is not a stage of its own.** Answering findings is examining the
   change, which is what this stage is. Why it is stated: the predecessor made it a sixth skill inside
   a five-stage lifecycle, and the seam cost it a decision record to patch.
-- **The external half of this stage is not yet usable.** Summoning a contractor reviewer, rating a
-  finding, and recording it arrive with the Review System and Findings System in Chapter 2. Until
-  then Verify is self-review and the adversarial pass, and a Verification says so plainly rather than
-  implying a review that did not happen.
+- **The external half of this stage is Chapter 2's.** Summoning a contractor reviewer, rating a
+  finding, and recording it are the Review System and Findings System; their shape is Chapter 2 →
+  *Verify's external half, now written*. The honesty line holds at every state of that machinery:
+  whatever ran, a Verification says so plainly rather than implying a review that did not happen.
 - **Terminal artifact:** the Verification, posted on the pull request.
 - **Exit:** no open must-fix finding remains.
 

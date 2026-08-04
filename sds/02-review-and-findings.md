@@ -312,7 +312,7 @@ index is what removes the cost.
 
 ## Verify's external half, now written
 
-Chapter 1 wrote Verify at full shape and marked its external half not yet usable. The shape it
+Chapter 1 wrote Verify at full shape and deferred its external half here. The shape it
 takes:
 
 - **The order gains one step.** Drift check, adversarial pass — which now hunts the lens menu's
