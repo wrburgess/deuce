@@ -5,9 +5,10 @@
 // measured without spawning anything (ADR 0014). It is kept separate from
 // gate.ts so that importing the logic in a test does not run the gate.
 
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { parseDeclaration } from "./declaration.ts";
+import { isExecutable } from "./executable.ts";
 import { EXIT_CANNOT_RUN, EXIT_CHECK_FAILED, EXIT_OK, runChecks } from "./gate.ts";
 
 const DECLARATION = "config/checks.md";
@@ -44,7 +45,7 @@ function main(): void {
       // means something else.
       return run.status ?? EXIT_CHECK_FAILED;
     },
-    existsSync,
+    isExecutable,
   );
 
   if (result.blocked !== null) console.error(result.blocked);
