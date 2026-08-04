@@ -26,15 +26,23 @@ The Plan is posted on the issue —
 3. **Create the feature branch**
    ([Stage 3](../../sds/01-lifecycle-and-skills.md#stage-3--implement)).
 4. **Implement the Plan's steps in order**
-   ([Stage 3](../../sds/01-lifecycle-and-skills.md#stage-3--implement)).
+   ([Stage 3](../../sds/01-lifecycle-and-skills.md#stage-3--implement)). **Read the surrounding
+   code before writing any** — the area's existing patterns are the spec for how new code should
+   look, and matching them now is cheaper than matching them as a finding later.
 5. **Write the tests the Plan's strategy defined** — **for a fix, the test is seen failing before
    the fix exists** ([Stage 3](../../sds/01-lifecycle-and-skills.md#stage-3--implement)).
 6. **Run the checks; fix and re-run until green**
    ([Stage 3](../../sds/01-lifecycle-and-skills.md#stage-3--implement)).
-7. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
-8. **Commit and push the feature branch**
+7. **Self-review the diff before anything is committed** — the cheap pass, minutes over the whole
+   diff: every Plan step present; every test the strategy named, written; each assertion answering
+   *if this test passed but the change were broken, would I know?*; no debug residue, no
+   deferred-work marker (a TODO, a "needs manual testing"). Fix it now — the same defect found in
+   [Verify](../verify/SKILL.md) costs
+   a recorded finding and the fix wave. This pass narrows Verify's noise; it never replaces it.
+8. **Read [`rules/authoring.md`](../../rules/authoring.md)** at the moment of writing.
+9. **Commit and push the feature branch**
    ([Stage 3](../../sds/01-lifecycle-and-skills.md#stage-3--implement)).
-9. **Open the pull request linked to the issue, its body per
+10. **Open the pull request linked to the issue, its body per
    [the body contract](../../sds/00-identity-and-governance.md#work-tracking-system), and set
    `status:review` on opening**
    ([the Stage 3 exit](../../sds/01-lifecycle-and-skills.md#stage-3--implement);
@@ -60,3 +68,7 @@ a superseding Plan, never improvising past the one that exists
 Re-authored from a reading of
 [ace's `invoke`](https://github.com/wrburgess/ace/blob/main/skills/invoke/SKILL.md), per
 [ADR 0006](../../adr/0006-skills-self-contained.md) — read and attributed, never vendored.
+Read-before-write and the pre-commit self-review pass are MPIAS-era craft, re-authored from a
+reading of markaz's `/impl` and restored on the HC's direction of 2026-08-04, recorded on #64.
+What a pre-artifact pass buys is measured: run at full strength ahead of review, it cut
+contractor findings by roughly 80% (#62).
