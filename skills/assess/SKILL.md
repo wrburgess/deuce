@@ -46,9 +46,10 @@ The HC points the AC at an issue —
    why they were rejected —
    [the Direction gate's floor](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated),
    clauses 1 and 2.
-11. **Hold at the Direction gate per its current setting** —
-   [Chapter 1 → The Direction gate, graduated](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated).
-   The setting is read there, never from this file.
+11. **Hold at the Direction gate per its current setting**
+   ([`config/gates.md`](../../config/gates.md)). The setting is read there, never from this file;
+   the floor no setting reaches is canon
+   ([Chapter 1 → The Direction gate, graduated](../../sds/01-lifecycle-and-skills.md#the-direction-gate-graduated)).
 
 ## Terminal artifact
 
