@@ -27,7 +27,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A check that measures something other than the invariant it claims
 
-7 instances, across 5 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51.
+10 instances, across 6 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59.
 
 - **PR #39, finding 4** — aggregate field counts certified a review whose per-finding blocks were malformed; the count was right and the structure was not.
 - **PR #39, finding 8** — lens coverage matched by substring, so a lens name appearing inside a quotation counted as a lens answered.
@@ -36,6 +36,34 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #46, finding 8** — a 512-byte limit asserted in characters; a 350-character label measured 950 bytes and passed a test that claimed to prove atomicity.
 - **PR #51, finding 1** — the delta is that this one was caught before it shipped: a proposed Glossary check keyed on bold as a proxy for *term of art*, measured against canon before adoption and found to be wrong 22 times out of 22. It had already survived into a draft of the chapter that forbids proxies.
 - **PR #51, finding 2** — a link check's empty guard sat on the unit it iterated (files) rather than the unit it measured (links), so a file containing no links still reported green.
+- **PR #59, finding 2** — `requires: node_modules` probed the directory that usually holds `tsc`; with the directory present and `tsc` gone the probe passed, the check exited 127, and the gate reported *a check failed* for a gate that could not run.
+- **PR #59, finding 6** — the replacement probe, `existsSync`, was the same defect one level tighter: a directory and a non-executable file are both present. Found by the review of the fix.
+- **PR #59, finding 5** — the delta worth keeping: the masking was in the *test*. An invariant test counted `unmet` entries through a filter that excluded exactly the branch that was broken, so the assertion named the invariant and measured a proxy for it.
+
+### A guard that fails open or fails silent on input it did not expect
+
+8 instances, across 3 pull requests — PR #39, PR #41, PR #59.
+
+- **PR #39, finding 2** — a malformed accepted register parsed as an empty list, so the summons carried no accepted findings and said nothing about it.
+- **PR #39, finding 5** — the register parser read past its own section into whatever followed.
+- **PR #39, finding 6** — a bare token passed as a signature, with neither tool nor model present.
+- **PR #39, finding 7** — a multi-row roster silently dispatched to the first row.
+- **PR #39, finding 9** — a stale empty marker beside real entries silently emptied the menu.
+- **PR #41, finding 3** — canon's prose lenses were accepted for any subject, which made them a route around the menu.
+- **PR #59, finding 1** — the frontmatter parser closed its vocabulary inside a check entry and left the top level open, so an unrecognized key was accepted and silently discarded.
+- **PR #59, finding 4** — scalars and lists were separate namespaces and each duplicate guard checked only its own, so one key declared twice in two shapes was accepted twice.
+
+### An invariant enforced on one path and leaking through another
+
+7 instances, across 3 pull requests — PR #39, PR #46, PR #59.
+
+- **PR #39, finding 3** — the declared lens bounds were written in configuration and unenforced at dispatch.
+- **PR #46, finding 2** — the conversion to a classified failure began after staging, so staging's own errors escaped raw.
+- **PR #46, finding 4** — `process.exit()` abandoned an undrained stream; a payload over the 65,536-byte pipe buffer was cut off exactly there.
+- **PR #46, finding 5** — the replacement stream could itself fail asynchronously, turning the classified exit 5 back into an unclassified 1.
+- **PR #46, finding 9** — the stream guards sat inside the failure branch, leaving the success path unguarded.
+- **PR #59, finding 3** — the partial-run report named the checks that ran and not the ones never attempted, so a short run read as a whole one.
+- **PR #59, finding 7** — the fix for that then counted a blocked check twice, once as unmet and once as skipped. Three consecutive reviews each found the per-check accounting wrong in a new way; the cause was three parallel arrays with the invariant maintained by hand at four return sites, and the resolution was the re-plan on #52, not a fourth patch.
 
 ### Restatement of content another document owns
 
@@ -62,24 +90,3 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #41, finding 5** — a trim for restatement carried away the re-summons verb the fix-wave step depended on.
 - **PR #43, finding 3** — a condensed pointer dropped Chapter 1, which owns one of the two gates it pointed at.
 - **PR #45, finding 1** — a gloss took one of its source's two columns and added "only", narrowing a canon term while explaining it.
-
-### A guard that fails open or fails silent on input it did not expect
-
-6 instances, across 2 pull requests — PR #39, PR #41.
-
-- **PR #39, finding 2** — a malformed accepted register parsed as an empty list, so the summons carried no accepted findings and said nothing about it.
-- **PR #39, finding 5** — the register parser read past its own section into whatever followed.
-- **PR #39, finding 6** — a bare token passed as a signature, with neither tool nor model present.
-- **PR #39, finding 7** — a multi-row roster silently dispatched to the first row.
-- **PR #39, finding 9** — a stale empty marker beside real entries silently emptied the menu.
-- **PR #41, finding 3** — canon's prose lenses were accepted for any subject, which made them a route around the menu.
-
-### An invariant enforced on one path and leaking through another
-
-5 instances, across 2 pull requests — PR #39, PR #46.
-
-- **PR #39, finding 3** — the declared lens bounds were written in configuration and unenforced at dispatch.
-- **PR #46, finding 2** — the conversion to a classified failure began after staging, so staging's own errors escaped raw.
-- **PR #46, finding 4** — `process.exit()` abandoned an undrained stream; a payload over the 65,536-byte pipe buffer was cut off exactly there.
-- **PR #46, finding 5** — the replacement stream could itself fail asynchronously, turning the classified exit 5 back into an unclassified 1.
-- **PR #46, finding 9** — the stream guards sat inside the failure branch, leaving the success path unguarded.
