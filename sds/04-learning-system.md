@@ -199,8 +199,8 @@ carrying a real trade-off — and are recorded at ratification:
 
 | ADR | Decision it records |
 |---|---|
-| 0016 | Field input enters through the Findings System — one intake, not a parallel pipeline. The predecessor's four intake Skills collapse into that door, and none ports. |
-| 0017 | Outside material informs a rule's statement but never substitutes for its evidence: `rules/` admits on this repository's own receipts at every source, at the stated cost of re-paying for lessons already paid for elsewhere. |
+| 0018 | Field input enters through the Findings System — one intake, not a parallel pipeline. The predecessor's four intake Skills collapse into that door, and none ports. |
+| 0019 | Outside material informs a rule's statement but never substitutes for its evidence: `rules/` admits on this repository's own receipts at every source, at the stated cost of re-paying for lessons already paid for elsewhere. |
 
 ---
 
