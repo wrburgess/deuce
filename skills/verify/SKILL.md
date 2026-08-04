@@ -46,7 +46,14 @@ exit — is canon and is not restated here.
 6. **Attack the change's own tests — don't count them.** For each test ask: *if this passed but
    the change were broken, would I know?* Hunt the false green that would still pass if the change
    were reverted, the missing sad path, and the assertion that checks "it ran" instead of "it is
-   correct" ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)).
+   correct" ([Stage 4](../../sds/01-lifecycle-and-skills.md#stage-4--verify)). Then **walk the
+   coverage by the architectural map** — the same groups the Delivery Record's Changes render in
+   ([Chapter 1 → The Delivery Record](../../sds/01-lifecycle-and-skills.md#the-delivery-record)):
+   for each group the diff touches, name what covers it; a touched group with nothing covering it
+   is a finding, and the Verification states coverage group by group, never in aggregate. Why
+   per-group: aggregate coverage hides the empty layer — the origin of this walk is the
+   predecessor lineage's per-layer checklist, part of the practice behind the HC's ~80%
+   measurement on #62.
 7. **Assume the reviewer's posture, and fix now what it would flag.** Before summoning, ask: *what
    is the single most likely finding the contractor reviewer returns on this diff?* — incomplete
    coverage, a missing edge or error path, a requirement from the issue not fully addressed, a
