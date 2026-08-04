@@ -38,7 +38,7 @@ in place rather than discovered.
 Review discovery comes in two kinds with opposite economics, and the split decides everything below.
 
 - **Solicited discovery** is commissioned: Verify's adversarial pass, a contractor reviewer's
-  response to a summons, and every re-summons after a fix. Because it is commissioned it can be
+  response to a summons, and the fix-verification a wave of fixes receives. Because it is commissioned it can be
   bounded — and it must be, because a commissioned hunt with no declared stopping condition does
   not terminate. It keeps returning true findings indefinitely, at monotonically falling value. The
   predecessor watched seven pull requests run ten to fourteen adversarial rounds each before a
@@ -173,9 +173,18 @@ original diff.
   mechanism restated in one sentence, then the failing test that exercises that mechanism — Chapter
   0's fail-first evidence, applied to review response. A test that would still pass with the defect
   present is the wrong test.
-- **Batch before re-summoning.** Every accepted fix in the wave lands before the reviewer is
-  summoned again, and the re-summons carries the whole wave: one re-review per wave, never one per
-  finding.
+- **The wave's verification is the AC's own — the reviewer is not re-summoned.** Every accepted
+  fix in the wave lands, then the AC re-runs its own passes on the wave's diff: the mechanism
+  anchor and its failing test above, the drift check, the adversarial pass. The external review
+  runs once per pull request, on the original summons; a fix wave never triggers a second. (The
+  validation re-summons a malformed response earns is a different thing and stands — that is the
+  same review returned to contract, not a new one.) Why the trade is safe to make: the
+  predecessor's efficient lifecycle capped every external loop at one round with the AC's
+  full-strength self-verification carrying fix checking, measured by the HC as cutting contractor
+  findings by roughly 80% — the HC set the trade on #62. What is given up, and it is real: a
+  defect introduced by a fix can now ship past the reviewer. The failing-test anchor and the
+  escalation below stand against it, and one that ships anyway lands in the Findings System like
+  any other defect — evidence for revisiting this trade, on the record.
 - **Escalate on recurrence.** When fix-verification keeps finding defects in the fixes past its
   declared limit, the signal is that the design is wrong, not that one more patch is owed. That is
   a stop, and its sanctioned resolution is Chapter 1's: back to Devise. The limit's number is
