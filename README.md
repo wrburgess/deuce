@@ -15,7 +15,7 @@ already sanction.
 | 1 — Lifecycle & skills | The five stages every piece of work passes through (Assess → Devise → Implement → Verify → Deliver), the two gates within them, the Readout format, and the Skills that run the stages | `ratified` | [#3](https://github.com/wrburgess/deuce/issues/3) |
 | 2 — Review System & Findings System | How solicited review is summoned, bounded, and validated, and how everything a run learns is recorded, drained, and turned into rules | `ratified` | [#4](https://github.com/wrburgess/deuce/issues/4) |
 | 3 — Quality gate & tooling | The checks a change must pass, what a check may be asked to decide, and the evidence a check ships with | `ratified` | [#5](https://github.com/wrburgess/deuce/issues/5) |
-| 4 — Learning System | How outside material becomes reviewed configuration | `not started` | [#6](https://github.com/wrburgess/deuce/issues/6) |
+| 4 — Learning System | How outside material becomes reviewed configuration | `ratified` | [#6](https://github.com/wrburgess/deuce/issues/6) |
 | 5 — Distribution & fleet cutover | How other projects adopt deuce | `not started` | [#7](https://github.com/wrburgess/deuce/issues/7) |
 | 6 — Factory automation | Running the system with the human away | `not started` | [#8](https://github.com/wrburgess/deuce/issues/8) |
 
