@@ -249,14 +249,17 @@ Declarations `config/` owes when this chapter's work runs, each dated and source
 
 ## Founding decisions
 
-Three decisions in this chapter clear Chapter 0's ADR bar — hard to reverse, surprising, and
+Two decisions in this chapter clear Chapter 0's ADR bar — hard to reverse, surprising, and
 carrying a real trade-off — and are recorded at ratification:
 
 | ADR | Decision it records |
 |---|---|
 | 0020 | Canon never ships: the standard is read at its source and cited by URL, and only what must run locally is vendored — at the cost that reading the standard means leaving the host's repository. |
 | 0021 | Every shipped path carries one of three declared classes — contract, seed, host — and seed is host-owned from the first copy, at the stated cost that upstream fixes never reach seeded copies. |
-| 0022 | The only update path is a pull request on the host, judged by the host's own gates — the trust boundary applied in both directions, with no emergency push path at any severity. |
+
+The sync's pull-request-only rule was weighed and is deliberately not recorded: it is Chapter 0's
+trust boundary applied in a second direction, and an application is not a decision. The rule stands
+in this chapter at full strength; what it does not get is a record number.
 
 ---
 
