@@ -25,4 +25,4 @@ hygiene sweep*, and are not restated here; this is adaptive configuration under
 ## Hygiene sweep
 
 - **Cadence: HC-called; no standing schedule.**
-- **Last run: never.** The first sweep is #74.
+- **Last run: 2026-08-05 (#74).** Full ledger, first pass; nothing left mid-job.

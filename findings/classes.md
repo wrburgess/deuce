@@ -67,21 +67,24 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### Restatement of content another document owns
 
-4 instances, across 3 pull requests — PR #41, PR #43, PR #51.
+6 instances, across 5 pull requests — PR #41, PR #43, PR #51, PR #75, PR #76.
 
 - **PR #41, finding 2** — four Skill steps restated canon mechanics the chapter owns.
 - **PR #43, finding 1** — a configuration declaration restated the mechanics behind the value it declared.
 - **PR #43, finding 2** — CLAUDE.md duplicated both the settings and the mechanics it was meant to point at.
 - **PR #51, finding 3** — CLAUDE.md again, and the delta is that the restatement rode in on a pointer: the block named Chapter 3 and the two decision records, then restated the rules they own. Raised by the contractor reviewer.
+- **PR #75, finding 1** — CLAUDE.md a third time, and the pointer shape a third time: the Learning section led with ADR 0018's decision sentence verbatim. The delta is that the section was modeled on the block PR #51 had already corrected, and the copy rode in anyway.
+- **PR #76, finding 1** — a configuration declaration again, PR #43 finding 1's shape: the values were right and chapter-owned behavior was wrapped around them — the scheduling boundary, the sweep's call rule, the record's update mechanics.
 
 ### A statement true when written whose condition has since passed
 
-4 instances, across 3 pull requests — PR #43, PR #45, PR #51.
+5 instances, across 4 pull requests — PR #43, PR #45, PR #51, PR #71.
 
 - **PR #43, finding 5** — two ratified chapters said every merge is `required`, written truthfully and outlived by the flip that followed; promoted to [#44](https://github.com/wrburgess/deuce/issues/44).
 - **PR #45, finding 7** — a heading read "(first response)" for every review, a label that marks a wave inside one invocation and stops being true across invocations.
 - **PR #51, finding 4** — the seventh surface of #44's sweep, found by reading: `delegated` is not usable "for the same reason `attested` is not", where the clause outlived the flip even though the sentence around it stayed true.
 - **PR #51, finding 5** — a Skill instructed that the pull request is "merged by the HC"; an instructing document, which PR #49's disposition already argued is the urgent half of this class.
+- **PR #71, finding 1** — the adversarial pass found README.md carrying the same expired status claim the pull request was fixing in CLAUDE.md. The delta is the carrier: Chapter 3's ratification draft updated the status lines inside itself and Chapter 4's did not, so one missed step surfaced as two stale entry-point files.
 
 ### A fix that removes or narrows something it needed to keep
 
