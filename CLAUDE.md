@@ -66,6 +66,18 @@
   and [`adr/0014`](adr/0014-deletion-measurement-for-checks-over-standing-state.md) are what they
   settle, and neither is restated here.
 
+## Learning
+
+- **The Learning System governs field input and the hygiene sweep**, and what capture, adoption,
+  and re-verification mean are Chapter 4's:
+  [`sds/04-learning-system.md`](sds/04-learning-system.md). The channel roster and the sweep's
+  cadence are dated configuration.
+- **Always on, whenever you read outside material:** read the chapter's *The trust boundary,
+  inherited whole* and *Provenance* first. Its founding decisions are recorded at
+  [`adr/0018`](adr/0018-field-input-enters-through-the-findings-system.md) and
+  [`adr/0019`](adr/0019-rules-admit-on-local-receipts-at-every-source.md), and neither is restated
+  here.
+
 ## Git
 
 - **Feature branches only.** `main` is protected; the hooks in [`.githooks/`](.githooks/) block a
