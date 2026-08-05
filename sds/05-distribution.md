@@ -134,11 +134,13 @@ Chapter 4 named the channel so the set would be complete, and deferred its mecha
 - **A host runs the Findings System whole, and locally.** Its findings live on its Verifications,
   its registers and class index are its own, and its recurrence earns its own lenses and rules.
   Nothing is central and nothing is shared — evidence-derived state is host class by construction.
-- **A finding travels up when its subject is something deuce ships, or the standard itself.** A
-  defect in a contract file, a lesson the lifecycle taught, a risk the standard walks a host into —
-  these are deuce's to hear. A finding about the host's own product stays home. The fleet channel
-  exists because running the standard elsewhere teaches what running it here cannot; it is not a
-  second intake for someone else's backlog.
+- **A finding travels up when its subject is something deuce ships, the standard itself, or the
+  platform's measured behavior.** A defect in a contract file, a lesson the lifecycle taught, a
+  stall the platform showed in a host's sessions — these are deuce's to hear, the third because the
+  platform is shared: what one repository measures re-verifies every repository's adaptive layer. A
+  finding about the host's own product stays home. The fleet channel exists because running the
+  standard elsewhere teaches what running it here cannot; it is not a second intake for someone
+  else's backlog.
 - **It enters through the one door, like everything.** In deuce a fleet finding is field input,
   recorded as a finding at the moment of reading (ADR 0018), carrying its provenance: the host, the
   record that raised it — cited by URL, never copied — and the date. From that moment it is
