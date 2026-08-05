@@ -7,7 +7,9 @@ vendor guidance that moves; it is exactly the class of statement
 
 - **Date:** 2026-08-02
 - **Source:** <https://code.claude.com/docs/en/memory>, read 2026-08-02 — "target under 200 lines
-  per CLAUDE.md file. Longer files consume more context and reduce adherence."
+  per CLAUDE.md file. Longer files consume more context and reduce adherence." Re-verified
+  2026-08-05 by the first hygiene sweep (#74): the quoted guidance and the imports-load-at-launch
+  claim both stand verbatim.
 
 ## Declaration
 
