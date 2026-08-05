@@ -99,9 +99,10 @@
 ## Bootstrap status
 
 - **Chapters ratified: 0** (identity & governance), **1** (lifecycle & skills), **2** (Review System
-  & Findings System), and **3** (quality gate & tooling). Chapters 4–6 are not started.
+  & Findings System), **3** (quality gate & tooling), and **4** (the Learning System). Chapters 5–6
+  are not started.
 - **deuce's own build-out now runs through its own lifecycle.** The bootstrap exception has narrowed
-  to one thing: drafting Chapters 4–6 themselves.
+  to one thing: drafting Chapters 5–6 themselves.
 - **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
   to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
 - The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as
