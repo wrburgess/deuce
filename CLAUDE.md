@@ -68,14 +68,15 @@
 
 ## Learning
 
-- **Field input enters through the Findings System**, and what capture, adoption, and the hygiene
-  sweep mean are Chapter 4's: [`sds/04-learning-system.md`](sds/04-learning-system.md). The channel
-  roster and the sweep's cadence are dated configuration.
+- **The Learning System governs field input and the hygiene sweep**, and what capture, adoption,
+  and re-verification mean are Chapter 4's:
+  [`sds/04-learning-system.md`](sds/04-learning-system.md). The channel roster and the sweep's
+  cadence are dated configuration.
 - **Always on, whenever you read outside material:** read the chapter's *The trust boundary,
-  inherited whole* and *Provenance* first —
+  inherited whole* and *Provenance* first. Its founding decisions are recorded at
   [`adr/0018`](adr/0018-field-input-enters-through-the-findings-system.md) and
-  [`adr/0019`](adr/0019-rules-admit-on-local-receipts-at-every-source.md) are what they settle, and
-  neither is restated here.
+  [`adr/0019`](adr/0019-rules-admit-on-local-receipts-at-every-source.md), and neither is restated
+  here.
 
 ## Git
 
