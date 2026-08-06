@@ -4,8 +4,8 @@
 // it would ship a copy the tree never held.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { lstatSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { dirname, isAbsolute, join, resolve, sep } from "node:path";
 import type { PayloadEntry } from "./manifest.ts";
 
 export interface MaterializedFile {
@@ -54,6 +54,56 @@ export function readPayloadAtCommit(
   });
 }
 
+// An entry at the path — file, directory, or symlink, dangling included.
+// existsSync follows symlinks and reports the target; the seed invariant is
+// about the path being occupied, and a dangling host symlink occupies it
+// (PR #92's review).
+export function entryExists(p: string): boolean {
+  try {
+    lstatSync(p);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// A repository-relative path resolved inside the root — absolute paths and
+// traversal out of the root are refused by name (PR #92's review).
+export function resolveInside(root: string, rel: string): string {
+  if (isAbsolute(rel)) {
+    throw new Error(`path '${rel}' is absolute — payload and receipt paths are repository-relative`);
+  }
+  const target = resolve(root, rel);
+  if (target !== root && !target.startsWith(root + sep)) {
+    throw new Error(`path '${rel}' escapes the repository root and is refused`);
+  }
+  return target;
+}
+
+// A write must stay inside the clone: an existing ancestor that is a symlink
+// would route it elsewhere on the host's machine (PR #92's review). Refused by
+// name — replacing the host's directory structure is not the sync's judgment
+// to make.
+export function assertSafeRoute(root: string, rel: string): void {
+  const parts = rel.split("/").slice(0, -1);
+  let cur = root;
+  for (const part of parts) {
+    cur = join(cur, part);
+    let stat;
+    try {
+      stat = lstatSync(cur);
+    } catch {
+      return; // absent from here down — the write will create real directories
+    }
+    if (stat.isSymbolicLink()) {
+      throw new Error(
+        `the host routes '${rel}' through a symlink at '${part}' — refused: a sync write never ` +
+          `leaves the clone`,
+      );
+    }
+  }
+}
+
 // Contract is always written — the pull request diff is the adoption decision.
 // Seed is written only where the path is absent: a file already there is the
 // host's own, whoever made the first copy (Chapter 5's class table).
@@ -61,7 +111,7 @@ export function planWrites(files: MaterializedFile[], hostRoot: string): WritePl
   const writes: MaterializedFile[] = [];
   const skippedSeed: string[] = [];
   for (const f of files) {
-    if (f.entry.class === "seed" && existsSync(join(hostRoot, f.entry.path))) {
+    if (f.entry.class === "seed" && entryExists(join(hostRoot, f.entry.path))) {
       skippedSeed.push(f.entry.path);
       continue;
     }
@@ -72,7 +122,8 @@ export function planWrites(files: MaterializedFile[], hostRoot: string): WritePl
 
 export function applyWrites(hostRoot: string, plan: WritePlan): void {
   for (const f of plan.writes) {
-    const target = join(hostRoot, f.entry.path);
+    const target = resolveInside(hostRoot, f.entry.path);
+    assertSafeRoute(hostRoot, f.entry.path);
     mkdirSync(dirname(target), { recursive: true });
     // Whatever the host has at a contract path is replaced, not merged and
     // never written through: an existing symlink would route the write into

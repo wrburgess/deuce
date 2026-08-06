@@ -5,8 +5,9 @@
 // one, and the two are never collapsed (ADR 0014's argument, applied here).
 
 import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname } from "node:path";
 import { parseFrontmatter } from "../gate/declaration.ts";
+import { assertSafeRoute, resolveInside } from "./payload.ts";
 
 export interface ReceiptChecksum {
   path: string;
@@ -65,6 +66,12 @@ export function parseReceipt(markdown: string): Receipt {
     if (!SHA256.test(sha256)) {
       throw new Error(`checksum for '${path}' is not a sha256 hex digest and is refused`);
     }
+    // The receipt is host-authored input by the time a sync reads it back; a
+    // path that leaves the repository is nonconforming, refused before any
+    // join (PR #92's review).
+    if (path.startsWith("/") || path.split("/").includes("..")) {
+      throw new Error(`receipt lists '${path}', which is not a repository-relative path — refused`);
+    }
     if (seen.has(path)) {
       throw new Error(`receipt lists '${path}' twice`);
     }
@@ -76,9 +83,11 @@ export function parseReceipt(markdown: string): Receipt {
 }
 
 // The receipt's directory may not exist on a host that never had a config/ —
-// the first live run against bryce hit exactly that.
+// the first live run against bryce hit exactly that. The path is contained
+// and route-checked like any payload write (PR #92's review).
 export function writeReceipt(hostRoot: string, receiptPath: string, receipt: Receipt): void {
-  const target = join(hostRoot, receiptPath);
+  const target = resolveInside(hostRoot, receiptPath);
+  assertSafeRoute(hostRoot, receiptPath);
   mkdirSync(dirname(target), { recursive: true });
   writeFileSync(target, formatReceipt(receipt));
 }

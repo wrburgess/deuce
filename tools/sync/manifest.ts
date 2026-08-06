@@ -82,6 +82,19 @@ export function parseManifest(markdown: string): Manifest {
 // written boundary); `all` ships with every selection — that is its meaning,
 // defined in the manifest's own body.
 export function shipSet(manifest: Manifest, systems: string[]): PayloadEntry[] {
+  // A selection naming a system the manifest never declares is refused, not
+  // silently narrowed to `all` — a run that reports the misspelling as its
+  // scope while omitting the requested contract files is the fail-silent
+  // class (PR #92's review).
+  const declared = new Set(manifest.entries.map((e) => e.system));
+  for (const s of systems) {
+    if (!declared.has(s)) {
+      throw new Error(
+        `selection names system '${s}', which the manifest never declares — it declares: ` +
+          [...declared].sort().join(", "),
+      );
+    }
+  }
   const wanted = new Set(systems);
   return manifest.entries.filter((e) => {
     if (e.class === "host") return false;

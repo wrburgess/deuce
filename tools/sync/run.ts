@@ -17,7 +17,8 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { parseManifest, shipSet } from "./manifest.ts";
 import { parseReceipt, writeReceipt, type ReceiptState } from "./receipt.ts";
-import { readPayloadAtCommit, planWrites, applyWrites } from "./payload.ts";
+import { readPayloadAtCommit, planWrites, applyWrites, type MaterializedFile } from "./payload.ts";
+import { mergeReceiptChecksums } from "./run-helpers.ts";
 import { computeDrift, sha256Hex } from "./drift.ts";
 import { composeReport } from "./report.ts";
 import {
@@ -57,6 +58,12 @@ function main(): void {
   const receiptPath = values["receipt-path"]!;
   const systems = values.system ?? [];
   const dryRun = values["dry-run"] ?? false;
+
+  if (receiptPath.startsWith("/") || receiptPath.split("/").includes("..")) {
+    console.error(`sync: --receipt-path '${receiptPath}' is not a repository-relative path (exit 3)`);
+    process.exitCode = 3;
+    return;
+  }
 
   // Readiness, side-effect-free, before anything is touched.
   try {
@@ -104,8 +111,17 @@ function main(): void {
     // Drift is computed against the host as it stands, before this sync writes.
     const drift = computeDrift(hostRoot, priorReceipt);
 
-    // The payload, at the pinned commit — never the working tree.
-    const files = readPayloadAtCommit(deuceRoot, commit, entries);
+    // The payload, at the pinned commit — never the working tree. A manifest
+    // path the tree does not carry is nonconforming input, a different
+    // outcome from a crash.
+    let files: MaterializedFile[];
+    try {
+      files = readPayloadAtCommit(deuceRoot, commit, entries);
+    } catch (e) {
+      console.error(`sync: ${(e as Error).message} (exit 3)`);
+      process.exitCode = 3;
+      return;
+    }
     const plan = planWrites(files, hostRoot);
 
     // Upstream change log over shipped paths since the receipt's commit.
@@ -121,14 +137,17 @@ function main(): void {
             .split("\n")
             .filter((l) => l !== "");
 
-    // The new receipt checksums what this sync ships as contract — computed
-    // from the materialized content, the same bytes the branch will carry.
+    // The new receipt: this sync's contract checksums, computed from the
+    // materialized content — the same bytes the branch carries — merged over
+    // the prior receipt so a selected-system sync never shrinks the baseline
+    // (canon: a checksum per contract file).
+    const shippedContract = files
+      .filter((f) => f.entry.class === "contract")
+      .map((f) => ({ path: f.entry.path, sha256: sha256Hex(f.content) }));
     const newReceipt = {
       commit,
       date: new Date().toISOString().slice(0, 10),
-      checksums: files
-        .filter((f) => f.entry.class === "contract")
-        .map((f) => ({ path: f.entry.path, sha256: sha256Hex(f.content) })),
+      checksums: mergeReceiptChecksums(priorReceipt, manifest, shippedContract),
     };
 
     const report = composeReport({
@@ -153,14 +172,24 @@ function main(): void {
 
     const branch = `deuce/sync-${commit.slice(0, 7)}`;
     createSyncBranch(hostRoot, branch);
-    applyWrites(hostRoot, plan);
-    writeReceipt(hostRoot, receiptPath, newReceipt);
+    // A refused write — a symlinked route, a path that escapes — is the host's
+    // state rejecting the sync, not a defect in it: classified 4, named.
+    try {
+      applyWrites(hostRoot, plan);
+      writeReceipt(hostRoot, receiptPath, newReceipt);
+    } catch (e) {
+      console.error(`sync: ${(e as Error).message} (exit 4)`);
+      process.exitCode = 4;
+      return;
+    }
     commitAndPush(
       hostRoot,
       branch,
       `chore(deuce): sync to ${commit.slice(0, 7)} — payload, drift report, receipt\n\n` +
         `Composed by deuce's sync (Chapter 5). The pull request body carries the report.\n\n` +
-        `Co-Authored-By: Claude Code Fable 5 <noreply@anthropic.com>`,
+        // The sync is the author; naming whatever model happens to invoke it
+        // would misattribute machine output (PR #92's Verification).
+        `Co-Authored-By: deuce sync <noreply@anthropic.com>`,
     );
 
     const bodyFile = join(mkdtempSync(join(tmpdir(), "deuce-sync-body-")), "body.md");
@@ -189,9 +218,11 @@ function main(): void {
       process.exitCode = REJECTION_EXIT[e.state];
       return;
     }
-    console.error(`sync: ${(e as Error).message} (exit 3)`);
-    process.exitCode = 3;
-    return;
+    // Anything else is a crash, and a crash crashes: dressing an unclassified
+    // state in a classified exit is how a caller reads "nonconforming input"
+    // where the truth was a defect (the tooling contract; PR #92's
+    // Verification).
+    throw e;
   }
 }
 
