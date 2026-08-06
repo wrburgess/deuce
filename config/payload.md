@@ -166,7 +166,9 @@ S ships the paths of S plus the paths of `all`, which is what keeps a selected s
 the tools are nothing without their runtime scaffolding, and setup serves every adoption. On host
 entries `all` says the boundary holds for every adoption. Selection semantics beyond that —
 ordering, per-host subsets, anything conditional — are the sync's to define (#82); this file only
-guarantees that S plus `all` is the whole of what S needs under this repository's stack.
+guarantees that S plus `all` is the whole of what S *ships* under this repository's stack. What
+remains is the host's own to write — its `config/` declarations, per the host class below: an
+adopted gate runs on the host's `config/checks.md`, never on a shipped copy of deuce's.
 
 ## Contract — deuce's, updated on every sync
 
