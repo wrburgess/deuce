@@ -6,9 +6,10 @@ at [Chapter 4](../sds/04-learning-system.md) → *The four channels* and *Re-ver
 hygiene sweep*, and are not restated here; this is adaptive configuration under
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*.
 
-- **Date:** 2026-08-05
+- **Date:** 2026-08-06
 - **Source:** the Direction gate on #72, where Option A — the earn-in roster — was chosen and the
-  cadence was declared HC-called.
+  cadence was declared HC-called. The fleet row's wording was refreshed at the Direction gate on
+  #80, Chapter 5 having landed; the roster itself is unchanged — earn-in does not move.
 
 ## Channel roster
 
@@ -20,7 +21,7 @@ hygiene sweep*, and are not restated here; this is adaptive configuration under
 | **Vendor** | None declared yet |
 | **Practitioner** | None declared yet |
 | **Platform observation** | No subscription by nature: its source is this repository's own sessions |
-| **Fleet** | None until Chapter 5 exists |
+| **Fleet** | None declared yet — earns in with the first real capture |
 
 ## Hygiene sweep
 
