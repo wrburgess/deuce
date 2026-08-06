@@ -16,7 +16,7 @@ already sanction.
 | 2 — Review System & Findings System | How solicited review is summoned, bounded, and validated, and how everything a run learns is recorded, drained, and turned into rules | `ratified` | [#4](https://github.com/wrburgess/deuce/issues/4) |
 | 3 — Quality gate & tooling | The checks a change must pass, what a check may be asked to decide, and the evidence a check ships with | `ratified` | [#5](https://github.com/wrburgess/deuce/issues/5) |
 | 4 — Learning System | How outside material becomes reviewed configuration | `ratified` | [#6](https://github.com/wrburgess/deuce/issues/6) |
-| 5 — Distribution & fleet cutover | How other projects adopt deuce | `not started` | [#7](https://github.com/wrburgess/deuce/issues/7) |
+| 5 — Distribution & fleet cutover | How other projects adopt deuce | `ratified` | [#7](https://github.com/wrburgess/deuce/issues/7) |
 | 6 — Factory automation | Running the system with the human away | `not started` | [#8](https://github.com/wrburgess/deuce/issues/8) |
 
 The chapters themselves are in [`sds/`](sds/).
@@ -33,8 +33,16 @@ The chapters themselves are in [`sds/`](sds/).
 
 ## Adopting it
 
-Not yet — adoption arrives with Chapter 5. Watch
-[#7](https://github.com/wrburgess/deuce/issues/7).
+Adoption is sanctioned as of [Chapter 5](sds/05-distribution.md): a project takes deuce one system
+at a time, and each system it takes, it takes whole — with the floors that make it that system. What
+ships is declared path by path in a payload manifest; the standard itself never ships, and is read
+at its source. Updates reach an adopting project only as pull requests, judged by that project's own
+gates.
+
+The machinery — the manifest, the vendoring receipt, the sync — is being built under
+[#7](https://github.com/wrburgess/deuce/issues/7), one canary project first. Until it has run
+end-to-end on a real project, adopting means reading the chapter and doing by hand what it
+describes.
 
 ## Provenance
 

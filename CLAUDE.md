@@ -78,6 +78,18 @@
   [`adr/0019`](adr/0019-rules-admit-on-local-receipts-at-every-source.md), and neither is restated
   here.
 
+## Distribution
+
+- **Chapter 5 governs how other projects adopt deuce**, and what a host, the payload manifest, the
+  vendoring receipt, and the sync mean are Chapter 5's:
+  [`sds/05-distribution.md`](sds/05-distribution.md). The manifest, the fleet roster, and the
+  sync's cadence are dated configuration.
+- **Always on, whenever anything ships to a host:** read the chapter's *What ships: the payload
+  manifest* and *The sync: updates arrive as pull requests* first. Its founding decisions are
+  recorded at [`adr/0020`](adr/0020-canon-never-ships.md),
+  [`adr/0021`](adr/0021-three-payload-classes-seed-host-owned.md), and
+  [`adr/0022`](adr/0022-updates-arrive-only-as-pull-requests.md), and none is restated here.
+
 ## Git
 
 - **Feature branches only.** `main` is protected; the hooks in [`.githooks/`](.githooks/) block a
@@ -111,10 +123,10 @@
 ## Bootstrap status
 
 - **Chapters ratified: 0** (identity & governance), **1** (lifecycle & skills), **2** (Review System
-  & Findings System), **3** (quality gate & tooling), and **4** (the Learning System). Chapters 5–6
-  are not started.
+  & Findings System), **3** (quality gate & tooling), **4** (the Learning System), and **5**
+  (distribution). Chapter 6 is not started.
 - **deuce's own build-out now runs through its own lifecycle.** The bootstrap exception has narrowed
-  to one thing: drafting Chapters 5–6 themselves.
+  to one thing: drafting Chapter 6 itself.
 - **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
   to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
 - The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as
