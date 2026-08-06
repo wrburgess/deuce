@@ -112,19 +112,19 @@ payload:
     system: review
   - path: package.json
     class: seed
-    system: runtime
+    system: all
   - path: package-lock.json
     class: seed
-    system: runtime
+    system: all
   - path: tsconfig.json
     class: seed
-    system: runtime
+    system: all
   - path: .gitignore
     class: seed
-    system: runtime
+    system: all
   - path: bin/setup
     class: seed
-    system: governance
+    system: all
   - path: labels.yml
     class: seed
     system: tracking
@@ -152,13 +152,21 @@ configuration under [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adap
 and only assigns the classes.
 
 The frontmatter is the machine half: one item per path, each carrying `path`, `class`, and
-`system`, in the same shape [`tools/gate/declaration.ts`](../tools/gate/declaration.ts) already
-parses — scalars plus one flat list of scalar-field items — so the sync (#82) and the
-configuration lint (#55) can adopt that parser rather than grow a new one. Nothing reads this
-frontmatter yet; those two are its intended readers, and this declaration existing first is the
-order Chapter 5 requires — the sync reads the manifest, never the reverse. The `system` field
-records which system a path belongs to, because Chapter 0 lets a host take one system without the
-rest, and a sync that serves that needs the grouping somewhere parseable.
+`system`, conforming to the frontmatter line grammar
+[`tools/gate/declaration.ts`](../tools/gate/declaration.ts) defines — scalars plus one flat list
+of scalar-field items — so the sync (#82) and the configuration lint (#55) can reuse that grammar
+with their own closed key vocabulary rather than grow a new format. `parseDeclaration` itself is
+`config/checks.md`'s reader and refuses any other key, by design; a reader of this file is new
+work, and both readers are chartered: at this declaration's date nothing reads the frontmatter
+yet, the sync reads the manifest and never the reverse, which is the order Chapter 5 requires.
+
+The `system` field records which system a path belongs to, because Chapter 0 lets a host take one
+system without the rest. `all` marks a path every selection includes: a sync selecting system
+S ships the paths of S plus the paths of `all`, which is what keeps a selected system runnable —
+the tools are nothing without their runtime scaffolding, and setup serves every adoption. On host
+entries `all` says the boundary holds for every adoption. Selection semantics beyond that —
+ordering, per-host subsets, anything conditional — are the sync's to define (#82); this file only
+guarantees that S plus `all` is the whole of what S needs under this repository's stack.
 
 ## Contract — deuce's, updated on every sync
 
@@ -188,11 +196,13 @@ path itself.
   this repository's runtime and not a host's, so a host on a different stack rewrites them in its
   own — sanctioned, not drift. The tests travel with the implementations they test.
 - **The runtime scaffolding** (`package.json`, `package-lock.json`, `tsconfig.json`, `.gitignore`,
-  system `runtime`) — it exists to run the tools, so it is classed with them. Seed means the host
+  system `all`) — it exists to run the tools, so it is classed with them and travels with every
+  selection: a gate without its toolchain declaration is not the gate. Seed means the host
   regenerates the lockfile as its own from day one.
-- **`bin/setup`** (system `governance`) — it installs the hooks, which are contract, but it also
-  installs the toolchain (`npm install`), which is stack-bound. One class per path, and the stack
-  binding decides it: a host not on Node rewrites setup, and must not have its rewrite clobbered.
+- **`bin/setup`** (system `all`) — it installs the hooks, which are contract, but it also installs
+  the toolchain (`npm install`), which is stack-bound. One class per path, and the stack binding
+  decides it: a host not on Node rewrites setup, and must not have its rewrite clobbered. It is
+  `all` because every adoption, whatever the subset, needs its installer.
 - **`labels.yml`** (system `tracking`) — the `type:` and `status:` axes are the standard's, but the
   `area:` axis is per-project by design, so every host rewrites this file on day one. Classing it
   contract would put permanent drift on the same file at every host, and a drift report that always
