@@ -153,8 +153,8 @@ the least-reviewed code in a change. Each fix is anchored to the finding's mecha
 fail-first evidence, every accepted fix is batched into one wave before the reviewer is summoned
 again, and recurrence past the declared limit escalates to re-planning rather than another patch.
 
-**Fleet** — The set of software projects that run on deuce, receive its configuration, and send
-findings back to it.
+**Fleet** — The set of software projects that run on deuce, receive what the payload manifest ships
+them, and send findings back to it.
 
 **Foundation-first** — Prioritizing load-bearing work: work is foundational when other work breaks
 or has to be rebuilt if it is wrong or missing. Considering the future means not foreclosing it,
@@ -214,8 +214,15 @@ carries the permanent lens — *what class is not on this list?*
 definition to merge: **Assess → Devise → Implement → Verify → Deliver**. The Direction gate closes
 Assess and the Ship gate closes Deliver; stages communicate only through their terminal artifacts.
 
-**must-port** — The label on a change landed in a frozen repository, marking it as one that must be
-carried forward into the successor.
+**must-port** — The label on a change landed in a frozen repository, marking it as one the successor
+must read before the archive. A capture obligation, never an adoption right: adoption still passes
+the successor's own doors, under the zero-based port rule.
+
+**Payload manifest** — The declaration naming every path that ships to a host, each carrying exactly
+one of three classes: **contract** — deuce's always, updated by every sync; **seed** — the host's
+from the first copy, never touched again; **host** — the host's always, never shipped, never read,
+never written. An undeclared path does not ship. The manifest is adaptive configuration; the three
+classes and the one-class-per-path rule are canon.
 
 **Plan** — The terminal artifact of the Devise stage: a Readout on the issue carrying ordered steps,
 the testing strategy decided up front, the files expected to change, and the risks accepted. It is
@@ -303,6 +310,11 @@ setting waives them.
 at summons time from the canonical documents and kept, bound to the reviewed commit, as part of the
 review record.
 
+**Sync** — The mechanism that delivers an update to a host: it writes what the payload manifest
+declares onto a branch in the host's repository and opens a pull request, which the host's own gates
+dispose of. The only update path — there is no direct push at any severity. Its pull request carries
+what changed since the receipt's commit, the drift report, and the new vendoring receipt.
+
 **Terminal artifact** — What a stage must leave behind for the next one to read. A stage is not done
 until its terminal artifact exists, and nothing but terminal artifacts crosses a stage boundary. The
 same rule governs delegated work: a result not delivered on the channel the dispatch named is not
@@ -319,6 +331,12 @@ every credential carries a blast-radius declaration.
 
 **Unsolicited discovery** — What a run notices while doing other work. It cannot be bounded,
 because an observation cannot be un-made; it is routed into the Findings System, never capped.
+
+**Vendoring receipt** — The machine-written record a host carries of what it vendored: the deuce
+commit, the date, and a checksum per contract file. Written by the sync, never by hand; it is what
+*behind upstream by N* and *contract file locally edited* are computed from, and what *runs on the
+successor* means during a cutover. The compound name keeps it apart from the receipts that admit
+rules and Skills.
 
 **Verification** — The terminal artifact of the Verify stage: a Readout on the pull request carrying
 the drift check against the Plan, the adversarial pass, and every finding with its disposition —
