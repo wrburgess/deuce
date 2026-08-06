@@ -33,12 +33,14 @@ const LIST_KEY = new RegExp(`^(${KEY}):\\s*$`);
 const ITEM = new RegExp(`^ {2}- (${KEY}): +(\\S.*?)\\s*$`);
 const FIELD = new RegExp(`^ {4}(${KEY}): +(\\S.*?)\\s*$`);
 
-interface Parsed {
+export interface Parsed {
   scalars: Map<string, string>;
   lists: Map<string, Map<string, string>[]>;
 }
 
-function parseFrontmatter(markdown: string): Parsed {
+// Exported for the other declaration readers (config/payload.md promised the
+// grammar's reuse); the closed key vocabulary stays each reader's own.
+export function parseFrontmatter(markdown: string): Parsed {
   const lines = markdown.split("\n");
   if (lines[0]?.trim() !== FENCE) {
     throw new Error("declaration carries no frontmatter block — it must open with '---'");
