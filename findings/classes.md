@@ -27,7 +27,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A check that measures something other than the invariant it claims
 
-10 instances, across 6 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59.
+11 instances, across 7 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94.
 
 - **PR #39, finding 4** — aggregate field counts certified a review whose per-finding blocks were malformed; the count was right and the structure was not.
 - **PR #39, finding 8** — lens coverage matched by substring, so a lens name appearing inside a quotation counted as a lens answered.
@@ -38,6 +38,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #51, finding 2** — a link check's empty guard sat on the unit it iterated (files) rather than the unit it measured (links), so a file containing no links still reported green.
 - **PR #59, finding 2** — `requires: node_modules` probed the directory that usually holds `tsc`; with the directory present and `tsc` gone the probe passed, the check exited 127, and the gate reported *a check failed* for a gate that could not run.
 - **PR #59, finding 6** — the replacement probe, `existsSync`, was the same defect one level tighter: a directory and a non-executable file are both present. Found by the review of the fix.
+- **PR #94, finding 1** — the delta is scope, not presence: a body-wide `includes()` asserted a citation the test's name placed in the footer, so the citation migrating out of the footer would have stayed green. The assertion's scope was wider than its claim.
 - **PR #59, finding 5** — the delta worth keeping: the masking was in the *test*. An invariant test counted `unmet` entries through a filter that excluded exactly the branch that was broken, so the assertion named the invariant and measured a proxy for it.
 
 ### A guard that fails open or fails silent on input it did not expect
