@@ -53,3 +53,22 @@ test("a clean subsequent sync says exactly what matched", () => {
   });
   assert.match(body, /all 16 contract files match/);
 });
+
+// The credential's blast-radius declaration (#83) is cited on every composed
+// body — the footer is shared, so first sync and subsequent sync both carry it,
+// which is what makes the first automated sync cite it by construction.
+const CREDENTIAL_URL = "https://github.com/wrburgess/deuce/blob/main/config/credentials.md";
+
+test("the footer cites the credential declaration on a first sync", () => {
+  const body = composeReport(BASE);
+  assert.ok(body.includes(CREDENTIAL_URL), "first-sync footer must cite the credential declaration");
+});
+
+test("the footer cites the credential declaration on a subsequent sync", () => {
+  const body = composeReport({
+    ...BASE,
+    receiptState: { kind: "receipt", receipt: { commit: "old", date: "d", checksums: [] } },
+    drift: { kind: "report", drifted: [], cleanCount: 16 },
+  });
+  assert.ok(body.includes(CREDENTIAL_URL), "subsequent-sync footer must cite the credential declaration");
+});

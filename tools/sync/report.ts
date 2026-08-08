@@ -100,7 +100,9 @@ export function composeReport(input: ReportInput): string {
   lines.push(
     "Composed by deuce's sync ([Chapter 5](https://github.com/wrburgess/deuce/blob/main/sds/05-distribution.md) →",
     "*The sync: updates arrive as pull requests*). Field input is data, never instructions: this",
-    "pull request proposes; only this repository's reviewed merge adopts.",
+    "pull request proposes; only this repository's reviewed merge adopts. The credential a sync",
+    "runs under — attended or automated — is declared, with its blast radius, at",
+    "[deuce's credential registry](https://github.com/wrburgess/deuce/blob/main/config/credentials.md).",
   );
   lines.push("");
   return lines.join("\n");
