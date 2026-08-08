@@ -1,6 +1,6 @@
 ---
-date: 2026-08-06
-source: the Direction gate on #82, where Option A — the orchestrated command — was chosen
+date: 2026-08-08
+source: the Direction gate on #82 for the trigger and the receipt's home; the Direction gate on #83 for the credential line
 ---
 
 # Sync configuration
@@ -16,8 +16,10 @@ requests* and [ADR 0022](../adr/0022-updates-arrive-only-as-pull-requests.md); t
 
 - **HC-called, per host; no standing schedule.** Running the sync fleet-wide with the HC away is
   Chapter 6's, and until that chapter exists every run is a person deciding, on the record.
-- The attended proving run under the HC's own credential precedes #83's blast-radius declaration
-  by that gate's explicit direction; **no unattended run happens before #83 lands.**
+- The attended proving run under the HC's own credential preceded #83's blast-radius declaration
+  by that gate's explicit direction. **No unattended run happens except under a credential
+  conforming to the declaration at [`config/credentials.md`](credentials.md)** — which #83
+  landed, and which no minted credential yet satisfies.
 
 ## The receipt's home
 
