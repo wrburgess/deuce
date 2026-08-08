@@ -28,6 +28,9 @@ request cites this entry whichever state opened it.
 - **Automated (not yet minted):** the credential unattended runs must use. It does not exist; this
   entry binds what may be minted. Writing precedes first use — that is the rule's point.
 
+**The four sections below bind the automated credential.** The attended state's blast radius is
+the two lines above, whole: the HC's own account, watched. Nothing below narrows it — nothing can.
+
 ### What it can reach
 
 - **Repositories:** the fleet's only — bryce, nadal, and mpi-ace (per #7), read from the fleet
