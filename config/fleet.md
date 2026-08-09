@@ -17,9 +17,10 @@ then, never ahead of it. This file is adaptive configuration under
 
 The frontmatter is the machine half, in the same line grammar
 [`config/payload.md`](payload.md)'s carries — scalars plus one flat list of scalar-field items — so
-whatever first reads one roster reads both. Nothing reads it yet: the sync takes its target from
-the HC per [`config/sync.md`](sync.md), and a host absent from this roster is synced at the
-default receipt home declared there.
+the reader that one day serves these declarations parses one grammar, not two. At this
+declaration's date nothing reads the frontmatter yet: the sync takes its target from the HC per
+[`config/sync.md`](sync.md), and a host absent from this roster is synced at the default receipt
+home declared there.
 
 ## bryce — the canary
 
