@@ -53,3 +53,33 @@ test("a clean subsequent sync says exactly what matched", () => {
   });
   assert.match(body, /all 16 contract files match/);
 });
+
+// The credential's blast-radius declaration (#83) is cited from every composed
+// body's footer — the footer is shared, so first sync and subsequent sync both
+// carry it, which is what makes the first automated sync cite it by
+// construction. Asserted on the footer portion, not the whole body: a citation
+// that migrated into an earlier section would keep a body-wide assertion green
+// while the footer stopped citing (the contractor review on PR #94).
+const CREDENTIAL_URL = "https://github.com/wrburgess/deuce/blob/main/config/credentials.md";
+
+function footerOf(body: string): string {
+  const cut = body.lastIndexOf("\n---\n");
+  assert.notEqual(cut, -1, "the composed body must carry a footer separator");
+  return body.slice(cut);
+}
+
+test("the footer cites the credential declaration on a first sync", () => {
+  const footer = footerOf(composeReport(BASE));
+  assert.ok(footer.includes(CREDENTIAL_URL), "first-sync footer must cite the credential declaration");
+});
+
+test("the footer cites the credential declaration on a subsequent sync", () => {
+  const footer = footerOf(
+    composeReport({
+      ...BASE,
+      receiptState: { kind: "receipt", receipt: { commit: "old", date: "d", checksums: [] } },
+      drift: { kind: "report", drifted: [], cleanCount: 16 },
+    }),
+  );
+  assert.ok(footer.includes(CREDENTIAL_URL), "subsequent-sync footer must cite the credential declaration");
+});
