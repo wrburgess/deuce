@@ -9,18 +9,17 @@ hosts:
 
 # The fleet roster
 
-Each host, its repository, and where its vendoring receipt lives. The roster's fields and its
-earn-in are canon, at [Chapter 5](../sds/05-distribution.md) → *The adaptive layer's additions* and
-→ *Succession* — a host is over when its first vendoring receipt exists, and a row enters only
-then, never ahead of it. This file is adaptive configuration under
-[Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*.
+Each host, its repository, and where its vendoring receipt lives. The roster's fields, and the
+earn-in rule a row enters under, are canon, at [Chapter 5](../sds/05-distribution.md) → *The
+adaptive layer's additions* and → *Succession*, and are not restated here; this file is adaptive
+configuration under [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*,
+and only declares the rows.
 
 The frontmatter is the machine half, in the same line grammar
 [`config/payload.md`](payload.md)'s carries — scalars plus one flat list of scalar-field items — so
 the reader that one day serves these declarations parses one grammar, not two. At this
-declaration's date nothing reads the frontmatter yet: the sync takes its target from the HC per
-[`config/sync.md`](sync.md), and a host absent from this roster is synced at the default receipt
-home declared there.
+declaration's date nothing reads the frontmatter yet: the sync takes its target from the HC, and
+treats a host absent from this roster, per [`config/sync.md`](sync.md).
 
 ## bryce — the canary
 
