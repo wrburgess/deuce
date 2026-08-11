@@ -1,6 +1,6 @@
 ---
-date: 2026-08-08
-source: the Direction gate on #83, where Option A — the credential registry — was chosen
+date: 2026-08-11
+source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87
 ---
 
 # Credentials
@@ -33,8 +33,9 @@ the two lines above, whole: the HC's own account, watched. Nothing below narrows
 
 ### What it can reach
 
-- **Repositories:** the fleet's only — bryce, nadal, and mpi-ace (per #7), read from the fleet
-  roster once its first row lands (#85). Not the HC's other repositories, not this one.
+- **Repositories:** the fleet's only — bryce and nadal (per #7, corrected at the Direction gate
+  on #87), read from the fleet roster once its first row lands (#85). Not the HC's other
+  repositories, not this one.
 - **Permissions:** contents read and write (clone, push a `deuce/sync-*` branch) and pull-requests
   read and write (open the sync pull request). Nothing else — the sync exercises nothing else.
 - **Deliberately not granted:** workflow permission (the payload manifest ships no
@@ -46,8 +47,8 @@ the two lines above, whole: the HC's own account, watched. Nothing below narrows
   force-push and branch deletion there.
 - **What stands between it and a default branch is the host's protection settings, not the
   token's scopes.** A host whose default branch is unprotected has handed this credential the
-  power to rewrite it. The protection state of bryce, nadal, and mpi-ace is unverified at this
-  declaration's date; verifying it is each cutover's work (#85, #86, #87), and no unattended run
+  power to rewrite it. The protection state of bryce and nadal is unverified at this
+  declaration's date; verifying it is each cutover's work (#85, #86), and no unattended run
   precedes that verification.
 
 ### What breaks if it leaks
