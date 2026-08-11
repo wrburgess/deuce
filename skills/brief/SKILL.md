@@ -68,8 +68,8 @@ already holds the durable truth every Brief derives from.
 
 On any of the four standing triggers —
 [Chapter 1 → Stops](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stops). The named example here is
-trigger 4: the target cannot be resolved, or the tracker cannot be reached — asked, never guessed
-around. The question and its answer are recorded on the issue before the answer is acted on.
+trigger 4: an unresolvable target, or an unreachable tracker. The read-only charter binds the
+Brief's delivery, never a stop's own record.
 
 ## Prior art
 

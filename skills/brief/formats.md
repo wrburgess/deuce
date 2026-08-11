@@ -20,9 +20,9 @@ a scan answers faster than a story.
 **Story** — the prose half: two or three plain-language paragraphs that rebuild the target's
 context from zero — what it is, why it exists, how it is being pursued, where it sits today.
 
-**Scan** — the table half, carrying the Readout's discipline
-([Chapter 1 → The Readout](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-readout)): verdict first,
-tables for state, a bold left edge, and uncertainty on its own labeled line. When a Story leads,
+**Scan** — the table half. Its shape is the Readout's discipline, linked and never restated —
+[Chapter 1 → The Readout](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-readout) — with the health
+verdict standing as the ask; the skeletons below are that discipline applied. When a Story leads,
 the Scan drops its What/Why/How rows — the Story just said them.
 
 ## Skeleton — combined form (Project, Epic)
@@ -37,7 +37,7 @@ pursued, where it sits today. Plain words; cite as you go (#N, PR #N).>
 one row per thing, dates on activity.>
 
 **Next steps**
-1. <Best next step, cited.>
+1. <Best next step, cited — the one line "None — complete." when the verdict is complete.>
 2. <…in order.>
 
 **Needs from you**
@@ -60,7 +60,7 @@ one row per thing, dates on activity.>
 <State or block table when the target's situation needs one.>
 
 **Next steps**
-1. <…>
+1. <… — "None — complete." when the verdict is complete.>
 
 **Needs from you**
 - <…or "Nothing.">
