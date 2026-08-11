@@ -37,6 +37,13 @@ credential, of what that credential can reach, what it can destroy, and what bre
 establish and so cannot be governed by it. It is bounded and ends chapter by chapter, as each
 governor is built.
 
+**Brief** — The terminal artifact of the `brief` Skill: an on-demand report, delivered in
+conversation and never posted, of where a target — the project, an epic, an issue, or a pull
+request — stands: a fresh-eyes description, one of five health verdicts, next steps, and what the
+work needs from the HC. Its prose half is the Story; its table half is the Scan. Distinct from the
+epic brief the way the readiness check is distinct from a check: the compound name keeps the two
+apart.
+
 **Canon** — What the SDS states, once the chapter stating it has been ratified. Canon binds later
 work; everything else is configuration, record, or discussion.
 
@@ -111,7 +118,8 @@ without reading implementation detail.
 
 **Epic brief** — The eight-field problem statement an `EPIC:` carries: problem, target solution,
 goals, constraints, expectations, risks, edge cases, and punted paths. Its exit test is that an AC
-with no history could start planning from the brief alone.
+with no history could start planning from the brief alone. Not the Brief, the status report — the
+compound name keeps the two apart.
 
 **Excellent enough** — The bar work stops at: the point past which more effort would not change a
 decision, prevent a class of defect, or change what ships. It binds review depth, issue scope, and
@@ -268,6 +276,11 @@ framework and the commit it claims to have reviewed. Ratified in Chapter 2.
 the contracts, which no automated check can decide. A rule enters only with receipts — cited evidence
 of the recurring class of defect it prevents. deuce starts with none.
 
+**Scan** — The table half of a Brief, carrying the Readout's discipline: the health verdict first,
+state in tables, next steps, and what the work needs from the HC, with uncertainty on its own
+labeled line. Standalone for an issue or a pull request; trimmed of its What/Why/How rows when a
+Story leads.
+
 **SDS** — Software Development System: the written standard in `sds/`, built one chapter at a time.
 Nothing exists in deuce that the SDS does not already sanction.
 
@@ -305,6 +318,10 @@ rather than shipped narrowed.
 guessing at intent?*, never severity. A stop is a pause and never a termination; the question and its
 answer are recorded durably before the AC acts on the answer. Stops are unconditional — no gate
 setting waives them.
+
+**Story** — The prose half of a Brief: two or three plain-language paragraphs that rebuild the
+target's context from zero — what it is, why it exists, how it is being pursued, where it sits
+today. Leads the Brief for the project and for an epic, with a trimmed Scan after.
 
 **Summons** — The work order that sends one bounded review to a contractor reviewer. It is composed
 at summons time from the canonical documents and kept, bound to the reviewed commit, as part of the
