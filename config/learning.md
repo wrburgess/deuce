@@ -11,7 +11,9 @@ hygiene sweep*, and are not restated here; this is adaptive configuration under
   cadence was declared HC-called. The fleet row's wording was refreshed at the Direction gate on
   #80, Chapter 5 having landed. The fleet row itself entered with the port of ace's frozen record —
   the Direction gate on #84, its first captures recorded at the
-  [port record](https://github.com/wrburgess/deuce/issues/84#issuecomment-5249231808).
+  [port record](https://github.com/wrburgess/deuce/issues/84#issuecomment-5249231808). The row's
+  ace and nadal fragments were re-verified at the Direction gate on #88, 2026-08-11 — the archive
+  on the record, the missed cutover read pointed at the sweep.
 
 ## Channel roster
 
@@ -23,7 +25,7 @@ hygiene sweep*, and are not restated here; this is adaptive configuration under
 | **Vendor** | None declared yet |
 | **Practitioner** | None declared yet |
 | **Platform observation** | No subscription by nature: its source is this repository's own sessions |
-| **Fleet** | Three sources, entered with the first real captures at #84: **bryce** — `docs/ai-config-feedback/` on `wrburgess/bryce`, a closed ledger (the cutover ended it); **nadal** — `docs/findings.md` on `wrburgess/nadal`, read through `4bf4daf`, next read at #86's cutover; **ace's frozen record** (mpi-ace's record included) — the `wrburgess/ace` tracker, read whole, permanently citable after #88's archive |
+| **Fleet** | Three sources, entered with the first real captures at #84: **bryce** — `docs/ai-config-feedback/` on `wrburgess/bryce`, a closed ledger (the cutover ended it); **nadal** — `docs/findings.md` on `wrburgess/nadal`, read through `4bf4daf`, the #86-cutover read did not run (68 unread lines accumulated since), next read at the hygiene sweep; **ace's frozen record** (mpi-ace's record included) — the `wrburgess/ace` tracker, read whole, [archived 2026-08-11](https://github.com/wrburgess/ace) (#88), read-only and permanently citable |
 
 ## Hygiene sweep
 
