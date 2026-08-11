@@ -39,10 +39,9 @@ target kinds. The reader to write for is the HC returning after time away, holdi
    description (what it is, why it exists, how it is being pursued), the health verdict from the
    table below, the best next steps, and what the work needs from the HC. Every claim cites its
    source per the
-   [reference grammar](https://github.com/wrburgess/deuce/blob/main/sds/00-identity-and-governance.md#work-tracking-system) — a bare
-   `#N` is an issue, `PR #N` a pull request — dates ride on activity so staleness is visible, and
-   what is unknown or unverified gets its own labeled line, never a hedge inside a sentence
-   carrying a fact.
+   [reference grammar](https://github.com/wrburgess/deuce/blob/main/sds/00-identity-and-governance.md#work-tracking-system),
+   dates ride on activity so staleness is visible, and uncertainty is carried per the Scan's
+   discipline in [`formats.md`](formats.md), which the skeletons' `Unverified:` line enforces.
 5. **Deliver the Brief in conversation, and touch nothing on the tracker** — no label moves, no
    comments. The Skill is read-only by charter: reporting sits outside the lifecycle, and a
    durable copy of live state is a stale copy (the Direction gate on #96, Option 1).
