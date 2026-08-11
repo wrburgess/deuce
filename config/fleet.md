@@ -1,9 +1,12 @@
 ---
-date: 2026-08-09
-source: the Direction gate on #85, where Option A was chosen; the row earned in by bryce PR #211's merge
+date: 2026-08-11
+source: the Direction gate on #85 for bryce's row, earned in by bryce PR #211's merge; the Direction gate on #86 for nadal's, earned in by nadal PR #143's merge
 hosts:
   - host: bryce
     repository: wrburgess/bryce
+    receipt: config/vendoring-receipt.md
+  - host: nadal
+    repository: wrburgess/nadal
     receipt: config/vendoring-receipt.md
 ---
 
@@ -29,3 +32,14 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
   [`config/sync.md`](sync.md) → *The receipt's home*.
 - The proving ground held: the manifest represented the canary's real state — 37 files written,
   5 seed paths skipped as bryce's own — with nothing the sort could not express.
+
+## nadal — the second host
+
+- **Earned in:** first vendoring receipt at deuce `90ee01a`, landed by
+  [nadal PR #143](https://github.com/wrburgess/nadal/pull/143)'s merge, 2026-08-11.
+- **Receipt:** the default home, `config/vendoring-receipt.md` on the host, per
+  [`config/sync.md`](sync.md) → *The receipt's home*.
+- The repetition held the canary's split exactly — 37 files written, the same 5 seed paths skipped
+  as nadal's own. Its one finding — a host whose product surface includes `tools/` sweeps the
+  seeded copies with its own checks — is #86's record, answered host-side by
+  [nadal PR #145](https://github.com/wrburgess/nadal/pull/145).
