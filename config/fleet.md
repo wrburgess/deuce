@@ -40,8 +40,6 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
 - **Receipt:** the default home, `config/vendoring-receipt.md` on the host, per
   [`config/sync.md`](sync.md) → *The receipt's home*.
 - The repetition held the canary's split exactly — 37 files written, the same 5 seed paths skipped
-  as nadal's own — and surfaced the finding the canary's stack could not: a host whose product
-  surface includes `tools/` sweeps the seeded gate/review copies with its own checks. Recorded on
-  [#86](https://github.com/wrburgess/deuce/issues/86); the host-side answer (carve-outs, dormant
-  until the gate is wired) landed with
+  as nadal's own. Its one finding — a host whose product surface includes `tools/` sweeps the
+  seeded copies with its own checks — is #86's record, answered host-side by
   [nadal PR #145](https://github.com/wrburgess/nadal/pull/145).
