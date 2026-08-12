@@ -27,7 +27,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A check that measures something other than the invariant it claims
 
-11 instances, across 7 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94.
+14 instances, across 8 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94, PR #110.
 
 - **PR #39, finding 4** — aggregate field counts certified a review whose per-finding blocks were malformed; the count was right and the structure was not.
 - **PR #39, finding 8** — lens coverage matched by substring, so a lens name appearing inside a quotation counted as a lens answered.
@@ -40,6 +40,9 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #59, finding 6** — the replacement probe, `existsSync`, was the same defect one level tighter: a directory and a non-executable file are both present. Found by the review of the fix.
 - **PR #94, finding 1** — the delta is scope, not presence: a body-wide `includes()` asserted a citation the test's name placed in the footer, so the citation migrating out of the footer would have stayed green. The assertion's scope was wider than its claim.
 - **PR #59, finding 5** — the delta worth keeping: the masking was in the *test*. An invariant test counted `unmet` entries through a filter that excluded exactly the branch that was broken, so the assertion named the invariant and measured a proxy for it.
+- **PR #110, finding 1** — the links check resolved targets through `existsSync`, so a gitignored file present on one machine passed as a repository link; the delta: caught by the AC's own adversarial pass and proven with a planted link before the fix existed.
+- **PR #110, finding 2** — the class-index grammar accepted an instance lead naming no finding, so a pull request alone counted as an instance; the delta: the defect sat in the very check written to hold this file's grammar.
+- **PR #110, finding 3** — glossary-reverse matched terms as unbounded substrings, so `AI` counted as present inside "plain"; the delta: a report-only check false-greened its report branch, and the word-bounded fix surfaced a real signal the substring had masked.
 
 ### A guard that fails open or fails silent on input it did not expect
 

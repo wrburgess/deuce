@@ -107,7 +107,7 @@ async function main(): Promise<void> {
       // undecidable and stays with review.
       for (const line of result.reports) console.log(line);
       console.log(
-        `glossary-reverse green — ${result.terms} entry terms searched (case-insensitive substring) across ${canon.length} canon chapters; ${result.reports.length} staleness signals for the hygiene sweep; the forward direction stays with review`,
+        `glossary-reverse green — ${result.terms} entry terms searched (case-insensitive, word-bounded) across ${canon.length} canon chapters; ${result.reports.length} staleness signals for the hygiene sweep; the forward direction stays with review`,
       );
       return;
     }

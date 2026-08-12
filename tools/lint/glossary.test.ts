@@ -40,6 +40,20 @@ test("an absent term is reported as a staleness signal, never a violation", () =
   assert.match(result.reports[0]!, /not a defect/);
 });
 
+test("a term occurring only inside another word is absent — 'AI' inside 'plain' is not an occurrence", () => {
+  const result = checkGlossary(glossary("**AI** — the collaborator half.\n"), canon("plain prose only."));
+  assert.equal(result.reports.length, 1);
+  assert.match(result.reports[0]!, /'AI'/);
+});
+
+test("an inflected occurrence still counts — Readout matches Readouts", () => {
+  const result = checkGlossary(
+    glossary("**Readout** — the shape.\n"),
+    canon("Two Readouts were posted."),
+  );
+  assert.deepEqual(result.reports, []);
+});
+
 test("zero terms parsed is the fail-open guard, never a green", () => {
   const result = checkGlossary(glossary("No bold-led paragraphs at all.\n"), canon("x"));
   assert.notEqual(result.guard, null);

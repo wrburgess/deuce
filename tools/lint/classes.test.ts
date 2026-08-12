@@ -90,6 +90,28 @@ test("an instance line without a bold lead is rejected by position", () => {
   assert.ok(violations.some((v) => /instance 1 does not open with a bold lead/.test(v)));
 });
 
+test("an instance lead that names no finding is rejected — a pull request alone is not an instance", () => {
+  const entry = `### A defect shape
+
+1 instance, across 1 pull request — PR #10.
+
+- **PR #10, prose** — a lead with no finding named.
+`;
+  const violations = checkClasses(index(entry)).violations;
+  assert.ok(violations.some((v) => /does not name a finding/.test(v)));
+});
+
+test("both finding shapes the index uses are accepted — numbered, and descriptor-led", () => {
+  const entry = `### A defect shape
+
+2 instances, across 2 pull requests — PR #10, PR #98.
+
+- **PR #10, finding 4** — the numbered shape.
+- **PR #98, posture-pass finding** — the descriptor shape.
+`;
+  assert.deepEqual(checkClasses(index(entry)).violations, []);
+});
+
 test("an instance lead naming two pull requests is rejected — reference plus delta keeps counting cheap", () => {
   const entry = `### A defect shape
 

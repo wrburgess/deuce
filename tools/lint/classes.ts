@@ -26,7 +26,10 @@ export interface ClassesResult {
 
 const COUNT_LINE =
   /^(\d+) instances?, across (\d+) pull requests? — (PR #\d+(?:, PR #\d+)*)\.?$/;
-const INSTANCE_LEAD = /^PR #(\d+), \S/;
+// A pull request and a finding, both: the numbered shape ("finding 4") or
+// the descriptor shape ("posture-pass finding"). A lead naming no finding is
+// not an instance — the contractor review on PR #110 built the fixture.
+const INSTANCE_LEAD = /^PR #(\d+), (?:finding \d+|.+ finding)$/;
 
 interface Entry {
   name: string;
@@ -116,10 +119,16 @@ export function checkClasses(content: string): ClassesResult {
         continue;
       }
       const leadText = textOf(lead);
-      const leadMatch = INSTANCE_LEAD.exec(leadText);
-      if (leadMatch === null || (leadText.match(/PR #/g) ?? []).length !== 1) {
+      if ((leadText.match(/PR #/g) ?? []).length !== 1) {
         violations.push(
           `${where}: instance ${items} lead "${leadText}" does not name exactly one pull request`,
+        );
+        continue;
+      }
+      const leadMatch = INSTANCE_LEAD.exec(leadText);
+      if (leadMatch === null) {
+        violations.push(
+          `${where}: instance ${items} lead "${leadText}" does not name a finding`,
         );
         continue;
       }

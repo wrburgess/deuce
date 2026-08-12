@@ -54,9 +54,17 @@ export function checkGlossary(
     };
   }
 
-  const corpus = canon.map((f) => f.content).join("\n").toLowerCase();
+  // Word-bounded, inflections allowed: an unbounded substring reported 'AI'
+  // present inside "plain" — a false green on the report branch, found by the
+  // contractor review on PR #110. The trailing group keeps plurals and
+  // possessives counting as occurrences.
+  const corpus = canon.map((f) => f.content).join("\n");
+  const occurs = (term: string): boolean =>
+    new RegExp(`\\b${term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:'s|es|s)?\\b`, "i").test(
+      corpus,
+    );
   const reports = terms
-    .filter((term) => !corpus.includes(term.toLowerCase()))
+    .filter((term) => !occurs(term))
     .map(
       (term) =>
         `stale? '${term}' appears in no canon chapter — a staleness signal for the hygiene sweep, not a defect`,
