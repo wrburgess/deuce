@@ -1,6 +1,6 @@
 ---
 date: 2026-08-11
-source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87
+source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87; the tracker credential and the reviewer's login declared at the Direction gate on #107
 ---
 
 # Credentials
@@ -79,3 +79,97 @@ the grant · touch workflows.
 - Every sync pull request cites this file from its footer
   ([`tools/sync/report.ts`](../tools/sync/report.ts)), so the first automated sync cites it by
   construction rather than by memory.
+
+## The tracker credential
+
+The credential a factory pass runs under ([Chapter 6](../sds/06-factory-automation.md) → *The
+credential precondition*): everything a pass does to the tracker and this repository — label
+edits, comments, run records, opened pull requests, pushed task branches — happens as this
+credential. [ADR 0026](../adr/0026-unattended-passes-require-a-minted-credential.md) holds every
+unattended pass to it.
+
+### The two states
+
+- **Attended (the only state in use today):** the HC's own `gh` login, with the HC watching. Its
+  reach is everything that account reaches; every pass so far — the proving run under #106
+  included — has run in this state, and no unattended pass ever does.
+- **Automated (bound here; its minted row lands below):** one fine-grained personal access token,
+  this repository only — the Direction gate on #107, Option A.
+
+**The four sections below bind the automated credential.** The attended state's blast radius is
+the two lines above, whole.
+
+### What it can reach
+
+- **Repository:** this one only.
+- **Permissions:** contents read and write (clone, push a `task/*` branch), issues read and write
+  (labels, comments), and pull requests read and write (open, comment). Everything a pass posts
+  rides on those three; nothing else is granted.
+- **Deliberately not granted:** workflow permission, administration, branch-protection settings,
+  releases.
+
+### What it can destroy
+
+- Every branch platform protection does not cover: contents-write includes force-push and branch
+  deletion.
+- **`main` left that set at the minting sitting, 2026-08-11:** platform protection is on —
+  force pushes and deletions blocked, admins bound (`enforce_admins`), so the rule reaches every
+  credential acting as the HC's account, this token included. Verified by API read-back at the
+  sitting, recorded on #107. The `.githooks/` guard is client-side and binds no token; protection
+  settings are what stand between a credential and a default branch, exactly as the sync entry
+  states for hosts.
+- **The honest residual:** protection without a required-pull-request rule still permits a plain
+  fast-forward push to `main`. The hooks block it locally, the Ship gate rule forbids it, and
+  closing it at the platform is one ruleset if ever wanted; this entry states the residual rather
+  than implying more than is enabled.
+
+### What breaks if it leaks
+
+- The holder can write plausible-looking tracker state — labels, comments, run records — and push
+  branches here. The artifacts are the lifecycle's authority, so forged tracker state can steer
+  work; what bounds the damage is that nothing merges except through the Ship gate, which this
+  credential cannot perform.
+- **Containment:** revoke at the token's settings page on the HC's account; rotation on any
+  suspicion.
+
+### What it deliberately cannot do
+
+Least privilege, stated as cannots: merge · force-push to or delete `main` · administer the
+repository or its protection · reach any other repository · touch workflows.
+
+### The minting rule
+
+- **No unattended pass runs until a credential conforming to this entry exists** — ADR 0026's
+  floor, restated nowhere else in this file.
+- **The minted row, 2026-08-11** — the stop and its answer on #107:
+
+  | Field | As minted |
+  |---|---|
+  | Form | Fine-grained personal access token |
+  | Name | `wrburgess/deuce PAT` |
+  | Repository access | This repository only |
+  | Permissions granted | Contents read/write · Issues read/write · Pull requests read/write (Metadata read, automatic) |
+  | Expiry | 2027-08-11 |
+  | Where the value lives | The HC's secret store — never the tracker, the repository, or a session |
+
+  The permissions line is the HC's transcription from the token screen, confirmed at the sitting;
+  the entry above is what binds, and any later mismatch found is a finding, not a shrug.
+
+## The reviewer's login
+
+The credential Verify's summons runs under: `codex exec` uses the Codex CLI's login on this
+machine — the HC's ChatGPT account ([`review.md`](review.md) → the roster). Declared here because
+an unattended pass summons the reviewer with nobody watching; declaration-only, because its
+minted form is OpenAI's to issue, not this repository's.
+
+- **What it reaches:** the working tree the summons points it at, read on this machine under that
+  account, and OpenAI's service as that account.
+- **What it can destroy:** nothing of the tracker's — it holds no tracker key. A misdirected run's
+  reach ends at the working tree it was pointed at, which git and the artifacts reconstruct.
+- **What breaks if it leaks:** the ChatGPT account itself. Containment is OpenAI's: sign out and
+  rotate the account's password; the roster's readiness check (`codex login status`) then fails
+  closed — an unreachable reviewer stops a run rather than certifying it
+  ([Chapter 2](../sds/02-review-and-findings.md) → *Verify's external half, now written*).
+- **The floor:** no unattended pass summons a reviewer before this declaration exists. This entry
+  is that declaration; the summons inherits the attended state's posture whole, and there is no
+  second, wider state to bind.
