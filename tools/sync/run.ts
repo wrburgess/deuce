@@ -19,6 +19,7 @@ import { parseManifest, shipSet } from "./manifest.ts";
 import { parseReceipt, writeReceipt, type ReceiptState } from "./receipt.ts";
 import {
   readPayloadAtCommit,
+  readManifestAtCommit,
   planWrites,
   applyWrites,
   applyRetirements,
@@ -85,9 +86,12 @@ function main(): void {
     values.commit ??
     execFileSync("git", ["-C", deuceRoot, "rev-parse", "origin/main"], { encoding: "utf8" }).trim();
 
+  // The manifest at the pinned commit, never the working tree: retirement
+  // makes a manifest/commit mismatch destructive — a working-tree edit could
+  // plan a removal the pinned commit never sanctioned (PR #119's review).
   let manifest, entries;
   try {
-    manifest = parseManifest(readFileSync(join(deuceRoot, "config/payload.md"), "utf8"));
+    manifest = parseManifest(readManifestAtCommit(deuceRoot, commit));
     entries = shipSet(manifest, systems);
   } catch (e) {
     console.error(`sync: ${(e as Error).message} (exit 3)`);
@@ -121,14 +125,25 @@ function main(): void {
 
     // Drift is computed against the host as it stands, before this sync
     // writes; a retired or held-back path's story belongs to the retirement
-    // section, so the drift table never speaks about it too.
-    const drift = computeDrift(
-      hostRoot,
-      priorReceipt,
-      new Set([...retirement.retired, ...retirement.heldBack]),
-    );
-    const retired =
-      priorReceipt === undefined ? [] : assessRetirements(hostRoot, priorReceipt, retirement.retired);
+    // section, so the drift table never speaks about it too. A refusal while
+    // reading — a non-regular entry, an unreadable path — is the host's state
+    // rejecting the sync, the applyWrites precedent: classified 4, named.
+    let drift, retired;
+    try {
+      drift = computeDrift(
+        hostRoot,
+        priorReceipt,
+        new Set([...retirement.retired, ...retirement.heldBack]),
+      );
+      retired =
+        priorReceipt === undefined
+          ? []
+          : assessRetirements(hostRoot, priorReceipt, retirement.retired);
+    } catch (e) {
+      console.error(`sync: ${(e as Error).message} (exit 4)`);
+      process.exitCode = 4;
+      return;
+    }
 
     // The payload, at the pinned commit — never the working tree. A manifest
     // path the tree does not carry is nonconforming input, a different

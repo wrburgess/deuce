@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { assessRetirements, computeDrift, sha256Hex } from "./drift.ts";
@@ -69,6 +69,52 @@ test("a retired path is skipped by drift, whatever the host did to it", () => {
   assert.equal(report.kind, "report");
   assert.equal(report.kind === "report" && report.drifted.length, 0);
   assert.equal(report.kind === "report" && report.cleanCount, 1);
+});
+
+// The review's wave on PR #119: absence means ENOENT or ENOTDIR and nothing
+// else — an unreadable path is a refusal, never "already absent"; a
+// non-regular entry is refused by name, never read.
+
+test("an unreadable path is a refusal, never reported absent", () => {
+  const root = host({});
+  mkdirSync(join(root, "locked"));
+  writeFileSync(join(root, "locked/file.md"), "sealed\n");
+  chmodSync(join(root, "locked"), 0o000);
+  const receipt = {
+    commit: "c",
+    date: "d",
+    checksums: [{ path: "locked/file.md", sha256: sha256Hex(Buffer.from("sealed\n")) }],
+  };
+  try {
+    assert.throws(() => assessRetirements(root, receipt, ["locked/file.md"]));
+  } finally {
+    chmodSync(join(root, "locked"), 0o755);
+  }
+});
+
+test("a directory at an assessed path is refused by name, not read", () => {
+  const root = host({});
+  mkdirSync(join(root, "was-a-file.md"));
+  const receipt = {
+    commit: "c",
+    date: "d",
+    checksums: [{ path: "was-a-file.md", sha256: sha256Hex(Buffer.from("x\n")) }],
+  };
+  assert.throws(
+    () => assessRetirements(root, receipt, ["was-a-file.md"]),
+    /non-regular entry at 'was-a-file\.md'/,
+  );
+});
+
+test("a parent that is a file means the path is absent — ENOTDIR is absence", () => {
+  const root = host({ "a": "a file, not a directory\n" });
+  const receipt = {
+    commit: "c",
+    date: "d",
+    checksums: [{ path: "a/b.md", sha256: sha256Hex(Buffer.from("x\n")) }],
+  };
+  const states = assessRetirements(root, receipt, ["a/b.md"]);
+  assert.deepEqual(states, [{ path: "a/b.md", state: "already-absent" }]);
 });
 
 test("retirement states: intact, edited, and already-absent, each named", () => {

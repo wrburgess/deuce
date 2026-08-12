@@ -6,7 +6,7 @@
 // an empty report.
 
 import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync, readlinkSync } from "node:fs";
+import { lstatSync, readFileSync, readlinkSync } from "node:fs";
 import { join } from "node:path";
 import type { Receipt } from "./receipt.ts";
 
@@ -24,20 +24,29 @@ export function sha256Hex(content: Buffer): string {
 }
 
 // A symlink's identity is its target string — the same content the tree
-// records and the receipt checksummed at shipping time.
+// records and the receipt checksummed at shipping time. Absence means ENOENT
+// or ENOTDIR and nothing else: an unreadable path reported as "absent" is a
+// guard failing silent, and a dry run would exit clean on the false report
+// (PR #119's review). Anything that is neither a file nor a symlink — a
+// directory, a FIFO, a socket, a device — is refused by name, never read.
 function hostContent(hostRoot: string, path: string): Buffer | undefined {
   const target = join(hostRoot, path);
-  if (!existsSync(target) && !isSymlink(target)) return undefined;
-  if (isSymlink(target)) return Buffer.from(readlinkSync(target), "utf8");
-  return readFileSync(target);
-}
-
-function isSymlink(p: string): boolean {
+  let stat;
   try {
-    return lstatSync(p).isSymbolicLink();
-  } catch {
-    return false;
+    stat = lstatSync(target);
+  } catch (e) {
+    const code = (e as NodeJS.ErrnoException).code;
+    if (code === "ENOENT" || code === "ENOTDIR") return undefined;
+    throw e;
   }
+  if (stat.isSymbolicLink()) return Buffer.from(readlinkSync(target), "utf8");
+  if (!stat.isFile()) {
+    throw new Error(
+      `the host holds a non-regular entry at '${path}' — refused: drift and retirement read ` +
+        `only files and symlinks`,
+    );
+  }
+  return readFileSync(target);
 }
 
 // A retired path's story belongs to the retirement, not the drift table: a

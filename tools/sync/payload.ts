@@ -23,6 +23,14 @@ function git(repoRoot: string, args: string[]): Buffer {
   return execFileSync("git", ["-C", repoRoot, ...args], { maxBuffer: 64 * 1024 * 1024 });
 }
 
+// The manifest is read at the same pinned commit as the payload bytes: the
+// report claims "the manifest at that commit is the whole authority", and a
+// working-tree manifest could plan a removal the pinned commit never
+// sanctioned (PR #119's review).
+export function readManifestAtCommit(deuceRoot: string, commit: string): string {
+  return git(deuceRoot, ["show", `${commit}:config/payload.md`]).toString("utf8");
+}
+
 // One ls-tree over the pinned commit; a declared path the tree does not carry
 // is refused by name — the manifest and the tree disagree, and shipping the
 // remainder silently would report a payload nobody declared.
@@ -144,6 +152,14 @@ export function applyRetirements(hostRoot: string, retired: string[]): void {
       throw new Error(
         `the host holds a directory at retired path '${path}' — refused: replacing the host's ` +
           `directory structure is not the sync's judgment to make`,
+      );
+    }
+    // A FIFO, socket, or device is no more the sync's to unlink than a
+    // directory is to replace (PR #119's review).
+    if (!stat.isFile() && !stat.isSymbolicLink()) {
+      throw new Error(
+        `the host holds a non-regular entry at retired path '${path}' — refused: a sync removes ` +
+          `only files and symlinks`,
       );
     }
     rmSync(target);
