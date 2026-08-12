@@ -23,6 +23,9 @@
    part of the live set.
 4. [`rules/`](rules/) — standing authoring guidance, one file per domain. Read the file for the
    domain you are about to write in, at the moment of writing.
+5. [`.claude/skills/`](.claude/skills/) — the packaged procedures, one directory per recurring job.
+   The path is the tool's own, so each Skill is invocable by name; invoke the stage's Skill at the
+   moment you run that stage ([ADR 0027](adr/0027-skills-live-at-the-tools-own-path.md)).
 
 ## Work tracking
 

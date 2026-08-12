@@ -317,7 +317,8 @@ setting in force is declared in `config/gates.md`; `attested` and its floor are 
 Chapter 0.
 
 **Skill** — A packaged procedure the AC follows for a recurring job, one per directory at
-`skills/<name>/SKILL.md`, stating when it is invoked, its procedure, its terminal artifact, and when
+`.claude/skills/<name>/SKILL.md` — the path the AC's tool reads on its own, so a Skill is invocable
+by name (ADR 0027) — stating when it is invoked, its procedure, its terminal artifact, and when
 it stops and asks. deuce ships only its own skills; lessons from outside skill families are
 re-authored with attribution rather than copied in. A Skill enters only with receipts — a job the AC
 has repeatedly done.
