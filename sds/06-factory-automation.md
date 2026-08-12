@@ -52,33 +52,41 @@ A factory run is a **factory pass**: one bounded traversal of the queue. Invoked
 pass reads the tracker, advances what it may as far as it may, parks what it must, posts its run
 record, and ends.
 
-- **The pass is stateless: the tracker is the factory's only memory.** Which artifacts exist
-  determines each issue's next stage — Chapter 1's re-entry rule, written so that an orchestrator
-  would have something to resume from. The pass holds no board, no run file, no cursor. Why: a
-  second copy of the queue's state is a second source of truth, and the predecessor's factory
-  design spent its complexity exactly there — a card column beside the artifacts, plus an owed rule
-  for when the two disagreed ([ace #144](https://github.com/wrburgess/ace/issues/144)). Here they
-  cannot disagree, because there is no second one: the queue read through its labels is the only
-  board this system has.
-- **Idempotent by construction.** A pass that dies is re-run, not resumed; a trigger that
-  double-fires finds the artifacts the first pass posted and does nothing. The cost is stated
-  plainly: work inside a stage that has not reached the stage's terminal artifact is lost at any
-  interruption, and the next pass re-runs that stage from its predecessor's artifact. That is the
-  price of free re-entry, and it was priced in when Chapter 1 decoupled artifacts from gates.
+- **The tracker is the factory's authority; the pass also keeps run state, and the two are not
+  peers.** Which artifacts exist determines each issue's next stage — Chapter 1's re-entry rule,
+  written so that an orchestrator would have something to resume from — and no run state ever
+  overrides it. **Run state** is the pass's disposable working memory: work in flight inside a
+  stage — a draft not yet posted, a suspended session, the pass's own cursor — kept so an
+  interruption does not throw away the hours of a stage that had not reached its artifact.
+  Disposable is the definition, not a hope: at every stage boundary the artifacts alone decide, on
+  any disagreement the artifacts win, and deleting run state costs re-doing work, never
+  correctness. Why the asymmetry is the whole design: the predecessor's factory put a second
+  authority beside the artifacts — a card column — and owed a rule for when the two disagreed
+  ([ace #144](https://github.com/wrburgess/ace/issues/144)). Authority is what makes a second copy
+  dangerous; working memory that cannot outrank the tracker is a cache, and Chapter 1's rule that
+  stages communicate only through terminal artifacts stands untouched — run state never crosses a
+  stage boundary. The queue read through its labels stays the only board this system has.
+- **Idempotent at every boundary.** A trigger that double-fires finds the artifacts the first pass
+  posted and does nothing. A pass that dies resumes from its run state where the state survived,
+  and re-runs the stage from its predecessor's artifact where it did not — two paths to the same
+  place, which is what disposable means.
 - **Passes do not overlap.** One pass runs at a time; a trigger that fires while one is running
   starts nothing. Why: the status axis advances only when an artifact posts, so two concurrent
-  stateless passes would pick up the same issue and do the same stage twice. Serializing passes is
-  cheaper than inventing a claim protocol, and nothing at this queue's scale needs one. How many
-  issues one pass advances, and any parallelism inside one, is adaptive configuration; the
-  no-overlap rule is the floor.
+  passes would pick up the same issue and do the same stage twice — and two run states over one
+  queue is the disagreement problem this design just declined. Serializing passes is cheaper than
+  inventing a claim protocol, and nothing at this queue's scale needs one. How many issues one
+  pass advances, and any parallelism inside one, is adaptive configuration; the no-overlap rule is
+  the floor.
 - **A pass ends on one of four outcomes, and says which:** *drained* — nothing ready remains
   advanceable; *parked* — everything left is waiting at a gate or on a stop; *spent* — a declared
   budget ran out; *killed* — the kill switch. The **run record** is where it says so: what the pass
   picked up, what it advanced, where each parked issue waits, and why the pass ended — posted
-  durably on the tracker, its exact home configuration. Why the record is a floor and not a
-  nicety: an unattended pass that ends silently cannot be told from one that died, and this
-  standard already refuses to blur that distinction — *unreachable* and *unresponsive* are
-  different outcomes (Chapter 2), and so are *finished* and *gone*.
+  durably on the tracker, its exact home configuration. The run record and the run state are
+  different things, and the compound names keep them apart: the record is the pass's durable
+  account, on the tracker; the state is its private scratch, disposable by definition. Why the
+  record is a floor and not a nicety: an unattended pass that ends silently cannot be told from
+  one that died, and this standard already refuses to blur that distinction — *unreachable* and
+  *unresponsive* are different outcomes (Chapter 2), and so are *finished* and *gone*.
 
 ## The front door
 
@@ -208,9 +216,10 @@ in flight ends at the next artifact boundary, recorded as *killed*.
   on archaeology before it is spent on the problem. One act, documented where the triggers are
   declared, findable by an HC who has never read this chapter.
 - **Killing is always safe, because parking is always safe.** Nothing finishes silently and nothing
-  rolls back: whatever posted stands, whatever did not post never happened, and re-entry resumes
-  from the artifacts when the factory is re-armed. The stateless pass is what makes the kill switch
-  cheap — a factory with run state would need a shutdown protocol; this one needs a stop sign.
+  rolls back: whatever posted stands, run state waits or is discarded, and re-entry resumes from
+  the artifacts when the factory is re-armed. The tracker's authority is what makes the kill
+  switch cheap — a factory whose state could outrank the artifacts would need a shutdown protocol;
+  this one needs a stop sign.
 - The switch's concrete form is adaptive configuration. That it exists, is one act, and is
   documented, is canon.
 
@@ -291,7 +300,7 @@ carrying a real trade-off — and are recorded at ratification:
 
 | ADR | Decision it records |
 |---|---|
-| 0024 | The factory is a stateless pass over the tracker — no board, no daemon, no run state; re-entry recomputes everything from terminal artifacts, at the stated cost that work not yet posted is lost at any interruption. |
+| 0024 | The factory keeps run state as disposable working memory, never authority: the tracker alone decides at every stage boundary, the artifacts win every disagreement, and deleting run state costs re-doing work, never correctness. |
 | 0025 | The front door is open: the factory may start anything `status:ready`, bounded by who can set the label rather than by a second admission act — and Chapter 0's priority revisit is disposed as declared order, not a priority axis. |
 | 0026 | An unattended pass requires a minted credential conforming to its blast-radius declaration — the attended credential state never runs unattended — at the stated cost that the factory stays dark until the minting happens. |
 
@@ -301,9 +310,10 @@ carrying a real trade-off — and are recorded at ratification:
 `config/gates.md`, `config/credentials.md`, `config/capacity.md`, and `config/models.md`. The
 predecessor's factory epic, [ace #144](https://github.com/wrburgess/ace/issues/144), is the chief
 source — its board, trigger, and idempotency questions are re-cut here against a lifecycle that
-already communicates only through artifacts, which is why its hardest problems, the card-and-artifact
-disagreement and the resume protocol, do not appear: the designs that would have needed them were
-refused in Chapter 1. Its routing dependency is consumed through
+already communicates only through artifacts, which is why its hardest problems arrive small: the
+card-and-artifact disagreement rule it owed is answered in one clause — the artifacts win, run
+state is never authority — and its resume protocol shrinks to re-entry plus a disposable cache.
+Its routing dependency is consumed through
 [ace #77](https://github.com/wrburgess/ace/issues/77), cited in `config/models.md`. The graduated
 merge the factory consumes unchanged is
 [the reboot charter's §4](https://github.com/wrburgess/ace/blob/main/docs/superpowers/specs/2026-08-01-deuce-reboot-design.md).
