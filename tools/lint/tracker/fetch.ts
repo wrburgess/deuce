@@ -36,12 +36,17 @@ function ghJson(args: string[]): unknown {
   }
 }
 
+// states is explicit on both connections: the platform's unfiltered default
+// already returns every state (measured on PR #113 — the live run's 58 issues
+// and 49 standing records are the whole tracker, closed and merged included),
+// but the invariant is "every issue", and an implicit default is a proxy for
+// a declared one (raised by the contractor review on PR #113).
 const ISSUES_QUERY = `
 query($owner: String!, $name: String!, $after: String) {
   repository(owner: $owner, name: $name) {
-    issues(first: 100, after: $after) {
+    issues(first: 100, after: $after, states: [OPEN, CLOSED]) {
       pageInfo { hasNextPage endCursor }
-      nodes { number title body labels(first: 100) { nodes { name } } }
+      nodes { number title body labels(first: 100) { pageInfo { hasNextPage } nodes { name } } }
     }
   }
 }`;
@@ -49,7 +54,7 @@ query($owner: String!, $name: String!, $after: String) {
 const PRS_QUERY = `
 query($owner: String!, $name: String!, $after: String) {
   repository(owner: $owner, name: $name) {
-    pullRequests(first: 50, after: $after) {
+    pullRequests(first: 50, after: $after, states: [OPEN, CLOSED, MERGED]) {
       pageInfo { hasNextPage endCursor }
       nodes {
         number title body
@@ -71,6 +76,32 @@ query($owner: String!, $name: String!, $number: Int!, $after: String) {
 interface Page<T> {
   pageInfo: { hasNextPage: boolean; endCursor: string | null };
   nodes: T[];
+}
+
+export interface IssueNode {
+  number: number;
+  title: string;
+  body: string | null;
+  labels: { pageInfo: { hasNextPage: boolean }; nodes: { name: string }[] };
+}
+
+// Exported for its rejecting branch's test. The guard is the contractor
+// review's must-fix on PR #113: an issue whose labels overflow the fetched
+// page is refused loudly — the lint must never certify "exactly one label
+// per axis" over labels the fetch cannot see. Seen failing before the guard
+// existed; the run is on PR #113.
+export function shapeIssue(node: IssueNode): TrackerIssue {
+  if (node.labels.pageInfo.hasNextPage) {
+    throw new Error(
+      `issue #${node.number} carries more labels than one fetch page — refusing to certify axes over labels the fetch cannot see`,
+    );
+  }
+  return {
+    number: node.number,
+    title: node.title,
+    body: node.body ?? "",
+    labels: node.labels.nodes.map((l) => l.name),
+  };
 }
 
 function graphql(query: string, fields: Record<string, string | number | null>): unknown {
@@ -104,15 +135,10 @@ export function fetchSnapshot(): TrackerSnapshot {
   let after: string | null = null;
   do {
     const repository = graphql(ISSUES_QUERY, { owner, name, after }) as {
-      issues: Page<{ number: number; title: string; body: string | null; labels: { nodes: { name: string }[] } }>;
+      issues: Page<IssueNode>;
     };
     for (const node of repository.issues.nodes) {
-      issues.push({
-        number: node.number,
-        title: node.title,
-        body: node.body ?? "",
-        labels: node.labels.nodes.map((l) => l.name),
-      });
+      issues.push(shapeIssue(node));
     }
     after = repository.issues.pageInfo.hasNextPage ? repository.issues.pageInfo.endCursor : null;
   } while (after !== null);
