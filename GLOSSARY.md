@@ -125,6 +125,16 @@ compound name keeps the two apart.
 decision, prevent a class of defect, or change what ships. It binds review depth, issue scope, and
 the SDS itself.
 
+**Factory** — The lifecycle run unattended: a ready issue advances through the same stages, Skills,
+terminal artifacts, gates, stops, and floors, with no human keystroke between the two gates. Not a
+second lifecycle: automation adds a trigger, a route for stops, and records — never a stage, a
+setting, or a merge authority. Ratified in Chapter 6.
+
+**Factory pass** — One bounded traversal of the queue by the factory: invoked by a trigger, it
+advances what it may, parks what it must, posts its run record, and ends on one of four recorded
+outcomes — drained, parked, spent, or killed. Passes never overlap. The compound name keeps it
+apart from the triage pass.
+
 **Fail-first evidence** — The requirement that a fix ships with the test that failed before it, so
 the test is known to detect the defect rather than merely known to pass.
 
@@ -206,6 +216,10 @@ merges), `TASK:` (one branch, one pull request), `BUG:` (a defect, with a reprod
 (research feeding a decision, whose terminal artifact is a Readout), and `CHORE:` (mechanical
 maintenance). Work fitting none of them defaults to `TASK:`.
 
+**Kill switch** — The one documented act that stops the factory: every trigger disarmed, no new
+pass starting, and a pass in flight ending at the next artifact boundary, recorded as killed. Its
+concrete form is configuration; that it exists, is one act, and is documented, is canon.
+
 **Learning System** — The system that turns field input into reviewed configuration changes, across
 four channels: vendor, practitioner, platform observation, and findings from the fleet. Ratified in
 Chapter 4.
@@ -275,6 +289,15 @@ framework and the commit it claims to have reviewed. Ratified in Chapter 2.
 **Rule** — Standing authoring guidance the AC reads while working, in `rules/`: the judgment half of
 the contracts, which no automated check can decide. A rule enters only with receipts — cited evidence
 of the recurring class of defect it prevents. deuce starts with none.
+
+**Run record** — The durable account a factory pass posts on the tracker before it ends: what it
+picked up, what it advanced, where each parked issue waits, and why the pass ended. It exists so a
+pass that finished can be told from one that died.
+
+**Run state** — A factory pass's disposable working memory: work in flight inside a stage, kept so
+an interruption does not discard it. Never authority — the artifacts alone decide at every stage
+boundary, they win every disagreement, and deleting run state costs re-doing work, never
+correctness. Distinct from the run record, the pass's durable account on the tracker.
 
 **Scan** — The table half of a Brief, carrying the Readout's discipline: the health verdict first,
 state in tables, next steps, and what the work needs from the HC, with uncertainty on its own
