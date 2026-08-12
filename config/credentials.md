@@ -127,15 +127,27 @@ the two lines above, whole.
 
 - The holder can write plausible-looking tracker state — labels, comments, run records — and push
   branches here. The artifacts are the lifecycle's authority, so forged tracker state can steer
-  work; what bounds the damage is that nothing merges except through the Ship gate, which this
-  credential cannot perform.
+  work.
+- **The worst of it, stated plainly: the holder can land changes on `main`** by opening a pull
+  request from its own branch and merging it — the merge endpoint takes exactly the contents and
+  pull-request writes this token holds, and no required-review rule stands in the way (a lone
+  maintainer cannot approve their own pull requests, so none is set). Protection on `main` blocks
+  rewriting history, not merging a fresh pull request.
 - **Containment:** revoke at the token's settings page on the HC's account; rotation on any
-  suspicion.
+  suspicion. A merge is not a force-push — whatever a leaked key landed is visible in history and
+  revertible.
 
 ### What it deliberately cannot do
 
-Least privilege, stated as cannots: merge · force-push to or delete `main` · administer the
-repository or its protection · reach any other repository · touch workflows.
+Least privilege, stated as cannots — and split honestly by what holds each one:
+
+- **Platform-held** (scopes and protection deny it): force-push to or delete `main` · administer
+  the repository or its protection · reach any other repository · touch workflows.
+- **Standard-held, not platform-held:** merging. The scopes this token needs for its job are the
+  same ones the merge endpoint takes, so the platform does not deny it — the Ship gate's floor
+  (never on the AC's own say-so) is held by canon, the run record, and revocation. The platform
+  closure — a required-approval rule — is one setting away and deliberately not set: a lone
+  maintainer cannot approve their own pull requests, so it would block the HC's own merges too.
 
 ### The minting rule
 
@@ -164,8 +176,9 @@ minted form is OpenAI's to issue, not this repository's.
 
 - **What it reaches:** the working tree the summons points it at, read on this machine under that
   account, and OpenAI's service as that account.
-- **What it can destroy:** nothing of the tracker's — it holds no tracker key. A misdirected run's
-  reach ends at the working tree it was pointed at, which git and the artifacts reconstruct.
+- **What it can destroy:** nothing of the tracker's — it holds no tracker key. On this machine its
+  bound is the CLI's own sandbox posture, which this entry does not vouch for; what is checkable
+  from here is that a damaged working tree is reconstructed by git and the artifacts.
 - **What breaks if it leaks:** the ChatGPT account itself. Containment is OpenAI's: sign out and
   rotate the account's password; the roster's readiness check (`codex login status`) then fails
   closed — an unreachable reviewer stops a run rather than certifying it
