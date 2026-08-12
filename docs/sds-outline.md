@@ -16,12 +16,12 @@
 The umbrella standard for the whole arc of building software with AI Contributors: taking a problem,
 shaping it, building the solution, releasing it, and operating it over the long run. The per-issue
 development work at its core is specified by the
-[Development Lifecycle](development-lifecycle.md); this document is the map that lifecycle sits
+Development Lifecycle (`development-lifecycle.md`); this document is the map that lifecycle sits
 inside — everything before an issue exists and everything after a PR merges.
 
 It is **business-neutral**: it names no company, product, stack, or vendor. Wherever a concrete tool
 or policy choice is needed, this standard declares a **host slot** — a named decision the Host App
-fills in [`PROJECT.md`](../../PROJECT.md) (or a stack overlay). The standard defines the bar; the
+fills in [`PROJECT.md`](https://github.com/wrburgess/ace/blob/main/PROJECT.md) (or a stack overlay). The standard defines the bar; the
 host picks the mechanism.
 
 This is a **living document** (origin: [#155](https://github.com/wrburgess/ace/issues/155)). Each
@@ -100,7 +100,7 @@ got you there. Nothing enters Plan without a brief to point at.
 ### 3. Plan
 
 Operates **above** the per-issue lifecycle: it turns one problem brief into a stream of issues.
-(Per-issue Assess/Devise are specified in the [Development Lifecycle](development-lifecycle.md) and
+(Per-issue Assess/Devise are specified in the Development Lifecycle (`development-lifecycle.md`) and
 are not re-specified here.)
 
 - **Decompose** — break the brief into compartmentalized units, each independently deliverable and
@@ -124,7 +124,7 @@ are not re-specified here.)
 ### 4. Develop
 
 The per-issue inner loop. **Delegates wholesale to the
-[Development Lifecycle](development-lifecycle.md)** (Assess → Plan → Implement → Verify → Deliver,
+Development Lifecycle (`development-lifecycle.md`)** (Assess → Plan → Implement → Verify → Deliver,
 plus review-response): implementation, self-review, independent cross-family review, revision, and
 the gates. Two additions at the system level:
 
@@ -204,7 +204,7 @@ about the same defect deduplicate into one issue.
 ## Part 2 — Cross-cutting standards
 
 These apply at every stage. The umbrella states each standard's **bar**; the working patterns live
-in the [Rules Layer](../../AGENTS.md#rules-layer) (`rules/*.md`) and are never duplicated here.
+in the [Rules Layer](https://github.com/wrburgess/ace/blob/main/AGENTS.md#rules-layer) (`rules/*.md`) and are never duplicated here.
 
 ### Security
 

@@ -4,12 +4,19 @@
   "type": "module",
   "scripts": {
     "gate": "node tools/gate/run.ts",
+    "lint:classes": "node tools/lint/run.ts classes",
     "lint:config": "node tools/config/run.ts",
+    "lint:gates": "node tools/lint/run.ts gates",
+    "lint:glossary": "node tools/lint/run.ts glossary",
+    "lint:links": "node tools/lint/run.ts links",
     "test": "node --test 'tools/**/*.test.ts'",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@types/commonmark": "^0.27.10",
     "@types/node": "^26.1.2",
+    "commonmark": "^0.31.2",
+    "github-slugger": "^2.0.0",
     "typescript": "^7.0.2"
   }
 }

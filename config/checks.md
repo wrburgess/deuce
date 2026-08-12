@@ -1,6 +1,6 @@
 ---
-date: 2026-08-03
-source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54
+date: 2026-08-11
+source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54; the four document-lint checks added at the Direction gate on #55
 checks:
   - name: typecheck
     command: npm run typecheck
@@ -9,6 +9,14 @@ checks:
     command: npm test
   - name: dated-and-sourced
     command: npm run lint:config
+  - name: links-resolve
+    command: npm run lint:links
+  - name: class-grammar
+    command: npm run lint:classes
+  - name: gate-setting
+    command: npm run lint:gates
+  - name: glossary-reverse
+    command: npm run lint:glossary
 ---
 
 # The quality gate
@@ -81,8 +89,30 @@ date of valid shape all pass. The residue is routed to the hygiene sweep, which 
 re-verifies `config/` ([Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's
 home*) — never dropped.
 
+## What the document lint covers, and what it does not
+
+The four checks under `tools/lint/` read the tracked markdown documents; each names what it read
+in its own output, and the two that cannot see everything say so there too
+([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *Every check declares its blind spot*):
+
+- **`links-resolve`** probes internal links and heading anchors only. External links are counted
+  and never probed — the gate runs offline — and links carried in raw HTML are not read.
+- **`gate-setting`** prints its declared blind spot on every run, green or red: a sentence
+  carrying a setting's meaning while naming neither a gate nor a value is not reached, and the
+  allowed homes are not scanned. Both restatements were measured against the repository before
+  adoption, per [ADR 0013](../adr/0013-checks-restated-structurally-with-declared-blind-spots.md);
+  the measurements are recorded on #55.
+- **`glossary-reverse`** reports and never fails: an absent term is a staleness signal routed to
+  the hygiene sweep. The forward direction is declared undecidable and stays with review
+  ([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *A restatement is measured before it is
+  adopted*).
+- **None of the four carries `requires`.** They need `commonmark` and `github-slugger`, which are
+  library files, not executables — a directory or file probe would be the PR #59 defect again.
+  A missing library is classified by the wiring as *could not run*, naming `bash bin/setup`.
+
 ## What is not here yet
 
-The checks [Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The configuration lint* owes are
-tracked under #55 and #56, and they join this list as they are built. This file growing is the
-intended mechanism, not evidence it was declared too small.
+The tracker-reading half of the configuration lint
+([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The configuration lint*) is tracked under
+#56 and joins this list when it is built. This file growing is the intended mechanism, not
+evidence it was declared too small.
