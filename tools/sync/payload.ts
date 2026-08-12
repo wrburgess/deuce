@@ -133,8 +133,12 @@ export function applyRetirements(hostRoot: string, retired: string[]): void {
     let stat;
     try {
       stat = lstatSync(target);
-    } catch {
-      continue;
+    } catch (e) {
+      // Absence is the one expected miss; any other stat failure is the
+      // host's state rejecting the removal, and it crashes classified, never
+      // silently skips.
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw e;
     }
     if (stat.isDirectory()) {
       throw new Error(

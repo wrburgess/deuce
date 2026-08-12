@@ -120,8 +120,13 @@ function main(): void {
     const retirement = planRetirements(priorReceipt, manifest);
 
     // Drift is computed against the host as it stands, before this sync
-    // writes; a retired path's story belongs to the retirement table.
-    const drift = computeDrift(hostRoot, priorReceipt, new Set(retirement.retired));
+    // writes; a retired or held-back path's story belongs to the retirement
+    // section, so the drift table never speaks about it too.
+    const drift = computeDrift(
+      hostRoot,
+      priorReceipt,
+      new Set([...retirement.retired, ...retirement.heldBack]),
+    );
     const retired =
       priorReceipt === undefined ? [] : assessRetirements(hostRoot, priorReceipt, retirement.retired);
 
