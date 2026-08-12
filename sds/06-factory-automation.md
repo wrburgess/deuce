@@ -72,8 +72,8 @@ record, and ends.
   issues one pass advances, and any parallelism inside one, is adaptive configuration; the
   no-overlap rule is the floor.
 - **A pass ends on one of four outcomes, and says which:** *drained* — nothing ready remains
-  advanceable; *parked* — everything left is waiting at a gate or on a stop; *spent* — the budget
-  below ran out; *killed* — the kill switch. The **run record** is where it says so: what the pass
+  advanceable; *parked* — everything left is waiting at a gate or on a stop; *spent* — a declared
+  budget ran out; *killed* — the kill switch. The **run record** is where it says so: what the pass
   picked up, what it advanced, where each parked issue waits, and why the pass ended — posted
   durably on the tracker, its exact home configuration. Why the record is a floor and not a
   nicety: an unattended pass that ends silently cannot be told from one that died, and this
@@ -150,24 +150,24 @@ setting is in force, which is `config/gates.md`'s alone:
   with the artifacts posted, and the HC's day is two kinds of decision instead of five stages of
   driving.
 
-## The two preconditions
+## The credential precondition
 
-No pass runs unattended until two declarations exist, and neither is this chapter's to write:
+No pass runs unattended until its credentials conform, and the rule is Chapter 0's third trust
+rule with one clause made explicit. `config/credentials.md` already distinguishes a credential's
+two states; this chapter makes the split canon: **the attended state never runs unattended.** The
+HC's own login reaches everything the HC reaches, and its declared blast radius ends with
+*watched* — with the HC away, that declaration is void. Every credential a pass touches — the
+tracker's, the sync's — has a minted form conforming to its declaration before the first
+unattended pass, and the factory's own tracker credential owes its entry before that pass exists
+to use it.
 
-1. **A conforming credential.** Chapter 0's third trust rule already requires a written
-   blast-radius declaration before automation uses a credential, and `config/credentials.md`
-   already distinguishes a credential's two states. This chapter makes the split canon: **the
-   attended state never runs unattended.** The HC's own login reaches everything the HC reaches,
-   and its declared blast radius ends with *watched* — with the HC away, that declaration is void.
-   Every credential a pass touches — the tracker's, the sync's — has a minted form conforming to
-   its declaration before the first unattended pass, and the factory's own tracker credential owes
-   its entry before that pass exists to use it.
-2. **A declared budget.** Chapter 0 budgets the AC's usage per cycle and `config/capacity.md`
-   holds the number; unattended runs are the first consumer that needs the number enforced rather
-   than written down. So: **an unattended pass runs only under a declared budget, and spending it
-   ends the pass** — recorded as *spent* in the run record, resumed by a later trigger under a
-   later budget. Why a floor and not a tuning knob: an attended run that overspends is noticed by
-   the person watching it; an unattended one is noticed only by what it consumed.
+**The budget is a knob, never a precondition.** Chapter 0 budgets the AC's usage per cycle and
+`config/capacity.md` holds the number when the HC declares one; the factory is its first enforcer:
+a declared budget ends the pass when spent — recorded as *spent* in the run record, resumed by a
+later trigger under a later cycle's budget. An undeclared budget stops nothing: the pass runs
+unbudgeted, exactly as attended work does. Why the knob is worth naming even unset: an attended
+run that overspends is noticed by the person watching it; an unattended one is noticed only by
+what it consumed — so the day the number matters, the enforcement already exists.
 
 ## Routing, consumed
 
@@ -235,8 +235,9 @@ ratification:
 
 - **No orchestrator existed.** `execute` was unbuilt, and every pass this repository had run had
   the HC in it.
-- **Neither precondition was met.** No credential's automated form was minted, and the declared
-  budget was none at all — so no pass could run unattended, by this chapter's own floors.
+- **The credential precondition was unmet.** No credential's automated form was minted — so no
+  pass could run unattended, by this chapter's own floor. And no budget was declared: the first
+  unattended passes run unbudgeted unless a number lands first.
 - **`attested`'s second leg was unbuilt.** Chapter 3's independent gate re-run did not exist, so a
   factory pass could not have merged at any setting.
 - **Nothing was scheduled.** The sweep and the sync remained HC-called, per their declarations.
@@ -265,7 +266,7 @@ during the founding. There is no ahead left.
 | `delegated` — Direction gate | Fully specified: both mechanisms Chapter 1 named now exist; in force only when the gate's declaration says so |
 | `attested` — Ship gate | Unchanged, and still short its second leg — Chapter 3's independent re-run; no factory pass merges before it exists |
 | The sweep and the sync | Schedulable, and the sync dispatchable fleet-wide; each waits on its own declarations and the credential floor |
-| Capacity | Gains its first enforcer: no unattended pass without a declared budget |
+| Capacity | Gains its first enforcer: a declared budget ends the pass when spent; declaring one stays the HC's call |
 | Chapter 0's priority revisit | Disposed: the factory needs an order, not a priority axis, and the order is configuration |
 | The fleet | A host's factory is its own: the Skill ships by the manifest's classes, the floors travel whole (Chapter 5), and every declaration — triggers, budget, credentials — is the host's |
 | The bootstrap exception | Spent |
@@ -279,7 +280,7 @@ Declarations `config/` owes when this chapter's work runs, each dated and source
 |---|---|
 | The factory's triggers and cadence, and the ready set's order | Scheduling economics and platform mechanism, the two most volatile things this chapter touches |
 | The per-stage model and effort table | Replaces `config/models.md`'s single declaration on that file's own terms; platform-coupled by definition |
-| The unattended budget | `config/capacity.md`'s number, at last with a consumer that enforces it |
+| The unattended budget | `config/capacity.md`'s number, enforced by the pass when one is declared |
 | The factory's credential rows | `config/credentials.md` entries under its minting rule, the tracker credential first |
 | The kill switch's concrete form, and the stop-notification path | Platform-coupled; both exist as canon only in what they must accomplish |
 
@@ -292,7 +293,7 @@ carrying a real trade-off — and are recorded at ratification:
 |---|---|
 | 0024 | The factory is a stateless pass over the tracker — no board, no daemon, no run state; re-entry recomputes everything from terminal artifacts, at the stated cost that work not yet posted is lost at any interruption. |
 | 0025 | The front door is open: the factory may start anything `status:ready`, bounded by who can set the label rather than by a second admission act — and Chapter 0's priority revisit is disposed as declared order, not a priority axis. |
-| 0026 | An unattended pass requires a minted credential and a declared budget — the attended credential state never runs unattended — at the stated cost that the factory stays dark until both declarations exist. |
+| 0026 | An unattended pass requires a minted credential conforming to its blast-radius declaration — the attended credential state never runs unattended — at the stated cost that the factory stays dark until the minting happens. |
 
 ---
 
