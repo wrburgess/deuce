@@ -85,7 +85,7 @@ function main(): void {
   // The declared bounds are enforced at dispatch, not trusted to the caller.
   const lensErrors = checkLensSelection(
     values.lens ?? [],
-    parseLensMenu(reviewConfig),
+    parseLensMenu(reviewConfig).map((entry) => entry.lens),
     parseLensSetSize(reviewConfig),
     values.prose ?? false,
   );

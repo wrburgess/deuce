@@ -1,12 +1,13 @@
+---
+date: 2026-08-03
+source: the HC's session configuration and the Direction gate on #13; the named model removed at the Direction gate on #44
+---
+
 # Per-stage model and effort
 
 Which model and effort level runs each lifecycle stage. This is adaptive configuration under
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*; the stages themselves
 are canon and are not restated here.
-
-- **Date:** 2026-08-03
-- **Source:** the HC's session configuration, and the Direction gate on #13; the removal of the
-  named model, the Direction gate on #44.
 
 ## Declaration
 

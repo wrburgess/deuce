@@ -1,3 +1,8 @@
+---
+date: 2026-08-04
+source: the HC's decision on #62, superseding the `attested` setting recorded at the Direction gate on #42
+---
+
 # Gate settings
 
 Which setting each of the two gates runs at — the values only. What each setting means, the
@@ -7,11 +12,9 @@ graduated shape, and the floors no setting reaches are canon, at
 is adaptive configuration under [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive
 layer's home*.
 
-- **Date:** 2026-08-04
-- **Source:** the HC's decision on #62, superseding the `attested` setting recorded at the
-  Direction gate on #42. The reason, dated: during bootstrap the HC reads every Delivery Record
-  anyway, so the per-merge attestation ceremony buys autonomy this repository does not yet use.
-  `attested` remains sanctioned by canon and available when that changes.
+Why `required` now, dated to the decision: during bootstrap the HC reads every Delivery Record
+anyway, so the per-merge attestation ceremony buys autonomy this repository does not yet use.
+`attested` remains sanctioned by canon and available when that changes.
 
 ## Ship gate
 

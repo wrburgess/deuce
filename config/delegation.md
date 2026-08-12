@@ -1,3 +1,8 @@
+---
+date: 2026-08-02
+source: the Direction gate on #13
+---
+
 # Delegation
 
 What work the AC offloads, to which model, at what effort, and the shape of what must come back.
@@ -5,9 +10,6 @@ This is adaptive configuration under [Chapter 1](../sds/01-lifecycle-and-skills.
 layer's home*. What delegation must always honor — how delegated work is delivered, and what
 counts as done — is canon, at [Chapter 1](../sds/01-lifecycle-and-skills.md) → *Stages communicate
 only through terminal artifacts*, and is not restated here.
-
-- **Date:** 2026-08-02
-- **Source:** #13.
 
 ## Declaration
 

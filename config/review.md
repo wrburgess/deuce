@@ -1,3 +1,27 @@
+---
+date: 2026-08-04
+source: the Direction gate on #33; the lens menu, the Direction gate on #47; the fix-verification limit and findings batching, the HC's loop-once direction on #62; machine-read values moved to frontmatter on #54
+lenses:
+  - lens: does this check measure the invariant it claims, or a proxy for it?
+    class: A check that measures something other than the invariant it claims
+  - lens: did this fix remove or narrow something it needed to keep?
+    class: A fix that removes or narrows something it needed to keep
+  - lens: does any guard fail open or fail silent on input it did not expect?
+    class: A guard that fails open or fails silent on input it did not expect
+  - lens: which path does this invariant not cover?
+    class: An invariant enforced on one path and leaking through another
+  - lens: is this a restatement of content another document owns?
+    class: Restatement of content another document owns
+  - lens: is any statement here true only as of when it was written?
+    class: A statement true when written whose condition has since passed
+lens-set-size: 3
+roster:
+  - reviewer: Codex CLI (OpenAI)
+    mechanism: codex exec
+    response: the output it returns; the summons and the returned review both land on the pull request
+    readiness: codex login status
+---
+
 # Review configuration
 
 The values the Review System runs on — who can be summoned and how reachability is checked, which
@@ -7,18 +31,17 @@ itself is questioned. The rules these values instantiate are canon, at
 restated here; this is adaptive configuration under
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*.
 
-- **Date:** 2026-08-04
-- **Source:** the Direction gate on #33; the lens menu, the Direction gate on #47; the
-  fix-verification limit and findings batching, the HC's loop-once direction on #62.
+**The machine-read values live in the frontmatter above and nowhere else** — the roster, the lens
+menu, and the lens-set size. [`tools/review/roster.ts`](../tools/review/roster.ts) and
+[`tools/review/lenses.ts`](../tools/review/lenses.ts) parse them there
+([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *Parse, never pattern-match*); the body
+carries only the reasoning behind each value.
 
 ## Reviewer roster
 
-| Reviewer | Mechanism | Response | Readiness check |
-|---|---|---|---|
-| **Codex CLI** (OpenAI) | Synchronous — invoked with `codex exec` | The output it returns; the summons and the returned review both land on the pull request | `codex login status` — side-effect-free |
-
 - **Proof at declaration:** v0.146.0 installed; `codex login status` exited 0 ("Logged in using
-  ChatGPT") on 2026-08-03.
+  ChatGPT") on 2026-08-03. The readiness check is side-effect-free, per
+  [Chapter 2](../sds/02-review-and-findings.md).
 - **Undeclared until proven:** GitHub Copilot review (present, review path unproven), a second
   Claude model via the Claude CLI (present, no side-effect-free auth check found), `gemini` (not
   installed). A candidate enters as a row when its readiness check has actually run.
@@ -28,20 +51,17 @@ restated here; this is adaptive configuration under
 - **One lens per class** in [`findings/classes.md`](../findings/classes.md), which carries the
   admission rule and the receipts behind each
   ([Chapter 2](../sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count) →
-  *Bounded by lens set*).
-- `does this check measure the invariant it claims, or a proxy for it?` — [class](../findings/classes.md#a-check-that-measures-something-other-than-the-invariant-it-claims)
-- `did this fix remove or narrow something it needed to keep?` — [class](../findings/classes.md#a-fix-that-removes-or-narrows-something-it-needed-to-keep)
-- `does any guard fail open or fail silent on input it did not expect?` — [class](../findings/classes.md#a-guard-that-fails-open-or-fails-silent-on-input-it-did-not-expect)
-- `which path does this invariant not cover?` — [class](../findings/classes.md#an-invariant-enforced-on-one-path-and-leaking-through-another)
-- `is this a restatement of content another document owns?` — [class](../findings/classes.md#restatement-of-content-another-document-owns)
-- `is any statement here true only as of when it was written?` — [class](../findings/classes.md#a-statement-true-when-written-whose-condition-has-since-passed)
+  *Bounded by lens set*). Each frontmatter entry pairs the lens with the class-index heading it
+  derives from, verbatim; the drift guard in
+  [`tools/review/lenses.test.ts`](../tools/review/lenses.test.ts) holds the two sets one to one,
+  in both directions.
 - Canon's own prose lenses remain canon-sourced and gated to prose subjects
   ([Chapter 2](../sds/02-review-and-findings.md#verifying-prose) → *Verifying prose*). The
-  restatement lens above is this menu's, and is summonable for a code subject.
+  restatement lens in the menu is this menu's, and is summonable for a code subject.
 
 ## Lens-set size
 
-- **3 lenses**, plus the permanent lens every set carries.
+- The declared size is in the frontmatter; every set also carries the permanent lens.
 - Evidence behind the number: the predecessor's scoped review converged after a single finding,
   and its lowest-value tail was rounds repeating a lens already paid
   ([ace #161](https://github.com/wrburgess/ace/issues/161)).

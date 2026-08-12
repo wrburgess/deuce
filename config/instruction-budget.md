@@ -1,3 +1,8 @@
+---
+date: 2026-08-02
+source: https://code.claude.com/docs/en/memory, read 2026-08-02; re-verified 2026-08-05 by the first hygiene sweep (#74)
+---
+
 # Instruction-file line budget
 
 A soft ceiling on the always-resident instruction file. The number is adaptive configuration under
@@ -5,11 +10,9 @@ A soft ceiling on the always-resident instruction file. The number is adaptive c
 vendor guidance that moves; it is exactly the class of statement
 [ADR 0004](../adr/0004-invariant-adaptive-split.md) keeps out of canon and out of immutable records.
 
-- **Date:** 2026-08-02
-- **Source:** <https://code.claude.com/docs/en/memory>, read 2026-08-02 — "target under 200 lines
-  per CLAUDE.md file. Longer files consume more context and reduce adherence." Re-verified
-  2026-08-05 by the first hygiene sweep (#74): the quoted guidance and the imports-load-at-launch
-  claim both stand verbatim.
+The vendor's words, quoted at capture: "target under 200 lines per CLAUDE.md file. Longer files
+consume more context and reduce adherence." The first hygiene sweep (#74) found the quoted
+guidance and the imports-load-at-launch claim both standing verbatim.
 
 ## Declaration
 
