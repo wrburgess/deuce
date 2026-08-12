@@ -90,9 +90,9 @@ unattended pass to it.
 
 ### The two states
 
-- **Attended (the only state in use today):** the HC's own `gh` login, with the HC watching. Its
-  reach is everything that account reaches; every pass so far — the proving run under #106
-  included — has run in this state, and no unattended pass ever does.
+- **Attended (every pass to date; in force until the first unattended pass — #108's, whose run
+  record is this line's update trigger):** the HC's own `gh` login, with the HC watching. Its
+  reach is everything that account reaches, and no unattended pass ever runs in it.
 - **Automated (bound here; its minted row lands below):** one fine-grained personal access token,
   this repository only — the Direction gate on #107, Option A.
 
@@ -151,8 +151,9 @@ Least privilege, stated as cannots — and split honestly by what holds each one
 
 ### The minting rule
 
-- **No unattended pass runs until a credential conforming to this entry exists** — ADR 0026's
-  floor, restated nowhere else in this file.
+- **The floor is [ADR 0026](../adr/0026-unattended-passes-require-a-minted-credential.md)'s, and
+  owned there.** This entry adds only what conforming means for this credential: the automated
+  state as bound above, with the row below as its minted form.
 - **The minted row, 2026-08-11** — the stop and its answer on #107:
 
   | Field | As minted |
@@ -183,6 +184,10 @@ minted form is OpenAI's to issue, not this repository's.
   rotate the account's password; the roster's readiness check (`codex login status`) then fails
   closed — an unreachable reviewer stops a run rather than certifying it
   ([Chapter 2](../sds/02-review-and-findings.md) → *Verify's external half, now written*).
+- **The readiness check's declared blind spot:** it decides that *a* login is reachable, never
+  *whose* — a substituted, authenticated account passes it, and no side-effect-free probe decides
+  identity. What stands against substitution is custody of this machine, and rotation on any
+  doubt; the blind spot is declared rather than papered over.
 - **The floor:** no unattended pass summons a reviewer before this declaration exists. This entry
   is that declaration; the summons inherits the attended state's posture whole, and there is no
   second, wider state to bind.

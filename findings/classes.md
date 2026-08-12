@@ -46,7 +46,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A guard that fails open or fails silent on input it did not expect
 
-8 instances, across 3 pull requests — PR #39, PR #41, PR #59.
+9 instances, across 4 pull requests — PR #39, PR #41, PR #59, PR #112.
 
 - **PR #39, finding 2** — a malformed accepted register parsed as an empty list, so the summons carried no accepted findings and said nothing about it.
 - **PR #39, finding 5** — the register parser read past its own section into whatever followed.
@@ -56,6 +56,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #41, finding 3** — canon's prose lenses were accepted for any subject, which made them a route around the menu.
 - **PR #59, finding 1** — the frontmatter parser closed its vocabulary inside a check entry and left the top level open, so an unrecognized key was accepted and silently discarded.
 - **PR #59, finding 4** — scalars and lists were separate namespaces and each duplicate guard checked only its own, so one key declared twice in two shapes was accepted twice.
+- **PR #112, finding 1** — `codex login status` decides that a login is reachable, never whose: a substituted, authenticated account passes readiness and a run proceeds under an undeclared credential. The delta: the guard is an external CLI's own check, so the closure is a declared blind spot plus machine custody, not a stronger probe.
 
 ### An invariant enforced on one path and leaking through another
 
@@ -71,7 +72,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### Restatement of content another document owns
 
-9 instances, across 6 pull requests — PR #41, PR #43, PR #51, PR #75, PR #76, PR #98.
+10 instances, across 7 pull requests — PR #41, PR #43, PR #51, PR #75, PR #76, PR #98, PR #112.
 
 - **PR #41, finding 2** — four Skill steps restated canon mechanics the chapter owns.
 - **PR #43, finding 1** — a configuration declaration restated the mechanics behind the value it declared.
@@ -82,10 +83,11 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #98, posture-pass finding** — a new Skill's compose step carried the reference grammar's content and a Readout rule's phrasing beside their links. The delta: caught and fixed by the AC's own pre-summons pass, before the reviewer saw it.
 - **PR #98, finding 1** — the same Skill's stops section. The delta: the restated sentence is one the six stage Skills all carry as convention, copied into a seventh Skill whose own charter it then contradicted.
 - **PR #98, finding 2** — the first instance in a Skill's bundled reference file rather than a Skill body, a chapter, or CLAUDE.md: the formats reference enumerated four Readout rules beside its link to them.
+- **PR #112, finding 2** — the tracker credential's minting rule restated ADR 0026's unattended-pass floor as a local rule. The delta: the restatement carried its own denial in the same sentence — "restated nowhere else in this file."
 
 ### A statement true when written whose condition has since passed
 
-6 instances, across 5 pull requests — PR #43, PR #45, PR #51, PR #71, PR #99.
+7 instances, across 6 pull requests — PR #43, PR #45, PR #51, PR #71, PR #99, PR #112.
 
 - **PR #43, finding 5** — two ratified chapters said every merge is `required`, written truthfully and outlived by the flip that followed; promoted to [#44](https://github.com/wrburgess/deuce/issues/44).
 - **PR #45, finding 7** — a heading read "(first response)" for every review, a label that marks a wave inside one invocation and stops being true across invocations.
@@ -93,6 +95,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #51, finding 5** — a Skill instructed that the pull request is "merged by the HC"; an instructing document, which PR #49's disposition already argued is the urgent half of this class.
 - **PR #71, finding 1** — the adversarial pass found README.md carrying the same expired status claim the pull request was fixing in CLAUDE.md. The delta is the carrier: Chapter 3's ratification draft updated the status lines inside itself and Chapter 4's did not, so one missed step surfaced as two stale entry-point files.
 - **PR #99, finding 1** — the fleet roster's nadal row said the seeded tools sit "dormant until the gate is wired": a live-status claim inside a historical entry, false the day the host wires its gate. Caught by the summoned lens; the line now records past facts only.
+- **PR #112, finding 3** — the tracker credential's attended state read "the only state in use today," false the day the first unattended pass runs, with no update trigger named. The delta: a security-state claim, where staleness reads as assurance; the line now names the event that falsifies it and where the update lands. The sync entry carries the same phrase, batched as a follow-up per the findings home.
 
 ### A fix that removes or narrows something it needed to keep
 
