@@ -220,20 +220,20 @@ Chapter 1's audit deferred one row here, and Chapter 5 closed every other. The d
 
 | Predecessor Skill | Verdict | Reason |
 |---|---|---|
-| `ship` | **Port**, re-authored as `operate` | Its value is the unattended run — Chapter 1's own verdict — and the faithfulness backstop it needed is Chapter 2's summons, now built. It is much smaller here, as Chapter 1 predicted: with stages communicating only through artifacts, one pass — read, advance, park, record — is nearly all of it. The name does not port: the Ship gate owns the word (one term per concept), and the predecessor's `ship` also carried in-session sequencing that the artifact rule already does. |
+| `ship` | **Port**, re-authored as `execute` | Its value is the unattended run — Chapter 1's own verdict — and the faithfulness backstop it needed is Chapter 2's summons, now built. It is much smaller here, as Chapter 1 predicted: with stages communicating only through artifacts, one pass — read, advance, park, record — is nearly all of it. The name does not port: the Ship gate owns the word (one term per concept), and the predecessor's `ship` also carried in-session sequencing that the artifact rule already does. |
 
-`operate` is the orchestrator: the Skill a trigger invokes to run one factory pass. It enters like
+`execute` is the orchestrator: the Skill a trigger invokes to run one factory pass. It enters like
 any Skill — through the lifecycle, on receipts — and the receipts exist: sequencing the five stages
 through their artifacts is the job this repository has done on every issue since Chapter 1. That
 closes Chapter 1's audit whole: six stages ported, `distill` ported, `listen` absorbed, the intake
-four and `create-skill` not ported, and `ship` re-authored as `operate`.
+four and `create-skill` not ported, and `ship` re-authored as `execute`.
 
 ## The transitional state, stated plainly
 
 Ratifying this chapter sanctions building the factory; it does not conjure it. At this chapter's
 ratification:
 
-- **No orchestrator existed.** `operate` was unbuilt, and every pass this repository had run had
+- **No orchestrator existed.** `execute` was unbuilt, and every pass this repository had run had
   the HC in it.
 - **Neither precondition was met.** No credential's automated form was minted, and the declared
   budget was none at all — so no pass could run unattended, by this chapter's own floors.
@@ -261,7 +261,7 @@ during the founding. There is no ahead left.
 
 | | After this chapter |
 |---|---|
-| The factory | Sanctioned: `operate`, admission's carrier, the run record, and the kill switch are buildable |
+| The factory | Sanctioned: `execute`, the run record, and the kill switch are buildable |
 | `delegated` — Direction gate | Fully specified: both mechanisms Chapter 1 named now exist; in force only when the gate's declaration says so |
 | `attested` — Ship gate | Unchanged, and still short its second leg — Chapter 3's independent re-run; no factory pass merges before it exists |
 | The sweep and the sync | Schedulable, and the sync dispatchable fleet-wide; each waits on its own declarations and the credential floor |
