@@ -42,6 +42,17 @@ test("a malformed issue or comment throws rather than passing as vacuously confo
     () =>
       parseSnapshot(
         JSON.stringify({
+          issues: [{ number: 1, title: "t", body: "", labels: [7] }],
+          pullRequests: [],
+          repoUrl: "u",
+        }),
+      ),
+    /an issue in the snapshot is missing/,
+  );
+  assert.throws(
+    () =>
+      parseSnapshot(
+        JSON.stringify({
           issues: [],
           pullRequests: [{ number: 2, title: "p", body: "", comments: [{ body: "c" }] }],
           repoUrl: "u",

@@ -51,7 +51,8 @@ export function parseSnapshot(json: string): TrackerSnapshot {
       typeof issue?.number !== "number" ||
       typeof issue?.title !== "string" ||
       typeof issue?.body !== "string" ||
-      !Array.isArray(issue?.labels)
+      !Array.isArray(issue?.labels) ||
+      !issue.labels.every((l: unknown) => typeof l === "string")
     ) {
       throw new Error("an issue in the snapshot is missing number/title/body/labels");
     }

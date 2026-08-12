@@ -41,7 +41,7 @@ query($owner: String!, $name: String!, $after: String) {
   repository(owner: $owner, name: $name) {
     issues(first: 100, after: $after) {
       pageInfo { hasNextPage endCursor }
-      nodes { number title body labels(first: 50) { nodes { name } } }
+      nodes { number title body labels(first: 100) { nodes { name } } }
     }
   }
 }`;

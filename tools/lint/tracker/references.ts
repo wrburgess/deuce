@@ -36,6 +36,7 @@ export interface ReferencesResult {
 export const BLIND_SPOT = [
   "blind spot: comments are not swept by the grammar checks — a defective reference inside a durable record stays with review (the HC's direction on #56)",
   "blind spot: a plain-text cross-repository citation whose number resolves to nothing locally passes until the number counter catches up — the standing fix is writing citations as links",
+  "blind spot: commit messages and the repository's documents are not swept — the grammar rule covers them, this check reads only the tracker's work items; that residue stays with review",
 ];
 
 const CLOSING_ADJACENT = /\b(close[sd]?|fix(?:e[sd])?|resolve[sd]?)\s+#(\d+)/gi;
