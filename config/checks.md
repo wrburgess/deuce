@@ -1,6 +1,6 @@
 ---
 date: 2026-08-11
-source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54; the four document-lint checks added at the Direction gate on #55
+source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54; the four document-lint checks added at the Direction gate on #55; the tracker lint added at the Direction gate on #56, where Option A was chosen
 checks:
   - name: typecheck
     command: npm run typecheck
@@ -17,6 +17,8 @@ checks:
     command: npm run lint:gates
   - name: glossary-reverse
     command: npm run lint:glossary
+  - name: tracker-lint
+    command: npm run lint:tracker
 ---
 
 # The quality gate
@@ -96,7 +98,8 @@ in its own output, and the two that cannot see everything say so there too
 ([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *Every check declares its blind spot*):
 
 - **`links-resolve`** probes internal links and heading anchors only. External links are counted
-  and never probed — the gate runs offline — and links carried in raw HTML are not read.
+  and never probed — the document lint runs without the network — and links carried in raw HTML are
+  not read.
 - **`gate-setting`** prints its declared blind spot on every run, green or red: a sentence
   carrying a setting's meaning while naming neither a gate nor a value is not reached, and the
   allowed homes are not scanned. Both restatements were measured against the repository before
@@ -110,9 +113,23 @@ in its own output, and the two that cannot see everything say so there too
   library files, not executables — a directory or file probe would be the PR #59 defect again.
   A missing library is classified by the wiring as *could not run*, naming `bash bin/setup`.
 
-## What is not here yet
+## What the tracker lint covers, and what it does not
 
-The tracker-reading half of the configuration lint
-([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The configuration lint*) is tracked under
-#56 and joins this list when it is built. This file growing is the intended mechanism, not
-evidence it was declared too small.
+`tracker-lint` ([`tools/lint/tracker/run.ts`](../tools/lint/tracker/run.ts)) is the tracker-reading
+half of the configuration lint ([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The
+configuration lint*): five checks — label axes, body sections, epic-close adjacency, bare
+references, findings-record fields — run against one snapshot fetched once, so no two checks see
+different trackers.
+
+- **It needs the network and an authenticated `gh`.** That trade was chosen at the Direction gate
+  on #56: every lifecycle stage already reads the tracker, so the gate gains no dependency the work
+  does not have. An unreachable tracker is **exit 2 — could not run**, loud and named, never green
+  ([ADR 0015](../adr/0015-one-gate-one-command-local-and-ci.md)'s local-run bar is met whenever the
+  tracker is reachable).
+- **It carries no `requires`.** `gh` is a system binary, not a repository path — a path probe would
+  be the PR #59 defect again. Its absence is classified by the fetch as *could not run*.
+- **Its blind spots print on every run, green or red** — among them: comments are not swept by the
+  grammar checks (the HC's direction on #56), and section presence is checked, never content
+  quality. Every restatement was measured against the tracker before adoption, per
+  [ADR 0013](../adr/0013-checks-restated-structurally-with-declared-blind-spots.md); the
+  measurements are recorded on #56 and its pull request.
