@@ -414,14 +414,17 @@ A **Skill** is a packaged procedure the AC follows for a recurring job.
 
 ### What a Skill is, and is not
 
-- **One directory, one body:** `skills/<name>/SKILL.md`, carrying its name, a description that says
-  when to reach for it, and a body. Long reference material is a bundled file beside it.
+- **One directory, one body:** `.claude/skills/<name>/SKILL.md`, carrying its name, a description
+  that says when to reach for it, and a body. Long reference material is a bundled file beside it.
+  The directory is the one the AC's tool reads on its own — a Skill placed there is found by name;
+  placed anywhere else it is a document ([ADR 0027](../adr/0027-skills-live-at-the-tools-own-path.md)).
 - **A Skill body states four things:** when it is invoked, the procedure, its terminal artifact, and
   the conditions under which it stops and asks.
 - **A Skill never restates canon; it links the chapter.** A restatement is a second copy, and a
   second copy drifts silently. This is the same rule that governs `CLAUDE.md`.
 - **There are no per-tool shims.** One AC means one reader (Chapter 0, *Who acts*); an adapter layer
-  is a cost with nothing on the other side of it.
+  is a cost with nothing on the other side of it. The path above is this rule followed, not bent
+  ([ADR 0027](../adr/0027-skills-live-at-the-tools-own-path.md)).
 - **A Skill is self-contained** (ADR 0006). A procedure worth having from an outside skill family is
   read, re-authored in deuce's vocabulary, and attributed — never vendored.
 - **The entry bar is receipts.** A Skill exists for a job the AC has actually done repeatedly, not

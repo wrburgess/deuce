@@ -12,22 +12,22 @@ route, what it does at each gate, what it must leave behind — is canon and is 
 
 ## When it is invoked
 
-- A factory pass is called for — by the trigger [`config/factory.md`](../../config/factory.md)
+- A factory pass is called for — by the trigger [`config/factory.md`](../../../config/factory.md)
   declares, dated and sourced; absent a declared trigger, the HC's call is the trigger
   ([Chapter 6 → The transitional state](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-transitional-state-stated-plainly)).
 - **One pass at a time.** A trigger that fires while a pass runs starts nothing
   ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
 - **No pass runs unattended until its credentials conform** to their declarations in
-  [`config/credentials.md`](../../config/credentials.md); the attended state never runs unattended
+  [`config/credentials.md`](../../../config/credentials.md); the attended state never runs unattended
   ([Chapter 6 → The credential precondition](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-credential-precondition)).
 
 ## Procedure
 
-1. **Read the pass's configuration** — the gate settings ([`config/gates.md`](../../config/gates.md));
-   the factory's declarations ([`config/factory.md`](../../config/factory.md)): the pass scope, the
+1. **Read the pass's configuration** — the gate settings ([`config/gates.md`](../../../config/gates.md));
+   the factory's declarations ([`config/factory.md`](../../../config/factory.md)): the pass scope, the
    run record's home, and the ready set's order where one is declared; the stage routing
-   ([`config/models.md`](../../config/models.md)); the budget, when one is declared
-   ([`config/capacity.md`](../../config/capacity.md)).
+   ([`config/models.md`](../../../config/models.md)); the budget, when one is declared
+   ([`config/capacity.md`](../../../config/capacity.md)).
 2. **Read the queue from the tracker.** The front door is anything `status:ready`
    ([Chapter 6 → The front door](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-front-door)).
    Take the set in the declared order — oldest first absent a declaration — skipping issue types the
@@ -57,16 +57,16 @@ route, what it does at each gate, what it must leave behind — is canon and is 
    ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
    The pass scope is a declared budget in that section's sense: a pass that reaches it with
    admissible work still ready ends *spent*, and a later pass takes the remainder
-   ([`config/factory.md`](../../config/factory.md)).
+   ([`config/factory.md`](../../../config/factory.md)).
 7. **Post the run record at the declared home**
-   ([`config/factory.md`](../../config/factory.md)): what the pass picked up, what it advanced and
+   ([`config/factory.md`](../../../config/factory.md)): what the pass picked up, what it advanced and
    to where, where each parked issue waits, what it skipped or left and why, and how it ended. The
    pass is not over until the record posts — a pass that ends silently cannot be told from one that
    died.
 
 ## Terminal artifact
 
-The run record, posted at the home [`config/factory.md`](../../config/factory.md) declares
+The run record, posted at the home [`config/factory.md`](../../../config/factory.md) declares
 ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
 
 ## When it stops and asks

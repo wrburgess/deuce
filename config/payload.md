@@ -1,23 +1,23 @@
 ---
-date: 2026-08-06
-source: the Direction gate on #81, where Option A — contract-forward — was chosen
+date: 2026-08-12
+source: the Direction gate on #115 — the Skills moved to the tool's own path; superseding the Direction gate on #81, where Option A — contract-forward — was chosen
 payload:
-  - path: skills/assess/SKILL.md
+  - path: .claude/skills/assess/SKILL.md
     class: contract
     system: lifecycle
-  - path: skills/devise/SKILL.md
+  - path: .claude/skills/devise/SKILL.md
     class: contract
     system: lifecycle
-  - path: skills/implement/SKILL.md
+  - path: .claude/skills/implement/SKILL.md
     class: contract
     system: lifecycle
-  - path: skills/verify/SKILL.md
+  - path: .claude/skills/verify/SKILL.md
     class: contract
     system: lifecycle
-  - path: skills/deliver/SKILL.md
+  - path: .claude/skills/deliver/SKILL.md
     class: contract
     system: lifecycle
-  - path: skills/distill/SKILL.md
+  - path: .claude/skills/distill/SKILL.md
     class: contract
     system: lifecycle
   - path: .githooks/guard-protected-branch
@@ -174,7 +174,7 @@ adopted gate runs on the host's `config/checks.md`, never on a shipped copy of d
 
 The sorting test, answered yes: these are the paths deuce must be able to fix everywhere at once.
 
-- **The six Skills** (`skills/*/SKILL.md`, system `lifecycle`) — the operating procedure itself. A
+- **The six Skills** (`.claude/skills/*/SKILL.md`, system `lifecycle`) — the operating procedure itself. A
   Skill links canon and never restates it, so a Skill fix is a procedure fix, and a host running a
   stale procedure is the drift that matters most.
 - **The git hooks** (`.githooks/*`, system `governance`) — the enforcement of a floor:

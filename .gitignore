@@ -47,3 +47,7 @@ node_modules/
 # An un-posted review record, saved by tools/review/summon.ts when a post fails.
 # It exists for the HC to place by hand; it is never committed.
 deuce-unposted-*
+
+# Session worktrees live under .claude/, which now also holds tracked content
+# (.claude/skills/, ADR 0027) — this line keeps them out of any commit.
+.claude/worktrees/
