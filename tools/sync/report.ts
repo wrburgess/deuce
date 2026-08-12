@@ -2,7 +2,7 @@
 // judges from the top half (Chapter 0's dual register, which ships with the
 // system). The ask leads; nothing written or skipped is silent.
 
-import type { DriftReport } from "./drift.ts";
+import type { DriftReport, RetiredFile } from "./drift.ts";
 import type { WritePlan } from "./payload.ts";
 import type { ReceiptState } from "./receipt.ts";
 
@@ -13,6 +13,8 @@ export interface ReportInput {
   changeLog: string[]; // one line per upstream commit since the receipt's; empty on first sync
   plan: WritePlan;
   drift: DriftReport;
+  retired: RetiredFile[]; // receipt paths the manifest no longer names, each with its host state
+  heldBack: string[]; // host-territory receipt paths — dropped from the receipt, never removed
   systems: string[]; // empty = everything declared
 }
 
@@ -44,6 +46,14 @@ export function composeReport(input: ReportInput): string {
     "  whole authority for what ships; an undeclared path does not ship.",
     `- **Scope:** ${scope}.`,
     "- **Drift:** " + driftSummary(input.drift),
+  );
+  if (input.retired.length > 0) {
+    lines.push(
+      `- **Retired by deuce: ${input.retired.length} path(s)** the manifest no longer names —`,
+      "  removed on this branch; the table below names each and what merging does to it.",
+    );
+  }
+  lines.push(
     `- **The receipt** (\`${input.receiptPath}\`) rides this branch and lands only if this pull`,
     "  request merges — it is what makes the next sync's drift report computable.",
   );
@@ -79,6 +89,32 @@ export function composeReport(input: ReportInput): string {
   }
   lines.push("");
 
+  if (input.retired.length > 0 || input.heldBack.length > 0) {
+    lines.push("## Retired by this sync");
+    lines.push("");
+    if (input.retired.length > 0) {
+      lines.push(
+        "A retired path is one the payload manifest no longer names: deuce shipped it once, and",
+        "this sync removes it. The removal is a diff line on this branch — merging adopts it, the",
+        "same door every update comes through.",
+      );
+      lines.push("");
+      lines.push("| Path | State on the host |");
+      lines.push("|---|---|");
+      for (const r of input.retired) lines.push(`| \`${r.path}\` | ${retirementLine(r)} |`);
+    }
+    if (input.heldBack.length > 0) {
+      lines.push("");
+      lines.push(
+        "Receipt entries under this repository's own territory — never deuce's to remove. Each is",
+        "dropped from the receipt without a removal; the file, if present, stays as it is:",
+      );
+      lines.push("");
+      for (const p of input.heldBack) lines.push(`- \`${p}\``);
+    }
+    lines.push("");
+  }
+
   lines.push("## Written by this sync");
   lines.push("");
   for (const w of contract) lines.push(`- \`${w.entry.path}\` — contract (${w.entry.system})`);
@@ -106,6 +142,13 @@ export function composeReport(input: ReportInput): string {
   );
   lines.push("");
   return lines.join("\n");
+}
+
+function retirementLine(r: RetiredFile): string {
+  if (r.state === "intact") return "intact — matches the receipt; removed";
+  if (r.state === "edited")
+    return "**edited — the host changed it; merging discards the host's edit**";
+  return "already absent — nothing to remove; the receipt entry is dropped";
 }
 
 function driftSummary(drift: DriftReport): string {

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { computeDrift, sha256Hex } from "./drift.ts";
+import { assessRetirements, computeDrift, sha256Hex } from "./drift.ts";
 
 function host(files: Record<string, string>): string {
   const root = mkdtempSync(join(tmpdir(), "deuce-drift-"));
@@ -48,5 +48,44 @@ test("an edited file and a removed file are named, each with its state", () => {
   assert.deepEqual(drifted, [
     { path: "a.md", state: "edited" },
     { path: "gone.md", state: "removed" },
+  ]);
+});
+
+// The retirement cases (#117): retirement owns a retired path's story, so the
+// drift table never speaks about it — a host's own deletion of a retired path
+// is agreement, not "removed" drift.
+
+test("a retired path is skipped by drift, whatever the host did to it", () => {
+  const root = host({ "kept.md": "clean\n" });
+  const receipt = {
+    commit: "c",
+    date: "d",
+    checksums: [
+      { path: "kept.md", sha256: sha256Hex(Buffer.from("clean\n")) },
+      { path: "retired-gone.md", sha256: sha256Hex(Buffer.from("was here\n")) },
+    ],
+  };
+  const report = computeDrift(root, receipt, new Set(["retired-gone.md"]));
+  assert.equal(report.kind, "report");
+  assert.equal(report.kind === "report" && report.drifted.length, 0);
+  assert.equal(report.kind === "report" && report.cleanCount, 1);
+});
+
+test("retirement states: intact, edited, and already-absent, each named", () => {
+  const root = host({ "intact.md": "as shipped\n", "edited.md": "the host changed this\n" });
+  const receipt = {
+    commit: "c",
+    date: "d",
+    checksums: [
+      { path: "intact.md", sha256: sha256Hex(Buffer.from("as shipped\n")) },
+      { path: "edited.md", sha256: sha256Hex(Buffer.from("as shipped\n")) },
+      { path: "absent.md", sha256: sha256Hex(Buffer.from("was here\n")) },
+    ],
+  };
+  const states = assessRetirements(root, receipt, ["intact.md", "edited.md", "absent.md"]);
+  assert.deepEqual(states, [
+    { path: "intact.md", state: "intact" },
+    { path: "edited.md", state: "edited" },
+    { path: "absent.md", state: "already-absent" },
   ]);
 });

@@ -120,6 +120,32 @@ export function planWrites(files: MaterializedFile[], hostRoot: string): WritePl
   return { writes, skippedSeed };
 }
 
+// A retired path is removed from the clone; `git add --all` stages the
+// deletion, so the removal rides the branch as a diff line the host adopts by
+// merging (ADR 0022; #117). The receipt is host-authored input by read-back
+// time, so the route is checked like any write's. A directory at the path is
+// refused by name — replacing the host's directory structure is not the
+// sync's judgment to make; an absent path needs no removal.
+export function applyRetirements(hostRoot: string, retired: string[]): void {
+  for (const path of retired) {
+    const target = resolveInside(hostRoot, path);
+    assertSafeRoute(hostRoot, path);
+    let stat;
+    try {
+      stat = lstatSync(target);
+    } catch {
+      continue;
+    }
+    if (stat.isDirectory()) {
+      throw new Error(
+        `the host holds a directory at retired path '${path}' — refused: replacing the host's ` +
+          `directory structure is not the sync's judgment to make`,
+      );
+    }
+    rmSync(target);
+  }
+}
+
 export function applyWrites(hostRoot: string, plan: WritePlan): void {
   for (const f of plan.writes) {
     const target = resolveInside(hostRoot, f.entry.path);

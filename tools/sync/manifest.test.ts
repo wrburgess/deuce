@@ -9,10 +9,10 @@ function fixture(items: string): string {
   return ["---", "date: 2026-08-06", "source: a test", "payload:", items, "---", "", "body"].join("\n");
 }
 
-test("the real manifest parses whole — 46 entries, three classes", () => {
+test("the real manifest parses whole — 48 entries, three classes", () => {
   const m = parseManifest(REAL);
-  assert.equal(m.entries.length, 46);
-  assert.equal(m.entries.filter((e) => e.class === "contract").length, 16);
+  assert.equal(m.entries.length, 48);
+  assert.equal(m.entries.filter((e) => e.class === "contract").length, 18);
   assert.equal(m.entries.filter((e) => e.class === "seed").length, 26);
   assert.equal(m.entries.filter((e) => e.class === "host").length, 4);
 });
@@ -47,7 +47,7 @@ test("an unrecognized item field is refused by name", () => {
 test("host entries never ship; empty selection ships everything else", () => {
   const m = parseManifest(REAL);
   const all = shipSet(m, []);
-  assert.equal(all.length, 42);
+  assert.equal(all.length, 44);
   assert.ok(all.every((e) => e.class !== "host"));
 });
 

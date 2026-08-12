@@ -10,7 +10,7 @@ import { join } from "node:path";
 import { parseManifest, shipSet } from "./manifest.ts";
 import { parseReceipt, writeReceipt } from "./receipt.ts";
 import { applyWrites, planWrites, readPayloadAtCommit } from "./payload.ts";
-import { mergeReceiptChecksums } from "./run-helpers.ts";
+import { mergeReceiptChecksums, planRetirements } from "./run-helpers.ts";
 import type { PayloadEntry } from "./manifest.ts";
 
 const REAL = readFileSync(new URL("../../config/payload.md", import.meta.url), "utf8");
@@ -45,6 +45,8 @@ test("an unknown --system value is refused, naming it and the declared set", () 
 
 // R2 — a partial sync's receipt keeps every prior contract baseline that the
 // manifest still declares, and drops what the manifest no longer carries.
+// Extended by #117: the dropped path is also planned for removal in the same
+// run — the drop alone would strand a stale copy with no drift signal.
 test("a selected-system receipt merges prior checksums instead of replacing them", () => {
   const prior = {
     commit: "old",
@@ -61,6 +63,8 @@ test("a selected-system receipt merges prior checksums instead of replacing them
   assert.ok(merged.some((c) => c.path === "AGENTS.md"), "unselected baseline survives");
   assert.ok(merged.some((c) => c.path === "skills/assess/SKILL.md"), "shipped checksum lands");
   assert.ok(!merged.some((c) => c.path === "retired.md"), "an undeclared path drops");
+  const retirement = planRetirements(prior, m);
+  assert.deepEqual(retirement.retired, ["retired.md"], "the dropped path is planned for removal");
 });
 
 // R3 — a dangling symlink at a seed path is a present host entry, not absence.
