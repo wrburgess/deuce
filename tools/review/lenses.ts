@@ -2,49 +2,65 @@
 // from the menu and capped at the declared size (Chapter 2, *Bounded by lens
 // set*; values in config/review.md). The declaration is read here so a run
 // cannot exceed its bounds and still record as conforming.
+//
+// The menu and the size are read from the declaration's frontmatter through
+// the shared grammar (Chapter 3, *Parse, never pattern-match*). The prose scan
+// this replaces was the counter-example the chapter cites: it read the menu
+// with matchAll and mimicked GitHub's heading-anchor function by hand, holding
+// only because every class heading was plain words (PR #48). A menu entry now
+// carries its class heading verbatim, so nothing derives an anchor at all.
 
-const MENU_HEADING = /^##\s+Lens menu\s*$/m;
-const SIZE_HEADING = /^##\s+Lens-set size\s*$/m;
-const EMPTY_MARKER = /\*\*Empty — zero lenses\.?\*\*/;
+import { parseFrontmatter } from "../gate/declaration.ts";
 
-function section(markdown: string, heading: RegExp, name: string): string {
-  const at = markdown.search(heading);
-  if (at === -1) {
-    throw new Error(`config carries no '${name}' section`);
-  }
-  return markdown.slice(at).split(/\n##\s/)[0]!;
+export interface LensEntry {
+  lens: string;
+  class: string;
 }
 
-export function parseLensMenu(markdown: string): string[] {
-  const body = section(markdown, MENU_HEADING, "## Lens menu");
-  // Entries, when they exist, are backticked list items: - `the lens question`
-  const entries = [...body.matchAll(/^\s*-\s+`([^`]+)`/gm)].map((m) => m[1]!.trim());
-  const markedEmpty = EMPTY_MARKER.test(body);
-  if (markedEmpty && entries.length > 0) {
-    // Neither side silently wins: a stale marker beside real entries is a
-    // malformed declaration, and resolving it is the declaration's job.
+const ENTRY_FIELDS = new Set(["lens", "class"]);
+
+export function parseLensMenu(markdown: string): LensEntry[] {
+  const { lists } = parseFrontmatter(markdown);
+  const raw = lists.get("lenses");
+  // Absent and empty are different states with different fixes (ADR 0014): a
+  // menu with nothing on it is declared as 'lenses:' with zero entries, and a
+  // declaration that never mentions the key has not declared a menu at all.
+  if (raw === undefined) {
     throw new Error(
-      "lens menu contradicts itself — it carries the empty marker and " +
-        `${entries.length} entr${entries.length === 1 ? "y" : "ies"}; fix the declaration`,
+      "declaration carries no 'lenses' key — an empty menu is declared as " +
+        "'lenses:' with zero entries, never by omission",
     );
   }
-  if (markedEmpty) return [];
-  if (entries.length === 0) {
-    throw new Error(
-      "lens menu is neither the empty marker nor recognizable entries — " +
-        "teach parseLensMenu the menu's shape before dispatching",
-    );
-  }
-  return entries;
+  return raw.map((entry) => {
+    const lens = entry.get("lens");
+    if (!lens) {
+      throw new Error("a menu entry declares no 'lens'");
+    }
+    const cls = entry.get("class");
+    if (!cls) {
+      throw new Error(
+        `menu entry '${lens}' declares no 'class' — every lens derives from a class in the index`,
+      );
+    }
+    for (const key of entry.keys()) {
+      if (!ENTRY_FIELDS.has(key)) {
+        throw new Error(`menu entry '${lens}' carries an unrecognized field '${key}'`);
+      }
+    }
+    return { lens, class: cls };
+  });
 }
 
 export function parseLensSetSize(markdown: string): number {
-  const body = section(markdown, SIZE_HEADING, "## Lens-set size");
-  const m = body.match(/\*\*(\d+)\s+lens/);
-  if (!m) {
-    throw new Error("lens-set size declaration carries no '**N lens…**' value");
+  const { scalars } = parseFrontmatter(markdown);
+  const raw = scalars.get("lens-set-size");
+  if (raw === undefined) {
+    throw new Error("declaration carries no 'lens-set-size'");
   }
-  return Number(m[1]);
+  if (!/^\d+$/.test(raw)) {
+    throw new Error(`'lens-set-size' is not a whole number: ${raw}`);
+  }
+  return Number(raw);
 }
 
 // Canon's own lenses for prose subjects — pinned copies of the phrases in

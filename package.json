@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "gate": "node tools/gate/run.ts",
+    "lint:config": "node tools/config/run.ts",
     "test": "node --test 'tools/**/*.test.ts'",
     "typecheck": "tsc --noEmit"
   },

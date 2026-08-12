@@ -1,12 +1,14 @@
 ---
 date: 2026-08-03
-source: the Direction gate on #52, where Option B was chosen
+source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54
 checks:
   - name: typecheck
     command: npm run typecheck
     requires: node_modules/.bin/tsc
   - name: tests
     command: npm test
+  - name: dated-and-sourced
+    command: npm run lint:config
 ---
 
 # The quality gate
@@ -69,6 +71,15 @@ Nothing short of executing a file decides the second column, so no probe closes 
 would only move the proxy. The residue is not misclassified: such a prerequisite passes resolution,
 the spawn fails, and the gate records that check `could-not-run`, the rest `not-attempted`, and
 exits 2. What is lost is only the resolve-everything-before-executing property, for that one case.
+
+## What the dated-and-sourced check does not reach
+
+`dated-and-sourced` ([`tools/config/run.ts`](../tools/config/run.ts)) decides **presence and
+shape, never truth** ([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *Every check declares
+its blind spot*): a stale date, a source naming the wrong decision, and an impossible calendar
+date of valid shape all pass. The residue is routed to the hygiene sweep, which is what
+re-verifies `config/` ([Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's
+home*) — never dropped.
 
 ## What is not here yet
 

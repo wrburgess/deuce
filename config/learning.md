@@ -1,3 +1,8 @@
+---
+date: 2026-08-11
+source: the Direction gate on #72; the fleet row refreshed at the Direction gates on #80, #84, and #88
+---
+
 # Learning configuration
 
 The values the Learning System runs on — which sources are followed on each channel, and the
@@ -5,15 +10,6 @@ hygiene sweep's cadence with its last-run record. The rules these values instant
 at [Chapter 4](../sds/04-learning-system.md) → *The four channels* and *Re-verification: the
 hygiene sweep*, and are not restated here; this is adaptive configuration under
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*.
-
-- **Date:** 2026-08-11
-- **Source:** the Direction gate on #72, where Option A — the earn-in roster — was chosen and the
-  cadence was declared HC-called. The fleet row's wording was refreshed at the Direction gate on
-  #80, Chapter 5 having landed. The fleet row itself entered with the port of ace's frozen record —
-  the Direction gate on #84, its first captures recorded at the
-  [port record](https://github.com/wrburgess/deuce/issues/84#issuecomment-5249231808). The row's
-  ace and nadal fragments were re-verified at the Direction gate on #88, 2026-08-11 — the archive
-  on the record, the missed cutover read pointed at the sweep.
 
 ## Channel roster
 
@@ -31,3 +27,13 @@ hygiene sweep*, and are not restated here; this is adaptive configuration under
 
 - **Cadence: HC-called; no standing schedule.**
 - **Last run: 2026-08-05 (#74).** Full ledger, first pass; nothing left mid-job.
+
+## Provenance
+
+At the Direction gate on #72, Option A — the earn-in roster — was chosen and the cadence was
+declared HC-called. The fleet row's wording was refreshed at the Direction gate on #80, Chapter 5
+having landed. The fleet row itself entered with the port of ace's frozen record — the Direction
+gate on #84, its first captures recorded at the
+[port record](https://github.com/wrburgess/deuce/issues/84#issuecomment-5249231808). The row's ace
+and nadal fragments were re-verified at the Direction gate on #88, 2026-08-11 — the archive on the
+record, the missed cutover read pointed at the sweep.
