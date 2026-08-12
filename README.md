@@ -17,7 +17,7 @@ already sanction.
 | 3 — Quality gate & tooling | The checks a change must pass, what a check may be asked to decide, and the evidence a check ships with | `ratified` | [#5](https://github.com/wrburgess/deuce/issues/5) |
 | 4 — Learning System | How outside material becomes reviewed configuration | `ratified` | [#6](https://github.com/wrburgess/deuce/issues/6) |
 | 5 — Distribution & fleet cutover | How other projects adopt deuce | `ratified` | [#7](https://github.com/wrburgess/deuce/issues/7) |
-| 6 — Factory automation | Running the system with the human away | `not started` | [#8](https://github.com/wrburgess/deuce/issues/8) |
+| 6 — Factory automation | Running the system with the human away | `ratified` | [#8](https://github.com/wrburgess/deuce/issues/8) |
 
 The chapters themselves are in [`sds/`](sds/).
 
@@ -39,10 +39,10 @@ ships is declared path by path in a payload manifest; the standard itself never 
 at its source. Updates reach an adopting project only as pull requests, judged by that project's own
 gates.
 
-The machinery — the manifest, the vendoring receipt, the sync — is being built under
-[#7](https://github.com/wrburgess/deuce/issues/7), one canary project first. Until it has run
-end-to-end on a real project, adopting means reading the chapter and doing by hand what it
-describes.
+The machinery — the manifest, the vendoring receipt, the sync — was built under
+[#7](https://github.com/wrburgess/deuce/issues/7) and has run end-to-end: the fleet's hosts took
+the payload by manifest and receive updates as pull requests. Adopting begins with the chapter;
+the fleet roster and what ships to it are dated configuration, in [`config/`](config/).
 
 ## Provenance
 
