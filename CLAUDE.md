@@ -90,6 +90,19 @@
   [`adr/0021`](adr/0021-three-payload-classes-seed-host-owned.md), and
   [`adr/0022`](adr/0022-updates-arrive-only-as-pull-requests.md), and none is restated here.
 
+## Factory
+
+- **Chapter 6 governs running the lifecycle with the HC away**, and what the factory, a pass, the
+  run record, the front door, and the kill switch mean are Chapter 6's:
+  [`sds/06-factory-automation.md`](sds/06-factory-automation.md). The factory's triggers, its pass
+  order and budget, and the kill switch's concrete form are dated configuration.
+- **Always on, whenever a pass runs unattended:** read the chapter's *The factory pass* and *The
+  credential precondition* first. Its founding decisions are recorded at
+  [`adr/0024`](adr/0024-run-state-is-disposable-working-memory-never-authority.md),
+  [`adr/0025`](adr/0025-the-front-door-is-open-ready-is-the-intake.md), and
+  [`adr/0026`](adr/0026-unattended-passes-require-a-minted-credential.md), and none is restated
+  here.
+
 ## Git
 
 - **Feature branches only.** `main` is protected; the hooks in [`.githooks/`](.githooks/) block a
@@ -123,12 +136,11 @@
 ## Bootstrap status
 
 - **Chapters ratified: 0** (identity & governance), **1** (lifecycle & skills), **2** (Review System
-  & Findings System), **3** (quality gate & tooling), **4** (the Learning System), and **5**
-  (distribution). Chapter 6 is not started.
-- **deuce's own build-out now runs through its own lifecycle.** The bootstrap exception has narrowed
-  to one thing: drafting Chapter 6 itself.
+  & Findings System), **3** (quality gate & tooling), **4** (the Learning System), **5**
+  (distribution), and **6** (factory automation). The standard is complete.
+- **deuce's build-out runs through its own lifecycle.** The **bootstrap exception** is spent: from
+  Chapter 6's ratification it covers nothing. See
+  [Chapter 6](sds/06-factory-automation.md) → *The bootstrap exception ends here*, and
+  [`adr/0002`](adr/0002-chapter-gated-build-bootstrap-exception.md).
 - **Nothing may be built that a ratified chapter does not already sanction.** If work you are asked
   to do has no chapter behind it, say so and stop — the answer is a chapter, not a workaround.
-- The **bootstrap exception** covers only work whose governor does not yet exist, and it narrows as
-  each chapter lands. See the chapter → *The bootstrap exception*, and
-  [`adr/0002`](adr/0002-chapter-gated-build-bootstrap-exception.md).
