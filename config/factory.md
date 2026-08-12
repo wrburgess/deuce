@@ -16,6 +16,10 @@ door*, and is not restated here; this is adaptive configuration under
 - **One issue per pass.** The proving posture: the smallest pass that still exercises every seam —
   the queue read, the order, the type skip, the stage runs, the parks, the record. Chosen at the
   Direction gate on #106; lifting it is one dated edit here, expected with #108's arming work.
+- **The scope is a declared budget in [Chapter 6](../sds/06-factory-automation.md) → *The factory
+  pass*'s sense.** A pass that reaches it with admissible work still ready ends ***spent*** — that
+  is the truthful outcome for a bounded pass that ran out of bound rather than out of queue — and
+  a later pass takes the remainder. Fixed at the review wave on PR #114.
 
 ## The run record's home
 

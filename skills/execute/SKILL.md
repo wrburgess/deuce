@@ -1,6 +1,6 @@
 ---
 name: execute
-description: The factory orchestrator. A pass is called for — today by the HC, by a trigger once one is armed; read the queue, advance what may advance by re-entry, park what must park, post the run record, end.
+description: The factory orchestrator. A pass is called for; read the queue, advance what may advance by re-entry, park what must park, post the run record, end.
 ---
 
 # execute — one factory pass
@@ -12,8 +12,8 @@ route, what it does at each gate, what it must leave behind — is canon and is 
 
 ## When it is invoked
 
-- A factory pass is called for. Today the HC calls one, attended; a trigger invokes it with nobody
-  typing once one is declared, dated and sourced, in [`config/factory.md`](../../config/factory.md)
+- A factory pass is called for — by the trigger [`config/factory.md`](../../config/factory.md)
+  declares, dated and sourced; absent a declared trigger, the HC's call is the trigger
   ([Chapter 6 → The transitional state](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-transitional-state-stated-plainly)).
 - **One pass at a time.** A trigger that fires while a pass runs starts nothing
   ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
@@ -55,6 +55,9 @@ route, what it does at each gate, what it must leave behind — is canon and is 
    A stop is never self-answered — the bar binds hardest with nobody watching.
 6. **End on one of the four outcomes and say which** — *drained*, *parked*, *spent*, or *killed*
    ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
+   The pass scope is a declared budget in that section's sense: a pass that reaches it with
+   admissible work still ready ends *spent*, and a later pass takes the remainder
+   ([`config/factory.md`](../../config/factory.md)).
 7. **Post the run record at the declared home**
    ([`config/factory.md`](../../config/factory.md)): what the pass picked up, what it advanced and
    to where, where each parked issue waits, what it skipped or left and why, and how it ended. The

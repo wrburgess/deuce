@@ -59,7 +59,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### An invariant enforced on one path and leaking through another
 
-7 instances, across 3 pull requests — PR #39, PR #46, PR #59.
+8 instances, across 4 pull requests — PR #39, PR #46, PR #59, PR #114.
 
 - **PR #39, finding 3** — the declared lens bounds were written in configuration and unenforced at dispatch.
 - **PR #46, finding 2** — the conversion to a classified failure began after staging, so staging's own errors escaped raw.
@@ -68,6 +68,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #46, finding 9** — the stream guards sat inside the failure branch, leaving the success path unguarded.
 - **PR #59, finding 3** — the partial-run report named the checks that ran and not the ones never attempted, so a short run read as a whole one.
 - **PR #59, finding 7** — the fix for that then counted a blocked check twice, once as unmet and once as skipped. Three consecutive reviews each found the per-check accounting wrong in a new way; the cause was three parallel arrays with the invariant maintained by hand at four return sites, and the resolution was the re-plan on #52, not a fourth patch.
+- **PR #114, finding 2** — the four run outcomes covered drained, parked, spent, and killed, and the declared one-issue scope created a fifth ending — scope reached, admissible work left — with no truthful outcome to record. The delta: the leak sat between a canon list and a config declaration; the fix binds scope to canon's declared-budget clause, ending such a pass *spent*.
 
 ### Restatement of content another document owns
 
@@ -85,7 +86,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A statement true when written whose condition has since passed
 
-6 instances, across 5 pull requests — PR #43, PR #45, PR #51, PR #71, PR #99.
+7 instances, across 6 pull requests — PR #43, PR #45, PR #51, PR #71, PR #99, PR #114.
 
 - **PR #43, finding 5** — two ratified chapters said every merge is `required`, written truthfully and outlived by the flip that followed; promoted to [#44](https://github.com/wrburgess/deuce/issues/44).
 - **PR #45, finding 7** — a heading read "(first response)" for every review, a label that marks a wave inside one invocation and stops being true across invocations.
@@ -93,6 +94,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #51, finding 5** — a Skill instructed that the pull request is "merged by the HC"; an instructing document, which PR #49's disposition already argued is the urgent half of this class.
 - **PR #71, finding 1** — the adversarial pass found README.md carrying the same expired status claim the pull request was fixing in CLAUDE.md. The delta is the carrier: Chapter 3's ratification draft updated the status lines inside itself and Chapter 4's did not, so one missed step surfaced as two stale entry-point files.
 - **PR #99, finding 1** — the fleet roster's nadal row said the seeded tools sit "dormant until the gate is wired": a live-status claim inside a historical entry, false the day the host wires its gate. Caught by the summoned lens; the line now records past facts only.
+- **PR #114, finding 1** — the execute Skill's body said "today the HC calls one, attended," false the day #108 arms a trigger, inside the document that would still be directing execution. The delta: the carrier is a Skill body, whose whole contract is to link the variables it must not hold; invocation now defers to the factory's declaration, which is where the trigger moves.
 
 ### A fix that removes or narrows something it needed to keep
 
