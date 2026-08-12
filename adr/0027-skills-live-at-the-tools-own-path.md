@@ -33,10 +33,16 @@ present, all eight Skills found by name; without it, none.
 ## Consequences
 
 - A Skill added under `.claude/skills/` is invocable by name the moment it lands; nothing else is
-  wired. A Skill placed anywhere else is a document, and its absence from discovery is a defect.
+  wired. The claim is behavioral, not structural — held by the receipts on #115 and PR #118, true
+  of the tool as of 2026-08-12. A tool release that changes discovery is field input, entering
+  through the Findings System (Chapter 4); while broken, the Skills remain what they always were —
+  readable documents at a stable path. A Skill placed anywhere else is a document, and its absence
+  from discovery is a defect.
 - The fleet inherits the path: hosts receive the lifecycle Skills where their AC reads them. The
-  move exposed that the sync never retires a path the manifest stopped naming — #117 carries that
-  gap; until it lands, a moved manifest path strands the old copy on every host.
+  move exposed that the sync never retires a path the manifest stopped naming — and the receipt
+  drops a retired path's entry, so a stranded copy sits with no drift signal. #117 carries the
+  retirement; until it lands, `config/sync.md` holds all sync dispatch (PR #118's review,
+  finding 3).
 - Tracked content now lives under `.claude/`, so `.gitignore` excludes `.claude/worktrees/` —
   session worktrees must never ride into a commit on the directory's coattails.
 - If a second AC tool ever enters, the premise above ("one reader") is void and this record is the

@@ -423,9 +423,8 @@ A **Skill** is a packaged procedure the AC follows for a recurring job.
 - **A Skill never restates canon; it links the chapter.** A restatement is a second copy, and a
   second copy drifts silently. This is the same rule that governs `CLAUDE.md`.
 - **There are no per-tool shims.** One AC means one reader (Chapter 0, *Who acts*); an adapter layer
-  is a cost with nothing on the other side of it. The path above is this rule followed, not bent:
-  what the rule forbids is a second copy or a pointer kept for a tool's sake, and one copy at the
-  one reader's own path needs neither ([ADR 0027](../adr/0027-skills-live-at-the-tools-own-path.md)).
+  is a cost with nothing on the other side of it. The path above is this rule followed, not bent
+  ([ADR 0027](../adr/0027-skills-live-at-the-tools-own-path.md)).
 - **A Skill is self-contained** (ADR 0006). A procedure worth having from an outside skill family is
   read, re-authored in deuce's vocabulary, and attributed — never vendored.
 - **The entry bar is receipts.** A Skill exists for a job the AC has actually done repeatedly, not
