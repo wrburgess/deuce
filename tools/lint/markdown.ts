@@ -99,3 +99,29 @@ export function trackedMarkdown(dir = "."): MarkdownFile[] {
     .filter((path) => path.length > 0)
     .map((path) => ({ path, content: readFileSync(join(dir, path), "utf8") }));
 }
+
+// Every tracked path, plus every directory those paths sit in. Link targets
+// resolve against this set, never against the local disk: existsSync passes
+// for a gitignored file that no other clone has, and is case-insensitive on
+// this machine while the repository is not — both are the invariant measured
+// against a proxy for it, proven on PR #110 before this function existed.
+export function trackedPaths(dir = "."): Set<string> {
+  const result = spawnSync("git", ["ls-files", "-z"], { cwd: dir, encoding: "utf8" });
+  if (result.error !== undefined) {
+    throw new Error(`git ls-files could not run: ${result.error.message}`);
+  }
+  if (result.status !== 0) {
+    throw new Error(`git ls-files exited ${result.status}: ${result.stderr.trim()}`);
+  }
+  const paths = new Set<string>();
+  for (const path of result.stdout.split("\0")) {
+    if (path.length === 0) continue;
+    paths.add(path);
+    let parent = path;
+    while (parent.includes("/")) {
+      parent = parent.slice(0, parent.lastIndexOf("/"));
+      paths.add(parent);
+    }
+  }
+  return paths;
+}

@@ -7,8 +7,6 @@
 // the module for that check, where it can be measured without touching the
 // filesystem (ADR 0014).
 
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 
 const EXIT_OK = 0;
 const EXIT_REJECTED = 1;
@@ -53,9 +51,10 @@ async function main(): Promise<void> {
   switch (which) {
     case "links": {
       const { checkLinks } = await import("./links.ts");
-      const result = checkLinks(files, (path) => existsSync(join(dir, path)));
+      const tracked = markdown.trackedPaths(dir);
+      const result = checkLinks(files, (path) => tracked.has(path));
       if (result.guard !== null) return cannotRun(result.guard);
-      const scope = `${result.internalChecked} internal links checked across ${result.filesRead} tracked documents; ${result.externalSkipped} external links not probed; links carried in raw HTML not read`;
+      const scope = `${result.internalChecked} internal links checked across ${result.filesRead} tracked documents, targets resolved against the tracked file set; ${result.externalSkipped} external links not probed; links carried in raw HTML not read`;
       if (result.violations.length > 0) {
         for (const v of result.violations) console.error(v);
         console.error(`links-resolve red — ${scope}`);
@@ -108,7 +107,7 @@ async function main(): Promise<void> {
       // undecidable and stays with review.
       for (const line of result.reports) console.log(line);
       console.log(
-        `glossary-reverse green — ${result.terms} entry terms searched across ${canon.length} canon chapters; ${result.reports.length} staleness signals for the hygiene sweep; the forward direction stays with review`,
+        `glossary-reverse green — ${result.terms} entry terms searched (case-insensitive substring) across ${canon.length} canon chapters; ${result.reports.length} staleness signals for the hygiene sweep; the forward direction stays with review`,
       );
       return;
     }
