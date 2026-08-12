@@ -1,6 +1,6 @@
 ---
 date: 2026-08-12
-source: the Direction gate on #115 — the Skills moved to the tool's own path; superseding the Direction gate on #81, where Option A — contract-forward — was chosen
+source: the Direction gate on #117 — brief enters as contract; superseding the same-day declaration sourced to the Direction gate on #115, and before it the Direction gate on #81, where Option A — contract-forward — was chosen
 payload:
   - path: .claude/skills/assess/SKILL.md
     class: contract
@@ -18,6 +18,12 @@ payload:
     class: contract
     system: lifecycle
   - path: .claude/skills/distill/SKILL.md
+    class: contract
+    system: lifecycle
+  - path: .claude/skills/brief/SKILL.md
+    class: contract
+    system: lifecycle
+  - path: .claude/skills/brief/formats.md
     class: contract
     system: lifecycle
   - path: .githooks/guard-protected-branch
@@ -174,9 +180,11 @@ adopted gate runs on the host's `config/checks.md`, never on a shipped copy of d
 
 The sorting test, answered yes: these are the paths deuce must be able to fix everywhere at once.
 
-- **The six Skills** (`.claude/skills/*/SKILL.md`, system `lifecycle`) — the operating procedure itself. A
-  Skill links canon and never restates it, so a Skill fix is a procedure fix, and a host running a
-  stale procedure is the drift that matters most.
+- **The Skills** (`.claude/skills/*`, system `lifecycle`) — the six stage Skills plus brief, the
+  standing procedure, which travels with the lifecycle it reports on (the Direction gate on #117;
+  nadal had already vendored it by hand, which is the demand a declaration answers). The operating
+  procedure itself: a Skill links canon and never restates it, so a Skill fix is a procedure fix,
+  and a host running a stale procedure is the drift that matters most.
 - **The git hooks** (`.githooks/*`, system `governance`) — the enforcement of a floor:
   feature branches only, `main` protected. Plain bash with no runtime to bind, so the ADR 0003
   argument that seeds the tools does not reach them. A fix here is a floor's enforcement repaired,

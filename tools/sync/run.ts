@@ -17,9 +17,16 @@ import { join } from "node:path";
 import { parseArgs } from "node:util";
 import { parseManifest, shipSet } from "./manifest.ts";
 import { parseReceipt, writeReceipt, type ReceiptState } from "./receipt.ts";
-import { readPayloadAtCommit, planWrites, applyWrites, type MaterializedFile } from "./payload.ts";
-import { mergeReceiptChecksums } from "./run-helpers.ts";
-import { computeDrift, sha256Hex } from "./drift.ts";
+import {
+  readPayloadAtCommit,
+  readManifestAtCommit,
+  planWrites,
+  applyWrites,
+  applyRetirements,
+  type MaterializedFile,
+} from "./payload.ts";
+import { mergeReceiptChecksums, planRetirements } from "./run-helpers.ts";
+import { assessRetirements, computeDrift, sha256Hex } from "./drift.ts";
 import { composeReport } from "./report.ts";
 import {
   cloneHost,
@@ -79,9 +86,12 @@ function main(): void {
     values.commit ??
     execFileSync("git", ["-C", deuceRoot, "rev-parse", "origin/main"], { encoding: "utf8" }).trim();
 
+  // The manifest at the pinned commit, never the working tree: retirement
+  // makes a manifest/commit mismatch destructive — a working-tree edit could
+  // plan a removal the pinned commit never sanctioned (PR #119's review).
   let manifest, entries;
   try {
-    manifest = parseManifest(readFileSync(join(deuceRoot, "config/payload.md"), "utf8"));
+    manifest = parseManifest(readManifestAtCommit(deuceRoot, commit));
     entries = shipSet(manifest, systems);
   } catch (e) {
     console.error(`sync: ${(e as Error).message} (exit 3)`);
@@ -108,8 +118,32 @@ function main(): void {
     }
     const priorReceipt = receiptState.kind === "receipt" ? receiptState.receipt : undefined;
 
-    // Drift is computed against the host as it stands, before this sync writes.
-    const drift = computeDrift(hostRoot, priorReceipt);
+    // Retirements are planned before the receipt merge can forget the path —
+    // the removal and the checksum's drop happen in the same run, structurally
+    // (#117, the correction on the issue).
+    const retirement = planRetirements(priorReceipt, manifest);
+
+    // Drift is computed against the host as it stands, before this sync
+    // writes; a retired or held-back path's story belongs to the retirement
+    // section, so the drift table never speaks about it too. A refusal while
+    // reading — a non-regular entry, an unreadable path — is the host's state
+    // rejecting the sync, the applyWrites precedent: classified 4, named.
+    let drift, retired;
+    try {
+      drift = computeDrift(
+        hostRoot,
+        priorReceipt,
+        new Set([...retirement.retired, ...retirement.heldBack]),
+      );
+      retired =
+        priorReceipt === undefined
+          ? []
+          : assessRetirements(hostRoot, priorReceipt, retirement.retired);
+    } catch (e) {
+      console.error(`sync: ${(e as Error).message} (exit 4)`);
+      process.exitCode = 4;
+      return;
+    }
 
     // The payload, at the pinned commit — never the working tree. A manifest
     // path the tree does not carry is nonconforming input, a different
@@ -157,11 +191,14 @@ function main(): void {
       changeLog,
       plan,
       drift,
+      retired,
+      heldBack: retirement.heldBack,
       systems,
     });
 
     console.log(`sync: read config/payload.md (${manifest.date}), receipt state '${receiptState.kind}', ` +
-      `payload at ${commit.slice(0, 7)} — ${plan.writes.length} to write, ${plan.skippedSeed.length} seed skipped`);
+      `payload at ${commit.slice(0, 7)} — ${plan.writes.length} to write, ${plan.skippedSeed.length} seed skipped, ` +
+      `${retirement.retired.length} retired`);
 
     if (dryRun) {
       const out = join(mkdtempSync(join(tmpdir(), "deuce-sync-dry-")), "report.md");
@@ -172,9 +209,11 @@ function main(): void {
 
     const branch = `deuce/sync-${commit.slice(0, 7)}`;
     createSyncBranch(hostRoot, branch);
-    // A refused write — a symlinked route, a path that escapes — is the host's
-    // state rejecting the sync, not a defect in it: classified 4, named.
+    // A refused write or removal — a symlinked route, a path that escapes, a
+    // directory where a retired file was — is the host's state rejecting the
+    // sync, not a defect in it: classified 4, named.
     try {
+      applyRetirements(hostRoot, retirement.retired);
       applyWrites(hostRoot, plan);
       writeReceipt(hostRoot, receiptPath, newReceipt);
     } catch (e) {

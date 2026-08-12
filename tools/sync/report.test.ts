@@ -14,6 +14,8 @@ const BASE: ReportInput = {
   changeLog: [],
   plan: { writes: [file("AGENTS.md", "contract", "review"), file("labels.yml", "seed", "tracking")], skippedSeed: ["package.json"] },
   drift: { kind: "no-baseline" },
+  retired: [],
+  heldBack: [],
   systems: [],
 };
 
@@ -52,6 +54,54 @@ test("a clean subsequent sync says exactly what matched", () => {
     drift: { kind: "report", drifted: [], cleanCount: 16 },
   });
   assert.match(body, /all 16 contract files match/);
+});
+
+// The retirement section (#117): every retired path named with its state, the
+// edited case loud about what merging discards, the held-back case named and
+// never removed — and no section at all when there is nothing to say.
+
+test("retired paths render as a table, and the summary counts them", () => {
+  const body = composeReport({
+    ...BASE,
+    receiptState: { kind: "receipt", receipt: { commit: "old", date: "d", checksums: [] } },
+    drift: { kind: "report", drifted: [], cleanCount: 16 },
+    retired: [
+      { path: "skills/assess/SKILL.md", state: "intact" },
+      { path: "skills/devise/SKILL.md", state: "already-absent" },
+    ],
+  });
+  assert.match(body, /\*\*Retired by deuce: 2 path\(s\)\*\*/);
+  assert.match(body, /## Retired by this sync/);
+  assert.match(body, /\| `skills\/assess\/SKILL\.md` \| intact — matches the receipt; removed \|/);
+  assert.match(body, /\| `skills\/devise\/SKILL\.md` \| already absent — nothing to remove/);
+});
+
+test("an edited-then-retired path says loudly that merging discards the edit", () => {
+  const body = composeReport({
+    ...BASE,
+    receiptState: { kind: "receipt", receipt: { commit: "old", date: "d", checksums: [] } },
+    drift: { kind: "report", drifted: [], cleanCount: 16 },
+    retired: [{ path: "skills/verify/SKILL.md", state: "edited" }],
+  });
+  assert.match(body, /`skills\/verify\/SKILL\.md`.*merging discards the host's edit/);
+});
+
+test("a held-back host-territory path is named, and marked never deuce's to remove", () => {
+  const body = composeReport({
+    ...BASE,
+    receiptState: { kind: "receipt", receipt: { commit: "old", date: "d", checksums: [] } },
+    drift: { kind: "report", drifted: [], cleanCount: 16 },
+    heldBack: ["config/checks.md"],
+  });
+  assert.match(body, /## Retired by this sync/);
+  assert.match(body, /never deuce's to remove/);
+  assert.match(body, /`config\/checks\.md`/);
+});
+
+test("no retirement, no section — the report does not speak about nothing", () => {
+  const body = composeReport(BASE);
+  assert.ok(!body.includes("## Retired by this sync"));
+  assert.ok(!body.includes("Retired by deuce"));
 });
 
 // The credential's blast-radius declaration (#83) is cited from every composed

@@ -5,7 +5,14 @@ import { lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, writeFil
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { PayloadEntry } from "./manifest.ts";
-import { applyWrites, planWrites, readPayloadAtCommit } from "./payload.ts";
+import {
+  applyRetirements,
+  applyWrites,
+  entryExists,
+  planWrites,
+  readManifestAtCommit,
+  readPayloadAtCommit,
+} from "./payload.ts";
 
 function git(root: string, args: string[]): string {
   return execFileSync("git", ["-C", root, ...args], { encoding: "utf8" });
@@ -95,4 +102,65 @@ test("seed present on the host is skipped and named; contract present is written
   applyWrites(host, plan);
   assert.equal(readFileSync(join(host, "seedfile"), "utf8"), "the host's own seed\n");
   assert.equal(readFileSync(join(host, "AGENTS.md"), "utf8"), "reviewer boundary v1\n");
+});
+
+// The retirement cases (#117): a retired path is removed from the clone; an
+// absent one needs nothing; the refusals mirror the write path's — the
+// receipt is host-authored input by the time a removal is planned from it.
+
+test("a retired file is removed; an already-absent one is a no-op, not an error", () => {
+  const host = mkdtempSync(join(tmpdir(), "deuce-host-"));
+  mkdirSync(join(host, "skills"));
+  writeFileSync(join(host, "skills/old.md"), "shipped once\n");
+  applyRetirements(host, ["skills/old.md", "skills/never-there.md"]);
+  assert.ok(!entryExists(join(host, "skills/old.md")), "the retired file is gone");
+});
+
+test("a symlinked ancestor on a removal route is refused, and the outside target survives", () => {
+  const outside = mkdtempSync(join(tmpdir(), "deuce-outside-"));
+  writeFileSync(join(outside, "old.md"), "outside the clone — must survive\n");
+  const host = mkdtempSync(join(tmpdir(), "deuce-host-"));
+  execFileSync("ln", ["-s", outside, join(host, "skills")]);
+  assert.throws(() => applyRetirements(host, ["skills/old.md"]), /symlink.*'skills'/s);
+  assert.equal(readFileSync(join(outside, "old.md"), "utf8"), "outside the clone — must survive\n");
+});
+
+test("a directory at a retired path is refused by name", () => {
+  const host = mkdtempSync(join(tmpdir(), "deuce-host-"));
+  mkdirSync(join(host, "skills/old.md"), { recursive: true });
+  assert.throws(() => applyRetirements(host, ["skills/old.md"]), /directory at retired path 'skills\/old\.md'/);
+});
+
+test("a traversal or absolute retirement path is refused before any removal", () => {
+  const host = mkdtempSync(join(tmpdir(), "deuce-host-"));
+  assert.throws(() => applyRetirements(host, ["../evil.md"]), /escapes/);
+  assert.throws(() => applyRetirements(host, ["/abs/evil.md"]), /absolute/);
+});
+
+// The review's wave on PR #119: a FIFO, socket, or device is no more the
+// sync's to unlink than a directory is to replace.
+test("a non-regular entry at a retired path is refused by name", () => {
+  const host = mkdtempSync(join(tmpdir(), "deuce-host-"));
+  execFileSync("mkfifo", [join(host, "was-a-file.md")]);
+  assert.throws(
+    () => applyRetirements(host, ["was-a-file.md"]),
+    /non-regular entry at retired path 'was-a-file\.md'/,
+  );
+  assert.ok(entryExists(join(host, "was-a-file.md")), "the refused entry is untouched");
+});
+
+// The review's wave on PR #119: the manifest is read at the pinned commit —
+// a working-tree edit must not plan a removal the commit never sanctioned.
+test("the manifest is read at the pinned commit, never the working tree", () => {
+  const root = mkdtempSync(join(tmpdir(), "deuce-manifest-"));
+  git(root, ["init", "--quiet"]);
+  git(root, ["config", "user.email", "t@t"]);
+  git(root, ["config", "user.name", "t"]);
+  mkdirSync(join(root, "config"));
+  writeFileSync(join(root, "config/payload.md"), "the pinned declaration\n");
+  git(root, ["add", "--all"]);
+  git(root, ["-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "one"]);
+  const pinned = git(root, ["rev-parse", "HEAD"]).trim();
+  writeFileSync(join(root, "config/payload.md"), "a working-tree edit the pin never saw\n");
+  assert.equal(readManifestAtCommit(root, pinned), "the pinned declaration\n");
 });

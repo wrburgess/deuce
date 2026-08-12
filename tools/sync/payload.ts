@@ -23,6 +23,14 @@ function git(repoRoot: string, args: string[]): Buffer {
   return execFileSync("git", ["-C", repoRoot, ...args], { maxBuffer: 64 * 1024 * 1024 });
 }
 
+// The manifest is read at the same pinned commit as the payload bytes: the
+// report claims "the manifest at that commit is the whole authority", and a
+// working-tree manifest could plan a removal the pinned commit never
+// sanctioned (PR #119's review).
+export function readManifestAtCommit(deuceRoot: string, commit: string): string {
+  return git(deuceRoot, ["show", `${commit}:config/payload.md`]).toString("utf8");
+}
+
 // One ls-tree over the pinned commit; a declared path the tree does not carry
 // is refused by name — the manifest and the tree disagree, and shipping the
 // remainder silently would report a payload nobody declared.
@@ -118,6 +126,44 @@ export function planWrites(files: MaterializedFile[], hostRoot: string): WritePl
     writes.push(f);
   }
   return { writes, skippedSeed };
+}
+
+// A retired path is removed from the clone; `git add --all` stages the
+// deletion, so the removal rides the branch as a diff line the host adopts by
+// merging (ADR 0022; #117). The receipt is host-authored input by read-back
+// time, so the route is checked like any write's. A directory at the path is
+// refused by name — replacing the host's directory structure is not the
+// sync's judgment to make; an absent path needs no removal.
+export function applyRetirements(hostRoot: string, retired: string[]): void {
+  for (const path of retired) {
+    const target = resolveInside(hostRoot, path);
+    assertSafeRoute(hostRoot, path);
+    let stat;
+    try {
+      stat = lstatSync(target);
+    } catch (e) {
+      // Absence is the one expected miss; any other stat failure is the
+      // host's state rejecting the removal, and it crashes classified, never
+      // silently skips.
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") continue;
+      throw e;
+    }
+    if (stat.isDirectory()) {
+      throw new Error(
+        `the host holds a directory at retired path '${path}' — refused: replacing the host's ` +
+          `directory structure is not the sync's judgment to make`,
+      );
+    }
+    // A FIFO, socket, or device is no more the sync's to unlink than a
+    // directory is to replace (PR #119's review).
+    if (!stat.isFile() && !stat.isSymbolicLink()) {
+      throw new Error(
+        `the host holds a non-regular entry at retired path '${path}' — refused: a sync removes ` +
+          `only files and symlinks`,
+      );
+    }
+    rmSync(target);
+  }
 }
 
 export function applyWrites(hostRoot: string, plan: WritePlan): void {

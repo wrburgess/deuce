@@ -1,6 +1,6 @@
 ---
 date: 2026-08-12
-source: PR #118's review, finding 3, for the hold; superseding the 2026-08-08 declaration (the Direction gate on #82 for the trigger and the receipt's home; the Direction gate on #83 for the credential line)
+source: the Direction gate on #117, lifting the hold PR #118's review placed; superseding the 2026-08-08 declaration (the Direction gate on #82 for the trigger and the receipt's home; the Direction gate on #83 for the credential line)
 ---
 
 # Sync configuration
@@ -14,11 +14,12 @@ requests* and [ADR 0022](../adr/0022-updates-arrive-only-as-pull-requests.md); t
 
 ## Trigger and cadence
 
-- **Held: no sync dispatch until #117 lands.** The Skills moved (PR #118) and the sync cannot yet
-  retire a path the manifest stopped naming — a sync before #117 would strand a stale `skills/`
-  copy on the host, and the receipt would drop the retired entries so the stale copy sits with no
-  drift signal. The hold lifts when #117 merges; it is written here because this file is where the
-  sync's caller reads its trigger.
+- **The hold is lifted: #117 taught the sync to retire a path the manifest no longer names.** The
+  hold PR #118's review placed (no dispatch while the Skills' move could strand stale `skills/`
+  copies) is spent with #117's merge, which is what lands this text. The first dispatch per host
+  carries one operational step from #117's gate record: a hand-authored commit on the sync branch
+  adding the `.claude/worktrees/` line to the host's `.gitignore` — seed class, so the sync's own
+  machinery can never deliver it.
 - **HC-called, per host; no standing schedule.** Running the sync fleet-wide with the HC away is
   Chapter 6's, and until that chapter exists every run is a person deciding, on the record.
 - The attended proving run under the HC's own credential preceded #83's blast-radius declaration
