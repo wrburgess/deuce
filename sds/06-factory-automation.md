@@ -27,7 +27,7 @@ Named here so the seams are visible rather than discovered, in the pattern Chapt
 
 ## The factory
 
-The **factory** is the lifecycle run unattended: an admitted issue advances Assess → Devise →
+The **factory** is the lifecycle run unattended: a ready issue advances Assess → Devise →
 Implement → Verify → Deliver by the same Skills, leaving the same terminal artifacts, under the same
 gates, stops, and floors, with no human keystroke between the two gates.
 
@@ -71,7 +71,7 @@ record, and ends.
   cheaper than inventing a claim protocol, and nothing at this queue's scale needs one. How many
   issues one pass advances, and any parallelism inside one, is adaptive configuration; the
   no-overlap rule is the floor.
-- **A pass ends on one of four outcomes, and says which:** *drained* — nothing admitted remains
+- **A pass ends on one of four outcomes, and says which:** *drained* — nothing ready remains
   advanceable; *parked* — everything left is waiting at a gate or on a stop; *spent* — the budget
   below ran out; *killed* — the kill switch. The **run record** is where it says so: what the pass
   picked up, what it advanced, where each parked issue waits, and why the pass ended — posted
@@ -80,28 +80,28 @@ record, and ends.
   standard already refuses to blur that distinction — *unreachable* and *unresponsive* are
   different outcomes (Chapter 2), and so are *finished* and *gone*.
 
-## Admission
+## The front door
 
-**The factory never selects its own work.** An issue enters the factory by **admission**: the HC's
-explicit, durable act of handing it over. `status:ready` means the work *can* start; admission means
-the HC said *start it*.
+**The queue is the intake: the factory may start anything `status:ready`.** The label already means
+the work can start — set at creation, or when a blocker clears (Chapter 1). The factory adds no
+second door: ready is admitted.
 
-- **Why the front door stays shut.** Chapter 0 deliberately has no priority axis: priority is which
-  issue the HC points the AC at next. Admission is that pointing, made durable so a trigger can read
-  it. A factory that picks up anything `status:ready` has quietly moved the choice of what to build
-  from the HC to whoever — or whatever — files issues, and the predecessor's epic named that risk
-  without resolving it: an unattended pipeline with an open front door is a different risk posture
-  ([ace #144](https://github.com/wrburgess/ace/issues/144)). This chapter resolves it: shut, and not
-  a setting. An open front door is not a loosening the gates offer.
-- **Admission order is the machine-readable priority.** Chapter 0 left one revisit open: a priority
-  signal returns only if automation needs it in machine-readable form. It does, and the answer is
-  the order of admission — no ranking, no weights, no second copy of a judgment the HC already
-  expressed by admitting one issue before another. The concrete carrier of admission — a label, a
-  milestone, an argument to the trigger — is adaptive configuration; that admission is explicit,
-  ordered, and the HC's act alone is canon.
-- **Admission is not a gate and waives nothing.** An admitted issue meets the Direction gate at its
-  declared setting, stops at every stop, and ships only through the Ship gate. Admission decides
-  *whether the factory may begin*; the gates decide everything they always decided.
+- **The bound is who can say ready.** On the platform, labels move only under triage permission, so
+  ready-ness is the HC's and the AC's to confer and nobody else's. Direction stays HC-governed
+  (Chapter 0) not because the factory checks provenance but because the label it reads cannot be
+  set from outside. The predecessor's epic asked whether an unattended pipeline dare leave its
+  front door open, and called the open door a different risk posture
+  ([ace #144](https://github.com/wrburgess/ace/issues/144)). The answer here is yes, open — because
+  the door was never the boundary. The label is.
+- **Order is configuration.** The factory takes the ready set in a declared order; absent a
+  declaration, oldest first. Chapter 0's one open revisit — a priority signal returns only if
+  automation needs it in machine-readable form — is disposed here: automation needs an *order*, not
+  a priority axis, and an order is one line of configuration rather than a second copy of a
+  judgment. The HC's pointing act survives whole: pointing is reordering, and an issue the HC
+  points at is simply next.
+- **Ready is not a gate and waives nothing.** A ready issue meets the Direction gate at its
+  declared setting, stops at every stop, and ships only through the Ship gate. The door decides
+  where the factory may begin; the gates decide everything they always decided.
 
 ## Stops, routed
 
@@ -112,7 +112,7 @@ a stop goes when nobody is standing at the desk.
 
 - **A stop parks the issue, never the factory.** The question posts durably where Chapter 1 put it,
   `status:blocked` marks it — the queue is already the dashboard that surfaces it — and the pass
-  moves to the next admitted issue. Why: one ambiguous requirement must not idle everything behind
+  moves to the next ready issue. Why: one ambiguous requirement must not idle everything behind
   it, and the reverse discipline is already canon — a pass that pushes past its stop to keep moving
   is Chapter 1's unsupervised run, not its unattended one.
 - **The answer is the resume.** The HC answers on the record, exactly as when present; the next pass
@@ -146,7 +146,7 @@ setting is in force, which is `config/gates.md`'s alone:
   and the factory is the first thing that would use it — the dated reasoning sits with the setting,
   in `config/gates.md`, and moves when the HC moves it, not when this chapter merges.
 - **A parked gate is the system working, not a failure to automate.** With both gates at their
-  strictest, the factory still earns its keep: every admitted issue is carried to its next gate
+  strictest, the factory still earns its keep: every ready issue is carried to its next gate
   with the artifacts posted, and the HC's day is two kinds of decision instead of five stages of
   driving.
 
@@ -266,7 +266,7 @@ during the founding. There is no ahead left.
 | `attested` — Ship gate | Unchanged, and still short its second leg — Chapter 3's independent re-run; no factory pass merges before it exists |
 | The sweep and the sync | Schedulable, and the sync dispatchable fleet-wide; each waits on its own declarations and the credential floor |
 | Capacity | Gains its first enforcer: no unattended pass without a declared budget |
-| Chapter 0's priority revisit | Disposed: admission order, with the carrier configuration |
+| Chapter 0's priority revisit | Disposed: the factory needs an order, not a priority axis, and the order is configuration |
 | The fleet | A host's factory is its own: the Skill ships by the manifest's classes, the floors travel whole (Chapter 5), and every declaration — triggers, budget, credentials — is the host's |
 | The bootstrap exception | Spent |
 | Canon | Otherwise unchanged: no new stage, no new gate setting, no new merge authority, no emergency path |
@@ -277,7 +277,7 @@ Declarations `config/` owes when this chapter's work runs, each dated and source
 
 | Declaration | Why it is configuration |
 |---|---|
-| The factory's triggers and cadence, and admission's concrete carrier | Scheduling economics and platform mechanism, the two most volatile things this chapter touches |
+| The factory's triggers and cadence, and the ready set's order | Scheduling economics and platform mechanism, the two most volatile things this chapter touches |
 | The per-stage model and effort table | Replaces `config/models.md`'s single declaration on that file's own terms; platform-coupled by definition |
 | The unattended budget | `config/capacity.md`'s number, at last with a consumer that enforces it |
 | The factory's credential rows | `config/credentials.md` entries under its minting rule, the tracker credential first |
@@ -291,7 +291,7 @@ carrying a real trade-off — and are recorded at ratification:
 | ADR | Decision it records |
 |---|---|
 | 0024 | The factory is a stateless pass over the tracker — no board, no daemon, no run state; re-entry recomputes everything from terminal artifacts, at the stated cost that work not yet posted is lost at any interruption. |
-| 0025 | Admission is explicit: the factory never selects its own work, the open front door is refused as a setting rather than declined as a default, and Chapter 0's priority revisit is answered by admission order. |
+| 0025 | The front door is open: the factory may start anything `status:ready`, bounded by who can set the label rather than by a second admission act — and Chapter 0's priority revisit is disposed as declared order, not a priority axis. |
 | 0026 | An unattended pass requires a minted credential and a declared budget — the attended credential state never runs unattended — at the stated cost that the factory stays dark until both declarations exist. |
 
 ---
