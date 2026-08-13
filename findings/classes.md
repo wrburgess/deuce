@@ -61,7 +61,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### An invariant enforced on one path and leaking through another
 
-8 instances, across 4 pull requests — PR #39, PR #46, PR #59, PR #114.
+9 instances, across 5 pull requests — PR #39, PR #46, PR #59, PR #114, PR #124.
 
 - **PR #39, finding 3** — the declared lens bounds were written in configuration and unenforced at dispatch.
 - **PR #46, finding 2** — the conversion to a classified failure began after staging, so staging's own errors escaped raw.
@@ -70,6 +70,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #46, finding 9** — the stream guards sat inside the failure branch, leaving the success path unguarded.
 - **PR #59, finding 3** — the partial-run report named the checks that ran and not the ones never attempted, so a short run read as a whole one.
 - **PR #59, finding 7** — the fix for that then counted a blocked check twice, once as unmet and once as skipped. Three consecutive reviews each found the per-check accounting wrong in a new way; the cause was three parallel arrays with the invariant maintained by hand at four return sites, and the resolution was the re-plan on #52, not a fourth patch.
+- **PR #124, finding 3** — a `config/gates.md` edit moving the Ship gate to `attested` restated that setting's floor as binding on unattended passes only, so an attended AC merge needed a conforming review alone. Chapter 3 names the independent gate re-run *a floor for `attested`*, unqualified. The delta, and the reason it belongs to this class rather than to restatement: the leak was authored **in the declaration that governs the gate**, by an AC that would have been the one merging under it — the one path where a narrowed invariant has nobody left to catch it, and it took the contractor review bound to the merge commit to find it.
 - **PR #114, finding 2** — the four run outcomes covered drained, parked, spent, and killed, and the declared one-issue scope created a fifth ending — scope reached, admissible work left — with no truthful outcome to record. The delta: the leak sat between a canon list and a config declaration; the fix binds scope to canon's declared-budget clause, ending such a pass *spent*.
 
 ### Restatement of content another document owns

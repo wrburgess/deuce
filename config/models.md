@@ -31,8 +31,12 @@ that section names *aspiration rather than configuration*.
 
 - **The values are read at dispatch, from this file** — never from a Skill body, never baked into a
   trigger. That is [Chapter 6](../sds/06-factory-automation.md#routing-consumed)'s rule, and
-  [`.claude/skills/execute/SKILL.md`](../.claude/skills/execute/SKILL.md) resolves the row for each
-  stage it runs.
+  [`.claude/skills/execute/SKILL.md`](../.claude/skills/execute/SKILL.md) reads the row for each
+  stage it runs and records it.
+- **Reading is not yet dispatching, and the difference is deliberate.** Nothing acts on a row today,
+  so nothing can refuse a bad one. Until the launcher exists, a pass records the row it read — and
+  names any stage that fell through to the default, so a row missing by accident is visible in the
+  run record rather than absorbed by the fallback.
 - **Models are named by alias, never by full name** — `opus`, not `claude-opus-5`. An alias tracks
   the latest model of its family, so it does not go stale. This is how the table keeps most of what
   #44 bought when it removed the named model from this file: the durable fix there was a statement
