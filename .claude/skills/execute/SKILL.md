@@ -26,8 +26,12 @@ route, what it does at each gate, what it must leave behind — is canon and is 
 1. **Read the pass's configuration** — the gate settings ([`config/gates.md`](../../../config/gates.md));
    the factory's declarations ([`config/factory.md`](../../../config/factory.md)): the pass scope, the
    run record's home, and the ready set's order where one is declared; the stage routing
-   ([`config/models.md`](../../../config/models.md)); the budget, when one is declared
-   ([`config/capacity.md`](../../../config/capacity.md)).
+   ([`config/models.md`](../../../config/models.md)) — **read the row for each stage the pass will
+   run and record it, naming any stage that fell through to the declared default**
+   ([Chapter 6 → Routing, consumed](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#routing-consumed)).
+   Nothing dispatches on those rows yet, and the pass does not act as though something does: a
+   session that does not match its row is a line in the run record, never a stop. The budget, when
+   one is declared ([`config/capacity.md`](../../../config/capacity.md)).
 2. **Read the queue from the tracker.** The front door is anything `status:ready`
    ([Chapter 6 → The front door](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-front-door)).
    Take the set in the declared order — oldest first absent a declaration — skipping issue types the
