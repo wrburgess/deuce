@@ -1,24 +1,6 @@
 ---
 date: 2026-08-13
 source: the Direction gate on #109, where Option B — the differentiated table — was chosen, superseding the single declaration sourced to the HC's session configuration and the Direction gate on #13; the named model was removed at the Direction gate on #44 and returns here as an alias, for the reason given below
-routing:
-  - stage: assess
-    model: opus
-    effort: high
-  - stage: devise
-    model: opus
-    effort: high
-  - stage: implement
-    model: opus
-    effort: medium
-  - stage: verify
-    model: opus
-    effort: max
-  - stage: deliver
-    model: sonnet
-    effort: low
-default-model: opus
-default-effort: high
 ---
 
 # Per-stage model and effort
@@ -27,20 +9,30 @@ Which model and effort level runs each lifecycle stage. This is adaptive configu
 [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's home*; the stages themselves
 are canon and are not restated here.
 
-**The machine-read values live in the frontmatter above and nowhere else** — the rows and the two
-defaults. The body carries only the reasoning behind them, as
-[`review.md`](review.md) splits its own roster
-([Chapter 3](../sds/03-quality-gate-and-tooling.md) → *Parse, never pattern-match*).
+**The table below is prose, deliberately, and the frontmatter carries only `date` and `source`.**
+That is [Chapter 3](../sds/03-quality-gate-and-tooling.md) → *The declaration schema*, applied
+rather than worked around: a value a tool reads gets a parseable home, and where nothing reads a
+value, prose is correct and sufficient. Nothing reads these values yet. When the launcher that reads
+them exists — #108's — the rows move to frontmatter in the grammar
+[`tools/gate/declaration.ts`](../tools/gate/declaration.ts) defines, in one dated edit, and that is
+the moment they earn it. Landing them in frontmatter today would be a field nothing reads, which
+that section names *aspiration rather than configuration*.
 
 ## Declaration
 
-- **Each stage runs at its row's model and effort.** A stage with no row runs at `default-model` and
-  `default-effort` — the fallback [Chapter 6](../sds/06-factory-automation.md#routing-consumed)
-  names.
+| Stage | Model | Effort | Why this row |
+|---|---|---|---|
+| **Assess** | `opus` | `high` | The widest read of the repository, and its options must genuinely differ. The stage most damaged by a cheap model, because a thin Assessment mis-aims everything after it |
+| **Devise** | `opus` | `high` | Decides the testing strategy up front, before code exists to write tests against. A weak plan is paid for at every later stage |
+| **Implement** | `opus` | `medium` | Executes steps the Plan already decided. The judgment was spent upstream; effort drops, the model does not |
+| **Verify** | `opus` | `max` | The refutation stage, and the last one that hunts defects rather than re-confirming them. The one place to spend most — a finding missed here ships |
+| **Deliver** | `sonnet` | `low` | Re-runs the checks, writes the record, acts on the declared setting. Mechanical by design, which is what makes it the one row that leaves the frontier tier |
+| *default* | `opus` | `high` | A stage with no row above runs here — the fallback [Chapter 6](../sds/06-factory-automation.md#routing-consumed) names |
+
 - **The values are read at dispatch, from this file** — never from a Skill body, never baked into a
   trigger. That is [Chapter 6](../sds/06-factory-automation.md#routing-consumed)'s rule, and
   [`.claude/skills/execute/SKILL.md`](../.claude/skills/execute/SKILL.md) resolves the row for each
-  stage it dispatches.
+  stage it runs.
 - **Models are named by alias, never by full name** — `opus`, not `claude-opus-5`. An alias tracks
   the latest model of its family, so it does not go stale. This is how the table keeps most of what
   #44 bought when it removed the named model from this file: the durable fix there was a statement
@@ -49,35 +41,26 @@ defaults. The body carries only the reasoning behind them, as
   every stage ran on whatever model the HC launched the session with. An unattended run has no such
   session to inherit from, so something must say which model — which is the whole of what
   [Chapter 6](../sds/06-factory-automation.md#routing-consumed) consumes from this file.
-- **The two defaults are scalars, not a nested block.** The frontmatter grammar this repository
-  parses has one level of list and scalars at the margin, and no production for a nested map — a
-  `default:` block is refused by the reader before any check runs. Two scalars say the same thing
-  inside the grammar.
-
-## The reasoning, row by row
-
-| Stage | Why this row |
-|---|---|
-| **Assess** | The widest read of the repository, and its options must genuinely differ. The stage most damaged by a cheap model, because a thin Assessment mis-aims everything after it |
-| **Devise** | Decides the testing strategy up front, before code exists to write tests against. A weak plan is paid for at every later stage |
-| **Implement** | Executes steps the Plan already decided. The judgment was spent upstream; effort drops, the model does not |
-| **Verify** | The refutation stage, and the last one that hunts defects rather than re-confirming them. The one place to spend most — a finding missed here ships |
-| **Deliver** | Re-runs the checks, writes the record, acts on the declared setting. Mechanical by design, which is what makes it the one row that leaves the frontier tier |
+- **Effort levels are the platform's vocabulary** — `low`, `medium`, `high`, `xhigh`, `max` — read
+  from the harness on 2026-08-13. A level outside that set is a defect in this table, and only the
+  launcher would find it.
 
 ## What nothing here validates
 
 A **declared limit**, in the sense [Chapter 3](../sds/03-quality-gate-and-tooling.md) requires of a
-check: nothing in this repository **resolves a stage to its row**. The frontmatter is parsed — that
-is how every declaration here is read at all — but only its `date` and `source` are looked at.
+check: **no check reads this table at all.** It is prose, and prose has no failing test
+([Chapter 2](../sds/02-review-and-findings.md) → *Verifying prose*). What that leaves open, stated
+rather than discovered:
 
-| Reached | Not reached |
+| Not reached | What it would look like |
 |---|---|
-| The block's *shape*: a malformed row, a repeated top-level key, or a nested map is refused by file and by line | The *values*: an alias naming no real model, or an effort level outside the platform's vocabulary, both pass |
-| A field repeated inside one row | **Two rows naming the same stage** — both parse, and a launcher would take one of them arbitrarily |
+| The values | An alias naming no real model, or an effort level outside the five above |
+| The row set | Two rows naming the same stage, or a stage missing with no intent behind it |
+| Agreement with the session | A row saying one thing while the run happens on another |
 
-Every entry in the left column was measured against this file before this declaration landed, and
-so was the right column's third: two `assess` rows carrying different values were written here and
-the check reported green. The launcher is what would decide these, and the launcher is #108's.
+The residue is routed, not dropped: what review catches, it catches under the lens *is any statement
+here true only as of when it was written?*; the rest waits for the launcher that will read these
+rows and can fail loudly on them.
 
 ## What an attended pass does
 

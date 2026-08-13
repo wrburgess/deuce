@@ -46,7 +46,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A guard that fails open or fails silent on input it did not expect
 
-9 instances, across 4 pull requests — PR #39, PR #41, PR #59, PR #112.
+10 instances, across 5 pull requests — PR #39, PR #41, PR #59, PR #112, PR #124.
 
 - **PR #39, finding 2** — a malformed accepted register parsed as an empty list, so the summons carried no accepted findings and said nothing about it.
 - **PR #39, finding 5** — the register parser read past its own section into whatever followed.
@@ -57,6 +57,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #59, finding 1** — the frontmatter parser closed its vocabulary inside a check entry and left the top level open, so an unrecognized key was accepted and silently discarded.
 - **PR #59, finding 4** — scalars and lists were separate namespaces and each duplicate guard checked only its own, so one key declared twice in two shapes was accepted twice.
 - **PR #112, finding 1** — `codex login status` decides that a login is reachable, never whose: a substituted, authenticated account passes readiness and a run proceeds under an undeclared credential. The delta: the guard is an external CLI's own check, so the closure is a declared blind spot plus machine custody, not a stronger probe.
+- **PR #124, finding 1** — routing values were installed as frontmatter, which reads as machine-read configuration, while nothing parsed them: an unknown model alias, an effort level outside the platform's vocabulary, and two rows naming the same stage all passed green. The delta: the silence was introduced by the change itself, and the AC's own pass *documented* it as a declared blind spot rather than removing it — while ratified canon already carried the answer (Chapter 3, *The declaration schema*: where nothing reads a value, prose is correct and sufficient). A blind spot declared where a rule already forbids the shape is not a disclosure, it is the defect with a label on it.
 
 ### An invariant enforced on one path and leaking through another
 
