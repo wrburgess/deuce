@@ -38,7 +38,15 @@ function main(): void {
 
   const label = declaration.trigger.label;
   const target = join(homedir(), "Library", "LaunchAgents", `${label}.plist`);
-  const domain = `gui/${process.getuid?.() ?? ""}`;
+  const uid = process.getuid?.();
+  if (uid === undefined) {
+    // `gui/` with nothing after it is a domain launchctl would reject in a way
+    // that reads as a launchctl problem. Refused here, where the cause is named.
+    console.error("nothing installed — this platform reports no user id, so there is no gui domain");
+    process.exitCode = EXIT_CANNOT_RUN;
+    return;
+  }
+  const domain = `gui/${uid}`;
 
   // Booting out an agent that is not loaded exits non-zero, which is not a
   // failure of this script: both paths want the same end state, loaded or gone.

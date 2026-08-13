@@ -177,46 +177,47 @@ function main(): void {
     });
 
     const endedAt = new Date();
-    const killed = pass.signal !== null;
-    if (killed) {
-      log(`pass killed after ${declaration.deadlineSeconds}s — the deadline`);
+    const died = (detail: string, reason: "deadline" | "exit"): void => {
+      log(`pass died — ${detail}`);
       postDeathNotice(
         declaration.recordHome,
         deathNotice({
           label: declaration.trigger.label,
           startedAt,
           endedAt,
-          reason: "deadline",
-          detail: `killed with ${pass.signal} after the declared ${declaration.deadlineSeconds}s`,
+          reason,
+          detail,
           logPath: declaration.logPath,
         }),
         token,
         cwd,
       );
       process.exitCode = EXIT_PASS_FAILED;
+    };
+
+    // The deadline is decided by the code node sets, never by "a signal
+    // arrived": a pass the HC killed by hand also arrives here with a signal,
+    // and a notice claiming the deadline for it would be a false account of the
+    // run — which is the one thing a death notice exists to avoid.
+    const failure = pass.error as NodeJS.ErrnoException | undefined;
+    if (failure?.code === "ETIMEDOUT") {
+      died(
+        `killed with ${pass.signal} at the declared deadline of ${declaration.deadlineSeconds}s`,
+        "deadline",
+      );
       return;
     }
-    if (pass.error) {
-      log(`the pass could not be started: ${pass.error.message}`);
+    if (failure) {
+      log(`the pass could not be started: ${failure.message}`);
       process.exitCode = EXIT_CANNOT_RUN;
       return;
     }
+    if (pass.signal !== null) {
+      died(`killed with ${pass.signal}, which was not the deadline`, "exit");
+      return;
+    }
     if (pass.status !== 0) {
-      log(`pass exited ${pass.status}`);
-      postDeathNotice(
-        declaration.recordHome,
-        deathNotice({
-          label: declaration.trigger.label,
-          startedAt,
-          endedAt,
-          reason: "exit",
-          detail: `exited ${pass.status}`,
-          logPath: declaration.logPath,
-        }),
-        token,
-        cwd,
-      );
-      process.exitCode = EXIT_PASS_FAILED;
+      died(`exited ${pass.status}`, "exit");
       return;
     }
     log("pass ended — its run record is the account of what it did");

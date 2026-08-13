@@ -301,6 +301,15 @@ Declared at the Direction gate on #108, before the first pass ran under it.
   asked for. What stands there is canon's stop rule, the run record, and the kill switch. None of
   them is a scope on a token, and pretending otherwise would be the fiction this file exists to
   refuse.
+- **The thinnest place, named: text the session reads.** This repository is public, so anyone can
+  write an issue body or a comment, and a pass reads both at every stage. Admission is bounded —
+  `status:ready` moves only under triage permission, which is
+  [Chapter 6](../sds/06-factory-automation.md) → *The front door*'s whole argument — so an
+  outsider cannot start work. But an admitted issue's thread carries text from anyone, and with
+  the approval prompts off there is no boundary between that text and this machine. What stands
+  there is the AC's own handling of instructions arriving inside material it was asked to read,
+  plus the three controls above. That is thinner than a scope, and it is written here rather than
+  left for an incident to write.
 
 ### What it deliberately cannot do
 
@@ -321,5 +330,10 @@ Least privilege, stated as cannots and split by what actually holds each one:
   rule: a reach that is written down can be argued with, and one that is not is discovered from
   its consequences.
 - **Narrowing it later is one dated edit** — a curated `--allowedTools` set in place of the
-  permission mode, if the passes ever show which tools they actually need. Deliberately not
-  guessed at before there is a pass to measure.
+  permission mode, or a sandbox profile around the child. Deliberately not guessed at before a
+  pass exists to measure: an allowlist covering what a lifecycle stage actually does — git, npm,
+  `gh`, `codex`, edits anywhere in the checkout, network research — is barely narrower than the
+  mode it replaces, and one guessed too tight fails as a stage that stops mid-run.
+- **What would move it sooner:** the reading surface above. A narrowing bought by measurement is a
+  later edit; one bought by an untrusted-text incident is a finding, and this entry is what makes
+  the difference visible in advance.
