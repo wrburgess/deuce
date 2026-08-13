@@ -25,21 +25,35 @@ route, what it does at each gate, what it must leave behind — is canon and is 
 
 1. **Read the pass's configuration** — the gate settings ([`config/gates.md`](../../../config/gates.md));
    the factory's declarations ([`config/factory.md`](../../../config/factory.md)): the pass scope, the
-   run record's home, and the ready set's order where one is declared; the stage routing
-   ([`config/models.md`](../../../config/models.md)) — **read the row for each stage the pass will
-   run and record it, naming any stage that fell through to the declared default**
+   run record's home, the lock and kill-switch paths, and the ready set's order where one is
+   declared; the stage routing ([`config/models.md`](../../../config/models.md)) — **read the row for
+   each stage the pass will run and record it, naming any stage that fell through to the declared
+   default**
    ([Chapter 6 → Routing, consumed](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#routing-consumed)).
    Nothing dispatches on those rows yet, and the pass does not act as though something does: a
    session that does not match its row is a line in the run record, never a stop. The budget, when
    one is declared ([`config/capacity.md`](../../../config/capacity.md)).
-2. **Read the queue from the tracker.** The front door is anything `status:ready`
+2. **Take the pass lock** at the path [`config/factory.md`](../../../config/factory.md) declares,
+   before reading the queue. A lock already held means a pass is running and **this one starts
+   nothing** — canon's floor, and the collision it exists for is the HC's own call landing on a
+   trigger's pass
+   ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
+   A lock this pass did not take is reported with its age, **never removed** — taking it starts the
+   second concurrent pass the floor forbids. Release it when the pass ends, whatever the outcome.
+3. **Read the kill switch at every artifact boundary** — before each stage's Skill, before each
+   park, and before the run record. Present means: start nothing further, post the run record with
+   the outcome ***killed***, and end. Its path is
+   [`config/factory.md`](../../../config/factory.md)'s, one act throws it, and a pass that only
+   noticed at its start would keep running for hours after the HC said stop
+   ([Chapter 6 → The kill switch](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-kill-switch)).
+4. **Read the queue from the tracker.** The front door is anything `status:ready`
    ([Chapter 6 → The front door](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-front-door)).
    Take the set in the declared order — oldest first absent a declaration — skipping issue types the
    lifecycle does not run
    ([Chapter 1 → Binding to the Work Tracking System](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)),
    and admit up to the declared scope. What was skipped and what was left, and why, goes in the run
    record.
-3. **Advance each admitted issue by re-entry.** The artifacts on the tracker alone decide its next
+5. **Advance each admitted issue by re-entry.** The artifacts on the tracker alone decide its next
    stage
    ([Chapter 1 → Stages communicate only through terminal artifacts](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stages-communicate-only-through-terminal-artifacts));
    run state is working memory and never decides
@@ -49,20 +63,20 @@ route, what it does at each gate, what it must leave behind — is canon and is 
    [`deliver`](../deliver/SKILL.md) — and continue stage to stage as each terminal artifact posts.
    **Never a compressed path:** nobody is present to select one
    ([Chapter 6 → The factory](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory)).
-4. **Park at a gate at its declared setting.** What the pass does at each setting is
+6. **Park at a gate at its declared setting.** What the pass does at each setting is
    [Chapter 6 → The gates, unattended](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-gates-unattended).
    A parked issue keeps the status its stage set; the run record names where it waits, and the HC's
    answer is the resume — a later pass finds it through re-entry, and no other mechanism exists.
-5. **Park on a stop and move on.** The question posts durably, `status:blocked` marks it, and the
+7. **Park on a stop and move on.** The question posts durably, `status:blocked` marks it, and the
    pass takes the next admitted issue
    ([Chapter 6 → Stops, routed](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#stops-routed)).
    A stop is never self-answered — the bar binds hardest with nobody watching.
-6. **End on one of the four outcomes and say which** — *drained*, *parked*, *spent*, or *killed*
+8. **End on one of the four outcomes and say which** — *drained*, *parked*, *spent*, or *killed*
    ([Chapter 6 → The factory pass](https://github.com/wrburgess/deuce/blob/main/sds/06-factory-automation.md#the-factory-pass)).
    The pass scope is a declared budget in that section's sense: a pass that reaches it with
    admissible work still ready ends *spent*, and a later pass takes the remainder
    ([`config/factory.md`](../../../config/factory.md)).
-7. **Post the run record at the declared home**
+9. **Post the run record at the declared home**
    ([`config/factory.md`](../../../config/factory.md)): what the pass picked up, what it advanced and
    to where, where each parked issue waits, what it skipped or left and why, and how it ended. The
    pass is not over until the record posts — a pass that ends silently cannot be told from one that
