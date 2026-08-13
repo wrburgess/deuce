@@ -133,6 +133,74 @@ test("a declaration with no date is refused — the block cites a date it must h
   assert.throws(() => parseMeasureDeclaration(undated), /date/i);
 });
 
+// Found by the AC's own refutation on PR #125: the vocabulary was called
+// closed and was not. A measure nobody renders, or a field nobody reads,
+// passing in silence is a declaration that says more than the block honours.
+test("a measure name outside the four is refused, not silently ignored", () => {
+  const extra = DECLARATION.replace(
+    "  - name: cost-efficiency",
+    "  - name: velocity\n    capture: computed\n  - name: cost-efficiency",
+  );
+  assert.throws(() => parseMeasureDeclaration(extra), /velocity/);
+});
+
+test("a field outside the declared vocabulary is refused, and named", () => {
+  const extra = DECLARATION.replace(
+    "  - name: autonomy\n    capture: declared",
+    "  - name: autonomy\n    capture: declared\n    colour: blue",
+  );
+  assert.throws(() => parseMeasureDeclaration(extra), /colour/);
+});
+
+test("the same measure declared twice is refused rather than last-one-wins", () => {
+  const twice = DECLARATION.replace(
+    "  - name: autonomy\n    capture: declared",
+    "  - name: autonomy\n    capture: declared\n  - name: autonomy\n    capture: un-instrumented",
+  );
+  assert.throws(() => parseMeasureDeclaration(twice), /autonomy/);
+});
+
+// Found by the AC's own refutation on PR #125: the declaration was parsed and
+// then ignored — every line was hard-coded, so `config/measures.md` and the
+// block it claims to speak for could disagree silently. These four cases are
+// what make the declaration load-bearing.
+test("a measure the declaration calls declared renders as a slot, not as a number", () => {
+  const declared = parseMeasureDeclaration(
+    DECLARATION.replace("  - name: throughput\n    capture: computed", "  - name: throughput\n    capture: declared"),
+  );
+  const block = renderBlock({ declaration: declared, quality, throughput, prNumber: 119 });
+  const line = block.split("\n").find((l) => l.includes("**Throughput**"))!;
+  assert.match(line, /\[declare:/);
+  assert.ok(!line.includes("9.2h"), `a computed elapsed leaked into a declared measure: ${line}`);
+});
+
+test("a declaration asking for a capture nothing implements is refused, named", () => {
+  const impossible = parseMeasureDeclaration(
+    DECLARATION.replace("  - name: cost-efficiency\n    capture: un-instrumented", "  - name: cost-efficiency\n    capture: computed"),
+  );
+  assert.throws(
+    () => renderBlock({ declaration: impossible, quality, throughput, prNumber: 119 }),
+    /cost-efficiency/,
+  );
+});
+
+test("Quality declared fully computed is refused — nothing computes the AC's half", () => {
+  const impossible = parseMeasureDeclaration(
+    DECLARATION.replace("  - name: quality\n    capture: computed-in-part", "  - name: quality\n    capture: computed"),
+  );
+  assert.throws(() => renderBlock({ declaration: impossible, quality, throughput, prNumber: 119 }), /quality/i);
+});
+
+test("a measure the declaration calls un-instrumented never carries a figure", () => {
+  const uninstrumented = parseMeasureDeclaration(
+    DECLARATION.replace("  - name: throughput\n    capture: computed", "  - name: throughput\n    capture: un-instrumented"),
+  );
+  const block = renderBlock({ declaration: uninstrumented, quality, throughput, prNumber: 119 });
+  const line = block.split("\n").find((l) => l.includes("**Throughput**"))!;
+  assert.match(line, /un-instrumented/);
+  assert.ok(!line.includes("9.2h"), `a computed elapsed leaked into an un-instrumented measure: ${line}`);
+});
+
 test("the live config/measures.md parses, and declares all four measures", () => {
   const live = parseMeasureDeclaration(readFileSync("config/measures.md", "utf8"));
   assert.equal(live.measures.size, 4);

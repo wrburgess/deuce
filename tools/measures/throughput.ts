@@ -50,13 +50,23 @@ export function findDeliveryRecord(comments: MeasuresComment[]): string | null {
   return posted;
 }
 
-/** Elapsed hours, written the way a person writes them in a record. */
+/** Elapsed hours, written the way a person writes them in a record.
+ *
+ *  Each branch rounds before it decides its unit, never after: minutes that
+ *  round up to sixty are an hour, and hours that round up to twenty-four are a
+ *  day. Deciding first printed "60m" and "24h", units nobody writes — the
+ *  off-by-one at every boundary, found by the AC's own refutation on PR #125. */
 export function formatElapsed(hours: number): string {
   if (hours < 1 / 60) return "under a minute";
-  if (hours < 1) return `${Math.round(hours * 60)}m`;
-  if (hours < 24) return `${Number(hours.toFixed(1))}h`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ${Number((hours - days * 24).toFixed(1))}h`;
+
+  const minutes = Math.round(hours * 60);
+  if (minutes < 60) return `${minutes}m`;
+
+  const wholeHours = Number(hours.toFixed(1));
+  if (wholeHours < 24) return `${wholeHours}h`;
+
+  const days = Math.floor(wholeHours / 24);
+  return `${days}d ${Number((wholeHours - days * 24).toFixed(1))}h`;
 }
 
 function stamp(iso: string): string {

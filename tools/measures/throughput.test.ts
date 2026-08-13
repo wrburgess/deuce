@@ -67,6 +67,18 @@ test("boundaries read the way a person would write them", () => {
   assert.equal(formatElapsed(195.8), "8d 3.8h");
 });
 
+// Found by the AC's own refutation on PR #125: minutes that round up to a
+// whole hour were printed as "60m", a unit nobody writes.
+test("minutes rounding up to a whole hour are written as an hour", () => {
+  assert.equal(formatElapsed(0.999), "1h");
+  assert.equal(formatElapsed(0.9917), "1h");
+  assert.equal(formatElapsed(0.99), "59m");
+});
+
+test("the same rounding at the day boundary does not print 24h", () => {
+  assert.equal(formatElapsed(23.999), "1d 0h");
+});
+
 test("the same-minute case is zero elapsed, not an error", () => {
   const t = computeThroughput({
     issue: { number: 1, createdAt: "2026-08-13T22:00:00Z" },

@@ -42,6 +42,7 @@ export interface RenderInput {
 
 const REQUIRED = ["quality", "autonomy", "throughput", "cost-efficiency"] as const;
 const CAPTURES = new Set<string>(["computed", "computed-in-part", "declared", "un-instrumented"]);
+const FIELDS = new Set<string>(["name", "capture", "command"]);
 const PATH = "config/measures.md";
 
 export function parseMeasureDeclaration(markdown: string): MeasureDeclaration {
@@ -62,6 +63,23 @@ export function parseMeasureDeclaration(markdown: string): MeasureDeclaration {
     const capture = item.get("capture");
     if (name === undefined) throw new Error(`${PATH}: a measure carries no 'name'`);
     if (capture === undefined) throw new Error(`${PATH}: measure '${name}' carries no 'capture'`);
+    // The vocabulary is closed on all three axes — the measure's name, its
+    // fields, and its capture — the way `parseDeclaration` closes the gate's.
+    // A key nobody reads is a declaration saying more than the block honours,
+    // and it says it silently.
+    if (!REQUIRED.includes(name as (typeof REQUIRED)[number])) {
+      throw new Error(
+        `${PATH}: '${name}' is not one of the four health measures (${REQUIRED.join(", ")})`,
+      );
+    }
+    if (measures.has(name)) {
+      throw new Error(`${PATH}: measure '${name}' is declared twice — one capture per measure`);
+    }
+    for (const field of item.keys()) {
+      if (!FIELDS.has(field)) {
+        throw new Error(`${PATH}: measure '${name}' carries an unrecognized field '${field}'`);
+      }
+    }
     if (!CAPTURES.has(capture)) {
       throw new Error(
         `${PATH}: measure '${name}' declares capture '${capture}', which is not one of computed | computed-in-part | declared | un-instrumented`,
@@ -99,17 +117,74 @@ function qualityLine(quality: QualityResult, prNumber: number): string {
   return `**Quality** — ${computed}. AC-raised findings: [declare: how many the AC raised in Verify, and how many were must-fix].${unknown}`;
 }
 
+// What this family can actually produce for each measure. A declaration asking
+// for anything else is refused rather than rendered around: the whole point of
+// reading `config/measures.md` is that the states a reader sees there and the
+// states the block claims are one set, and a declaration parsed but ignored is
+// a second copy wearing the first one's clothes.
+const IMPLEMENTED: Record<string, Capture[]> = {
+  quality: ["computed-in-part", "declared", "un-instrumented"],
+  autonomy: ["declared", "un-instrumented"],
+  throughput: ["computed", "declared", "un-instrumented"],
+  "cost-efficiency": ["declared", "un-instrumented"],
+};
+
+function capture(declaration: MeasureDeclaration, name: string): Capture {
+  const declared = declaration.measures.get(name)!;
+  if (!IMPLEMENTED[name]!.includes(declared)) {
+    throw new Error(
+      `${PATH} declares '${name}' as ${declared}, and nothing here produces that: this family can render ${name} as ${IMPLEMENTED[name]!.join(" or ")}. Refusing to print a block that contradicts the declaration.`,
+    );
+  }
+  return declared;
+}
+
+function uninstrumented(label: string, date: string): string {
+  return `**${label}** — un-instrumented; no capture path exists on this platform (${PATH}, ${date}). Never estimated.`;
+}
+
 export function renderBlock(input: RenderInput): string {
   const { declaration, quality, throughput, prNumber } = input;
+  const date = declaration.date;
 
   const stampNote = throughput.endIsNow
     ? " The end stamp is this run, not the record's posting time — a record cannot know when it will be posted."
     : "";
 
-  return [
-    qualityLine(quality, prNumber),
-    "**Autonomy** — [declare: HC interventions beyond the two gates].",
-    `**Throughput** — ${throughput.line}.${stampNote}`,
-    `**Cost efficiency** — un-instrumented; no capture path exists on this platform (${PATH}, ${declaration.date}). Never estimated.`,
-  ].join("\n");
+  const qualityCapture = capture(declaration, "quality");
+  const autonomyCapture = capture(declaration, "autonomy");
+  const throughputCapture = capture(declaration, "throughput");
+  const costCapture = capture(declaration, "cost-efficiency");
+
+  const lines: string[] = [];
+
+  lines.push(
+    qualityCapture === "computed-in-part"
+      ? qualityLine(quality, prNumber)
+      : qualityCapture === "declared"
+        ? "**Quality** — [declare: findings raised, and how many were must-fix]."
+        : uninstrumented("Quality", date),
+  );
+
+  lines.push(
+    autonomyCapture === "declared"
+      ? "**Autonomy** — [declare: HC interventions beyond the two gates]."
+      : uninstrumented("Autonomy", date),
+  );
+
+  lines.push(
+    throughputCapture === "computed"
+      ? `**Throughput** — ${throughput.line}.${stampNote}`
+      : throughputCapture === "declared"
+        ? "**Throughput** — [declare: elapsed from the issue opening to this record]."
+        : uninstrumented("Throughput", date),
+  );
+
+  lines.push(
+    costCapture === "declared"
+      ? "**Cost efficiency** — [declare: AC usage consumed across the five stages]."
+      : uninstrumented("Cost efficiency", date),
+  );
+
+  return lines.join("\n");
 }
