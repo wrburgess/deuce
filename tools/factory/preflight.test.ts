@@ -13,7 +13,7 @@ const clear: Observation = {
   lockTakenAt: null,
   checkoutClean: true,
   branch: "main",
-  tokenPresent: true,
+  token: "usable",
 };
 
 test("a clear observation starts a pass", () => {
@@ -26,7 +26,7 @@ test("the kill switch outranks every other state", () => {
     lockTakenAt: new Date("2026-08-13T07:00:00Z"),
     checkoutClean: false,
     branch: "task/108",
-    tokenPresent: false,
+    token: "absent",
   };
   const verdict = decide(worst, NOW);
   assert.equal(verdict.kind, "killed");
@@ -55,9 +55,31 @@ test("a branch that is not main is not a condition — proving runs run from the
 });
 
 test("an unreadable credential refuses rather than falling back to the ambient login", () => {
-  const verdict = decide({ ...clear, tokenPresent: false }, NOW);
+  const verdict = decide({ ...clear, token: "absent" }, NOW);
   assert.equal(verdict.kind, "refused");
   assert.match(verdict.message, /never falls back/);
+});
+
+// The first proving run on #108 spent a whole pass to discover at the queue
+// read that the keychain held a placeholder. Presence and usability are
+// different facts, and each gets its own refusal.
+test("a credential that is present but does not work is its own refusal", () => {
+  const verdict = decide({ ...clear, token: "unusable" }, NOW);
+  assert.equal(verdict.kind, "refused");
+  assert.match(verdict.message, /read but did not work/);
+  assert.match(verdict.message, /no pass was spent/);
+  assert.notEqual(
+    verdict.message,
+    decide({ ...clear, token: "absent" }, NOW).message,
+    "absent and unusable must not share a message — they have different fixes",
+  );
+});
+
+test("an unusable credential names the tracker's reachability too, never only the token", () => {
+  // One failed call cannot tell a rejected token from an unreachable tracker,
+  // so the message must not send the reader to the wrong one.
+  const verdict = decide({ ...clear, token: "unusable" }, NOW);
+  assert.match(verdict.message, /rejected it, or the tracker is unreachable/);
 });
 
 test("the lock's age reads in minutes, in hours, and backwards", () => {

@@ -16,7 +16,7 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseFactoryDeclaration } from "./declaration.ts";
 import { claim, release, takenAt } from "./lock.ts";
-import { decide, deathNotice, type Observation } from "./preflight.ts";
+import { decide, deathNotice, type Observation, type TokenState } from "./preflight.ts";
 
 const DECLARATION = "config/factory.md";
 
@@ -52,6 +52,20 @@ function readToken(service: string, account: string): string | null {
   return token === "" ? null : token;
 }
 
+// Presence is not usability, and a pass needs the second. One call at the door
+// costs a round trip and saves a whole pass — the receipt is this build's first
+// proving run, which reached the queue read before learning the keychain held a
+// placeholder (#108).
+function tokenState(service: string, account: string): TokenState {
+  const token = readToken(service, account);
+  if (token === null) return "absent";
+  const probe = spawnSync("gh", ["api", "user", "--jq", ".login"], {
+    encoding: "utf8",
+    env: { ...process.env, GH_TOKEN: token },
+  });
+  return !probe.error && probe.status === 0 ? "usable" : "unusable";
+}
+
 function observe(
   cwd: string,
   killSwitch: string,
@@ -77,10 +91,10 @@ function observe(
     lockTakenAt,
     checkoutClean: status === null ? null : status.trim() === "",
     branch: branch === null ? null : branch.trim(),
-    // Reading the keychain is a side effect only in the sense that it needs the
-    // login keychain unlocked; with the HC logged out it fails, and failing
-    // closed is the declared behavior (config/factory.md).
-    tokenPresent: readToken(service, account) !== null,
+    // Reading the keychain needs the login keychain unlocked; with the HC
+    // logged out it fails, and failing closed is the declared behavior
+    // (config/factory.md).
+    token: tokenState(service, account),
   };
 }
 
@@ -220,7 +234,12 @@ function main(): void {
       died(`exited ${pass.status}`, "exit");
       return;
     }
-    log("pass ended — its run record is the account of what it did");
+    // Never "its run record is the account of what it did": this wrapper does
+    // not read the tracker, and a pass that stopped on an unreachable input
+    // also exits 0 having posted nothing. Claiming the record existed is the
+    // blur between *finished* and *gone* that Chapter 6 refuses — and the log
+    // line that made exactly that false claim is this comment's receipt (#108).
+    log("pass ended, exit 0 — the wrapper reads no tracker and claims no run record");
     process.exitCode = EXIT_OK;
   } finally {
     release(declaration.lock);

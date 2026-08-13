@@ -6,6 +6,13 @@
 // switch outranks everything, because an emergency act that loses to a lock or
 // a dirty tree is not one act (Chapter 6, *The kill switch*).
 
+// Presence and usability are different facts, and only one of them is what a
+// pass needs. The receipt is this build's own first proving run: a keychain
+// item holding 18 characters of something else passed a presence check, and the
+// pass spent its whole start discovering at the queue read what one call at the
+// door would have said. Recorded on #108.
+export type TokenState = "absent" | "unusable" | "usable";
+
 export interface Observation {
   killSwitchPresent: boolean;
   // When the lock directory was created; null when the lock is free.
@@ -14,7 +21,7 @@ export interface Observation {
   // a checkout read successfully and found dirty, and it gets its own message.
   checkoutClean: boolean | null;
   branch: string | null;
-  tokenPresent: boolean;
+  token: TokenState;
 }
 
 export type Verdict =
@@ -68,14 +75,26 @@ export function decide(observed: Observation, now: Date): Verdict {
         "nothing started. A pass must not commit over work in progress.",
     };
   }
-  if (!observed.tokenPresent) {
-    // Fail closed. Falling through to whatever gh holds would run the pass on
-    // the HC's own login, which is the state ADR 0026 forbids outright.
+  // Fail closed on both. Falling through to whatever gh holds would run the
+  // pass on the HC's own login, which is the state ADR 0026 forbids outright.
+  if (observed.token === "absent") {
     return {
       kind: "refused",
       message:
         "the tracker credential was not readable — nothing started. " +
         "A pass never falls back to the ambient login.",
+    };
+  }
+  if (observed.token === "unusable") {
+    // Deliberately names both causes rather than blaming the credential: one
+    // failed call cannot tell a rejected token from an unreachable tracker, and
+    // a message that picked one would send the reader to the wrong place half
+    // the time.
+    return {
+      kind: "refused",
+      message:
+        "the tracker credential was read but did not work — the tracker rejected it, " +
+        "or the tracker is unreachable. Nothing started, and no pass was spent finding out.",
     };
   }
   return {
