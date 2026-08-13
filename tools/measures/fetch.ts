@@ -92,6 +92,26 @@ export function shapePullRequest(node: PullRequestNode): PullRequestSnapshot {
   return { number: node.number, title: node.title, url: node.url, comments, closes };
 }
 
+// The walk's one decision, exported for its rejecting branches' tests. A page
+// that claims another page and carries no cursor is an inconsistent response,
+// not the end of the thread — and reading it as the end truncates the thread
+// silently, which is the whole failure this module says it does not have. The
+// contractor review on PR #125 raised it as must-fix: `null` was both "no
+// cursor" and "stop".
+export function nextCursor(
+  pageInfo: { hasNextPage: boolean; endCursor?: string | null },
+  what: string,
+): string | null {
+  if (!pageInfo.hasNextPage) return null;
+  const cursor = pageInfo.endCursor;
+  if (cursor === null || cursor === undefined || cursor === "") {
+    throw new Error(
+      `the tracker's response for ${what} claims another page and carries no cursor — refusing to compute over a thread this fetch cannot finish reading`,
+    );
+  }
+  return cursor;
+}
+
 function graphql(fields: Record<string, string | number | null>): PullRequestNode {
   const args = ["api", "graphql", "-f", `query=${PR_QUERY}`];
   for (const [key, value] of Object.entries(fields)) {
@@ -122,16 +142,18 @@ export function fetchPullRequest(number: number): PullRequestSnapshot {
   const first = graphql({ owner, name, number, after: null });
   const snapshot = shapePullRequest(first);
 
-  // Threads run past one page — PR #119's did. A truncated thread silently
-  // drops records and their findings with them, so the walk is complete or
-  // the command does not answer.
-  let after = first.comments.pageInfo.hasNextPage ? (first.comments.pageInfo.endCursor ?? null) : null;
+  // Threads run past one page. A truncated thread silently drops records and
+  // their findings with them, so the walk is complete or the command does not
+  // answer — `nextCursor` is what makes "complete" decidable rather than
+  // assumed.
+  const what = `PR #${number}'s comments`;
+  let after = nextCursor(first.comments.pageInfo, what);
   while (after !== null) {
     const page = graphql({ owner, name, number, after });
     for (const c of page.comments.nodes) {
       snapshot.comments.push({ body: c.body, url: c.url, createdAt: c.createdAt });
     }
-    after = page.comments.pageInfo.hasNextPage ? (page.comments.pageInfo.endCursor ?? null) : null;
+    after = nextCursor(page.comments.pageInfo, what);
   }
 
   return snapshot;

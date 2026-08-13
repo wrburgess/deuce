@@ -52,6 +52,21 @@ test("an unrecognized argument is named rather than skipped", () => {
   assert.match(parseArgs(["119", "--post"]).error!, /unrecognized argument: --post/);
 });
 
+// The contractor review's should-fix on PR #125: a repeated argument was
+// resolved last-one-wins, so `119 120` measured PR #120 in silence. An
+// ambiguous invocation is refused rather than resolved.
+test("two pull request numbers are refused, not resolved to the last one", () => {
+  assert.match(parseArgs(["119", "120"]).error!, /named twice|more than one pull request/i);
+});
+
+test("--issue given twice is refused", () => {
+  assert.match(parseArgs(["119", "--issue", "1", "--issue", "2"]).error!, /--issue/);
+});
+
+test("--snapshot given twice is refused", () => {
+  assert.match(parseArgs(["--snapshot", "a.json", "--snapshot", "b.json"]).error!, /--snapshot/);
+});
+
 test("one linked issue is the one measured from", () => {
   const chosen = selectIssue([issue(117)], null, 119);
   assert.equal(chosen.issue!.number, 117);

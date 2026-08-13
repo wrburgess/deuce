@@ -43,10 +43,27 @@ export interface RenderInput {
 const REQUIRED = ["quality", "autonomy", "throughput", "cost-efficiency"] as const;
 const CAPTURES = new Set<string>(["computed", "computed-in-part", "declared", "un-instrumented"]);
 const FIELDS = new Set<string>(["name", "capture", "command"]);
+const TOP_LEVEL_SCALARS = new Set<string>(["date", "source"]);
 const PATH = "config/measures.md";
 
 export function parseMeasureDeclaration(markdown: string): MeasureDeclaration {
   const parsed = parseFrontmatter(markdown);
+
+  // Closed at the top level as well as inside each measure. The contractor
+  // review on PR #125 caught the asymmetry: a misspelled or stray top-level
+  // key passed while nothing honoured it, which is a declaration claiming more
+  // than the block delivers.
+  for (const key of parsed.scalars.keys()) {
+    if (!TOP_LEVEL_SCALARS.has(key)) {
+      throw new Error(`${PATH}: unrecognized top-level key '${key}'`);
+    }
+  }
+  for (const key of parsed.lists.keys()) {
+    if (key !== "measures") {
+      throw new Error(`${PATH}: unrecognized top-level list '${key}'`);
+    }
+  }
+
   const date = parsed.scalars.get("date");
   const source = parsed.scalars.get("source");
   if (date === undefined) throw new Error(`${PATH} carries no 'date' — the block cites one`);

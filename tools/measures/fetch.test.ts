@@ -4,7 +4,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { shapePullRequest, type PullRequestNode } from "./fetch.ts";
+import { nextCursor, shapePullRequest, type PullRequestNode } from "./fetch.ts";
 
 const node = (over: Partial<PullRequestNode> = {}): PullRequestNode => ({
   number: 119,
@@ -42,6 +42,28 @@ test("closing links overflowing the fetched page are refused loudly", () => {
       ),
     /refusing to compute throughput over links the fetch cannot see/,
   );
+});
+
+// The contractor review's must-fix on PR #125: a page claiming another page
+// while carrying no cursor ended the walk normally, because null was also the
+// loop's termination value — a truncated thread computed as a whole one.
+test("a page with another page and no cursor is refused, never read as the end", () => {
+  assert.throws(
+    () => nextCursor({ hasNextPage: true, endCursor: null }, "PR #119's comments"),
+    /claims another page and carries no cursor/,
+  );
+});
+
+test("a page with another page and no cursor field at all is refused the same way", () => {
+  assert.throws(() => nextCursor({ hasNextPage: true }, "PR #119's comments"), /no cursor/);
+});
+
+test("a last page ends the walk", () => {
+  assert.equal(nextCursor({ hasNextPage: false, endCursor: "abc" }, "x"), null);
+});
+
+test("a page with another page and a cursor continues the walk", () => {
+  assert.equal(nextCursor({ hasNextPage: true, endCursor: "abc" }, "x"), "abc");
 });
 
 test("a pull request that closes no issue shapes without inventing one", () => {

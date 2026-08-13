@@ -17,11 +17,17 @@ export interface Args {
 // name rather than skipped.
 export function parseArgs(argv: string[]): Args {
   const args: Args = { pr: null, snapshotPath: null, issue: null, error: null };
+  // A repeated argument is an ambiguous invocation, and last-one-wins resolves
+  // it in silence: `119 120` measured PR #120 and said nothing. Raised by the
+  // contractor review on PR #125; refused here rather than resolved.
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]!;
     if (arg === "--snapshot") {
       const value = argv[++i];
       if (value === undefined) return { ...args, error: "--snapshot needs a file path" };
+      if (args.snapshotPath !== null) {
+        return { ...args, error: `--snapshot is given twice (${args.snapshotPath}, ${value}) — name one snapshot` };
+      }
       args.snapshotPath = value;
       continue;
     }
@@ -30,11 +36,18 @@ export function parseArgs(argv: string[]): Args {
       if (value === undefined || !/^\d+$/.test(value)) {
         return { ...args, error: "--issue needs an issue number" };
       }
+      if (args.issue !== null) {
+        return { ...args, error: `--issue is given twice (#${args.issue}, #${value}) — name one issue` };
+      }
       args.issue = Number(value);
       continue;
     }
     if (/^#?\d+$/.test(arg)) {
-      args.pr = Number(arg.replace("#", ""));
+      const value = Number(arg.replace("#", ""));
+      if (args.pr !== null) {
+        return { ...args, error: `the pull request is named twice (#${args.pr}, #${value}) — name one` };
+      }
+      args.pr = value;
       continue;
     }
     return { ...args, error: `unrecognized argument: ${arg}` };

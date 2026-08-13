@@ -152,6 +152,19 @@ test("a field outside the declared vocabulary is refused, and named", () => {
   assert.throws(() => parseMeasureDeclaration(extra), /colour/);
 });
 
+// The contractor review's should-fix on PR #125: the vocabulary was closed one
+// level down and open at the top, so a stray or misspelled top-level key
+// passed while nothing honoured it.
+test("an unknown top-level key is refused, not silently accepted", () => {
+  const stray = DECLARATION.replace("source: the Direction gate on #57", "source: the Direction gate on #57\nowner: the AC");
+  assert.throws(() => parseMeasureDeclaration(stray), /owner/);
+});
+
+test("an unknown top-level list is refused too", () => {
+  const stray = DECLARATION.replace("measures:", "extras:\n  - name: quality\n    capture: declared\nmeasures:");
+  assert.throws(() => parseMeasureDeclaration(stray), /extras/);
+});
+
 test("the same measure declared twice is refused rather than last-one-wins", () => {
   const twice = DECLARATION.replace(
     "  - name: autonomy\n    capture: declared",
