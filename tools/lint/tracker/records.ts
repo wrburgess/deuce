@@ -6,15 +6,10 @@
 // exists is the record that path never saw: a hand-placed record, the state
 // summon's exit 5 is for.
 //
-// Discovery is by the record's own header, the shape summon.ts posts:
-// `## Contractor review — <reviewer> (<wave>)`. Outcome-headed posts —
-// nonconforming, reviewer unreachable, reviewer unresponsive — are the
-// machinery's own honest records of a failed exchange, already named as what
-// they are, and are skipped by name rather than re-flagged.
-//
-// A defective record's conforming fix is a superseding post, never an edit —
-// comments are durable. A later comment carrying `**Supersedes:** <url>`
-// exempts the record at that url.
+// Discovery — which comments are the standing records, and which are skipped
+// by name — is `tools/review/standing.ts`'s, extracted there by #57 so the
+// measures family counts what this check validates over the same rule. This
+// module decides conformance only.
 //
 // ---------------------------------------------------------------------------
 // Declared blind spot (Chapter 3, *Every check declares its blind spot*)
@@ -24,6 +19,7 @@
 // commit line's presence, never its binding, because a standing record's
 // bound commit lives in the summons beside it, not in this check's reach.
 
+import { selectStandingRecords } from "../../review/standing.ts";
 import { validateRecordStructure } from "../../review/validate.ts";
 import type { TrackerPullRequest } from "./snapshot.ts";
 
@@ -40,10 +36,6 @@ export const BLIND_SPOT = [
   "blind spot: the commit line's presence is checked, never its binding — the bound commit lives in the summons, out of this check's reach",
 ];
 
-const RECORD_HEADER = /^## Contractor review — /;
-const OUTCOME_SUFFIX = /:\s*(nonconforming|reviewer unreachable|reviewer unresponsive)\s*$/;
-const SUPERSEDES = /\*\*Supersedes:\*\*\s*(\S+)/g;
-
 export function checkRecords(pullRequests: TrackerPullRequest[]): RecordsResult {
   const violations: string[] = [];
   let recordsChecked = 0;
@@ -51,24 +43,13 @@ export function checkRecords(pullRequests: TrackerPullRequest[]): RecordsResult 
   let supersededSkipped = 0;
 
   for (const pr of pullRequests) {
-    const superseded = new Set<string>();
-    for (const comment of pr.comments) {
-      for (const m of comment.body.matchAll(SUPERSEDES)) {
-        superseded.add(m[1]!.replace(/[<>]/g, ""));
-      }
-    }
+    // Discovery is `tools/review/standing.ts`'s, shared with the measures
+    // family (#57) so one rule decides what a standing record is.
+    const found = selectStandingRecords(pr.comments);
+    outcomeRecordsSkipped += found.outcomeSkipped;
+    supersededSkipped += found.supersededSkipped;
 
-    for (const comment of pr.comments) {
-      const firstLine = comment.body.trimStart().split("\n", 1)[0]!.trim();
-      if (!RECORD_HEADER.test(firstLine)) continue;
-      if (OUTCOME_SUFFIX.test(firstLine)) {
-        outcomeRecordsSkipped++;
-        continue;
-      }
-      if (superseded.has(comment.url)) {
-        supersededSkipped++;
-        continue;
-      }
+    for (const comment of found.standing) {
       recordsChecked++;
       for (const missing of validateRecordStructure(comment.body)) {
         violations.push(`PR #${pr.number} (${comment.url}): ${missing}`);

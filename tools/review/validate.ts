@@ -39,11 +39,18 @@ interface BlockScan {
   lensAnswers: string[];
 }
 
+// What a finding block is, in one place: everything from one **Lens:** field
+// to the next. Both the validator below and the counter that computes the
+// Quality health measure (#57) split on this, so neither can drift into a
+// different idea of where a finding begins.
+function splitBlocks(review: string): { preamble: string; blocks: string[] } {
+  const parts = review.split(/(?=\*\*Lens:\*\*)/);
+  return { preamble: parts[0]!, blocks: parts.slice(1) };
+}
+
 function scanBlocks(review: string): BlockScan {
   const issues: string[] = [];
-  const parts = review.split(/(?=\*\*Lens:\*\*)/);
-  const preamble = parts[0]!;
-  const blocks = parts.slice(1);
+  const { preamble, blocks } = splitBlocks(review);
 
   for (const field of BODY_FIELDS) {
     if (fieldValues(preamble, field).length > 0) {
@@ -86,6 +93,49 @@ function scanBlocks(review: string): BlockScan {
   });
 
   return { issues, lensAnswers };
+}
+
+export interface FindingCount {
+  raised: number;
+  mustFix: number;
+  /** Every finding whose severity is missing or outside the framework's
+   *  vocabulary, named. Such a finding still counts as raised: a count that
+   *  silently dropped it would under-report Quality on exactly the record
+   *  that is already malformed. */
+  unknownSeverity: string[];
+}
+
+// The counting half — how many findings a record carries, and how many are
+// must-fix. This is the computed half of the Quality health measure
+// (Chapter 3, *Capturing the health measures*; ADR 0028): it counts, and it
+// decides nothing about conformance, which stays with the validators above.
+export function countFindings(review: string): FindingCount {
+  const { blocks } = splitBlocks(review);
+  let raised = 0;
+  let mustFix = 0;
+  const unknownSeverity: string[] = [];
+
+  blocks.forEach((block, i) => {
+    const lens = fieldValues(block, "Lens")[0] ?? "";
+    // An explicit no-findings answer is a lens answered, not a finding.
+    if (NO_FINDINGS.test(lens)) return;
+    raised++;
+    const severities = fieldValues(block, "Severity").map((s) =>
+      s.replace(/[`*]/g, "").trim(),
+    );
+    const severity = severities[0];
+    if (severity === undefined) {
+      unknownSeverity.push(`finding ${i + 1} (lens: ${lens}) carries no severity field`);
+      return;
+    }
+    if (severity === "must-fix") {
+      mustFix++;
+      return;
+    }
+    if (!SEVERITIES.has(severity)) unknownSeverity.push(severity);
+  });
+
+  return { raised, mustFix, unknownSeverity };
 }
 
 // The structural half alone — the fields a findings record carries, with no

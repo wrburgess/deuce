@@ -45,6 +45,10 @@ The Verification on the pull request carries no open must-fix finding —
    health measures per
    [Chapter 1 → Where the health measures live](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#where-the-health-measures-live),
    the scannable half's rules per [Chapter 1 → The Readout](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-readout).
+   **Where this repository provides a measures command, run it and take the computed measures from
+   its output**; where it does not, read them from the tracker by hand. A measure with no capture
+   path is recorded as un-instrumented and never estimated
+   ([Chapter 3 → Capturing the health measures](https://github.com/wrburgess/deuce/blob/main/sds/03-quality-gate-and-tooling.md#capturing-the-health-measures)).
 8. **Post the Delivery Record on the pull request and set `status:done-pending-merge` on
    posting**
    ([Stage 5](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-5--deliver);
