@@ -61,17 +61,23 @@ defaults. The body carries only the reasoning behind them, as
 | **Assess** | The widest read of the repository, and its options must genuinely differ. The stage most damaged by a cheap model, because a thin Assessment mis-aims everything after it |
 | **Devise** | Decides the testing strategy up front, before code exists to write tests against. A weak plan is paid for at every later stage |
 | **Implement** | Executes steps the Plan already decided. The judgment was spent upstream; effort drops, the model does not |
-| **Verify** | The refutation stage and the last floor before the Ship gate. The one place to spend most — a finding missed here ships |
+| **Verify** | The refutation stage, and the last one that hunts defects rather than re-confirming them. The one place to spend most — a finding missed here ships |
 | **Deliver** | Re-runs the checks, writes the record, acts on the declared setting. Mechanical by design, which is what makes it the one row that leaves the frontier tier |
 
 ## What nothing here validates
 
 A **declared limit**, in the sense [Chapter 3](../sds/03-quality-gate-and-tooling.md) requires of a
-check: no reader in this repository parses these rows. The quality gate reaches the frontmatter's
-*shape* — a malformed row, a repeated key, or a nested block is refused by name and by line, and
-that was measured against this file before this declaration landed, not assumed. It reaches nothing
-about the *values*: an alias naming no real model, and an effort level outside the platform's
-vocabulary, both pass. The launcher is what would find them, and the launcher is #108's.
+check: nothing in this repository **resolves a stage to its row**. The frontmatter is parsed — that
+is how every declaration here is read at all — but only its `date` and `source` are looked at.
+
+| Reached | Not reached |
+|---|---|
+| The block's *shape*: a malformed row, a repeated top-level key, or a nested map is refused by file and by line | The *values*: an alias naming no real model, or an effort level outside the platform's vocabulary, both pass |
+| A field repeated inside one row | **Two rows naming the same stage** — both parse, and a launcher would take one of them arbitrarily |
+
+Every entry in the left column was measured against this file before this declaration landed, and
+so was the right column's third: two `assess` rows carrying different values were written here and
+the check reported green. The launcher is what would decide these, and the launcher is #108's.
 
 ## What an attended pass does
 
