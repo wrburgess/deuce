@@ -168,18 +168,24 @@ Least privilege, stated as cannots — and split honestly by what holds each one
   The permissions line is the HC's transcription from the token screen, confirmed at the sitting;
   the entry above is what binds, and any later mismatch found is a finding, not a shrug.
 
-- **The keychain item is the HC's to create, and the value never passes through a session.** The
-  command, recorded here because a resting place nobody can reproduce is not a declaration:
+- **The keychain item is the HC's to create, and the value never passes through a session.** One
+  command stores it, and refuses to store one that does not work:
 
   ```
-  security add-generic-password -a "$USER" -s deuce-factory-tracker \
-    -l "deuce factory tracker PAT" -T /usr/bin/security -U -w
+  pbpaste | bash bin/factory-credential
+  op read "op://<vault>/<item>/credential" | bash bin/factory-credential
   ```
 
-  It prompts for the value rather than taking it on a command line, where `ps` would carry it, and
-  trusts `security` itself so [`tools/factory/run.ts`](../tools/factory/run.ts)'s read needs no
-  prompt. The read fails closed: no item, an empty value, or a locked keychain starts nothing
-  ([`factory.md`](factory.md) → *The credential, at run time*).
+  The token arrives on stdin — never on a command line, where shell history and `ps` would carry
+  it — is classified, is probed against this repository, and only then written to the keychain,
+  trusting `security` itself so [`tools/factory/run.ts`](../tools/factory/run.ts)'s read needs no
+  prompt. The read at run time fails closed: no item, a value that does not work, or a locked
+  keychain starts nothing ([`factory.md`](factory.md) → *The credential, at run time*).
+- **Why a command and not the raw `security` prompt, with its receipt.** `security -w` prompts
+  twice, silently, and stores whatever it is given: a word typed where a token belonged looked
+  identical to a good paste and stayed hidden until a pass spent its start on a 401. That happened
+  twice on #108. Storing and verifying are now one act, which is the only arrangement in which a
+  bad credential cannot survive its own storage.
 
 ## The continuous-integration token
 
