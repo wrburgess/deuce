@@ -16,7 +16,13 @@ import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseFactoryDeclaration } from "./declaration.ts";
 import { claim, release, takenAt } from "./lock.ts";
-import { decide, deathNotice, type Observation, type TokenState } from "./preflight.ts";
+import {
+  decide,
+  deathNotice,
+  parseRemote,
+  type Observation,
+  type TokenState,
+} from "./preflight.ts";
 
 const DECLARATION = "config/factory.md";
 
@@ -56,13 +62,20 @@ function readToken(service: string, account: string): string | null {
 // costs a round trip and saves a whole pass — the receipt is this build's first
 // proving run, which reached the queue read before learning the keychain held a
 // placeholder (#108).
-function tokenState(service: string, account: string): TokenState {
+function tokenState(cwd: string, service: string, account: string): TokenState {
   const token = readToken(service, account);
   if (token === null) return "absent";
-  const probe = spawnSync("gh", ["api", "user", "--jq", ".login"], {
-    encoding: "utf8",
-    env: { ...process.env, GH_TOKEN: token },
-  });
+  // Probe the repository, not the account. The minted credential is scoped to
+  // this repository only, so `gh api user` could 401 a token that works
+  // perfectly for every call a pass makes — and a false refusal on a good
+  // credential is the most confusing failure this door could produce.
+  const remote = git(cwd, ["remote", "get-url", "origin"]);
+  const target = remote === null ? null : parseRemote(remote);
+  const probe = spawnSync(
+    "gh",
+    target === null ? ["api", "user", "--jq", ".login"] : ["api", `repos/${target}`, "--jq", ".full_name"],
+    { encoding: "utf8", env: { ...process.env, GH_TOKEN: token } },
+  );
   return !probe.error && probe.status === 0 ? "usable" : "unusable";
 }
 
@@ -94,7 +107,7 @@ function observe(
     // Reading the keychain needs the login keychain unlocked; with the HC
     // logged out it fails, and failing closed is the declared behavior
     // (config/factory.md).
-    token: tokenState(service, account),
+    token: tokenState(cwd, service, account),
   };
 }
 

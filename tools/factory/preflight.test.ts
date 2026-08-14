@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { claim, release, takenAt } from "./lock.ts";
-import { deathNotice, decide, describeAge, type Observation } from "./preflight.ts";
+import { deathNotice, decide, describeAge, parseRemote, type Observation } from "./preflight.ts";
 
 const NOW = new Date("2026-08-13T07:47:00Z");
 
@@ -116,6 +116,20 @@ test("a lock nobody released is reported with its age, never stolen", () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("the credential probe targets the repository, parsed from either remote form", () => {
+  assert.equal(parseRemote("git@github.com:wrburgess/deuce.git\n"), "wrburgess/deuce");
+  assert.equal(parseRemote("https://github.com/wrburgess/deuce.git"), "wrburgess/deuce");
+  assert.equal(parseRemote("https://github.com/wrburgess/deuce"), "wrburgess/deuce");
+});
+
+test("an unparseable remote yields no target rather than a wrong one", () => {
+  // The caller falls back to an account probe; a half-parsed target would
+  // probe some other repository and call the answer this one's.
+  assert.equal(parseRemote("/some/local/path"), null);
+  assert.equal(parseRemote("git@github.com:deuce"), null);
+  assert.equal(parseRemote(""), null);
 });
 
 test("the death notice names how the pass ended and never claims no record exists", () => {

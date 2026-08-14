@@ -32,6 +32,20 @@ export type Verdict =
 
 const HOUR_MS = 3_600_000;
 
+// The probe target: the repository the checkout points at, which is exactly the
+// reach a pass needs. Deliberately not an account endpoint — the minted
+// credential is scoped to this repository and nothing else
+// (config/credentials.md), so probing the account would risk refusing a
+// perfectly good token for lacking a permission no pass ever uses.
+export function parseRemote(url: string): string | null {
+  const trimmed = url.trim().replace(/\.git$/, "");
+  const ssh = /^git@[^:]+:([^/]+\/[^/]+)$/.exec(trimmed);
+  if (ssh) return ssh[1]!;
+  const https = /^https?:\/\/[^/]+\/([^/]+\/[^/]+)$/.exec(trimmed);
+  if (https) return https[1]!;
+  return null;
+}
+
 export function describeAge(taken: Date, now: Date): string {
   const ms = now.getTime() - taken.getTime();
   if (ms < 0) return "taken in the future — the machine's clock moved";
