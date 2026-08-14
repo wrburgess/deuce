@@ -186,6 +186,19 @@ Least privilege, stated as cannots — and split honestly by what holds each one
   identical to a good paste and stayed hidden until a pass spent its start on a 401. That happened
   twice on #108. Storing and verifying are now one act, which is the only arrangement in which a
   bad credential cannot survive its own storage.
+- **Why the keychain is the runtime copy and a password manager is not.** The login keychain
+  unlocks at login and stays unlocked for the life of the HC's session, which makes it the one
+  store on this machine a pass can read with nobody there. Every 1Password path fails that test:
+  the desktop-app integration prompts, and a prompt with nobody to answer it is the hang this
+  design refuses; a `op signin` session expires within the hour; and a service account's own token
+  would have to rest somewhere readable non-interactively — the keychain, holding a different
+  secret. **The manager is the copy of record and the keychain is the runtime copy**, bridged by
+  the attended command above whenever the token rotates. Recorded so that a later reader improving
+  the wrapper into an `op read` at run time finds the reason it is not one.
+- **What "unattended" therefore means here, exactly:** the HC logged in and away from the desk —
+  the pass runs. The HC logged out, or the machine shut down — the keychain is locked, the read
+  fails closed, and the log says so; a launchd user agent would not have fired in that state
+  either.
 
 ## The continuous-integration token
 
