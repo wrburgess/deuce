@@ -87,17 +87,22 @@ exit — is canon and is not restated here.
 
     ```
     node tools/review/summon.ts --pr <n> --commit <wave head> --base <reviewed commit> \
-      --lens "<each lens that raised a finding>"
+      --lens "<one lens that raised a finding>" --lens "<the next one>"
     ```
 
-    **Nothing this review finds is fixed here** — a fix moves the head and breaks the binding the
-    summons was raised to establish. A `must-fix` sends the pull request to the HC to merge,
-    whatever the Ship gate's declared setting ([`config/gates.md`](../../../config/gates.md)); a
-    `should-fix` is promoted to tracked work or accepted as residual, on the record; a `note` is
-    recorded. Every one lands on the Verification with its disposition. **Once the summons owed has
-    returned, the head is final** — any movement past the last conforming review, a further fix or an
-    update from the base branch alike, leaves nothing bound to what merges, and that pull request
-    goes to the HC. There is never a third summons; the rule and every clause on it are
+    **`--lens` repeats — one flag per lens, each value matching the menu verbatim.** Passing several
+    lenses as one value is rejected before dispatch, and the run then carries no bound review at all.
+
+    **A `must-fix` is answered as the severity framework requires** — fixed with fail-first evidence,
+    or refuted with the refuting evidence recorded; the change never ships with one open. Fixing it
+    moves the head past this review, so the merge goes to the HC whatever the Ship gate's declared
+    setting ([`config/gates.md`](../../../config/gates.md)). **Nothing below `must-fix` is answered
+    with code here:** a `should-fix` is promoted to tracked work or accepted as residual, on the
+    record; a `note` is recorded. Every one lands on the Verification with its disposition. **Once
+    the summons owed has returned, the head is final** — any movement past the last conforming review,
+    a further fix or an update from the base branch alike, leaves nothing bound to what merges, and
+    that pull request goes to the HC. There is never a third summons; the rule and every clause on it
+    are
     [Chapter 2 → Fix-verification, bounded separately](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#fix-verification-bounded-separately).
 12. **Answer each finding on the surface it arrived on** — a pull request carries three:
     comments, inline threads, review bodies; a self-raised finding is answered in the

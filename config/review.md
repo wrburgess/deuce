@@ -82,8 +82,8 @@ carries only the reasoning behind each value.
   without archaeology: #62 set it on 2026-08-04, and the ratification on #129 narrowed it on
   2026-08-16. The measurement that admitted the change: across the pull requests here carrying a
   review commit on record, the reviewed commit differed from the merged one on 14 of 18. The
-  one-round bound #62 bought is intact — the further summons cannot produce a third, because what it
-  finds is never answered with code in that pull request.
+  one-round bound #62 bought is intact — the summons count is fixed at two, and what the second one
+  raises ends in the HC's merge rather than in a third read.
 
 ## Findings batching
 

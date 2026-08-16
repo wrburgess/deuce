@@ -192,15 +192,21 @@ run again, on the wave's diff alone.
     change again. Those lenses already ran on the original diff; this is the re-run *Bounded by lens
     set* already provides for, with the contractor running it rather than the AC. The permanent lens
     rides this set as it rides every other.
-  - **Nothing it finds is fixed in this pull request.** A fix moves the head, and the binding the
-    summons was raised to establish is broken again one round down. A `must-fix` puts the merge back
-    in the HC's hands, exactly as `required` does — it does not change the setting in force, and no
-    declaration is edited. A `should-fix` is promoted to tracked work or accepted as residual, on the
-    record. A `note` is recorded.
+  - **A `must-fix` is answered as the severity framework requires, and that framework is not narrowed
+    here.** The change does not ship with one open: it is fixed with fail-first evidence, or refuted
+    with the refuting evidence recorded. Fixing it moves the head past the review that raised it, so
+    the merge returns to the HC's hands exactly as `required` puts it there — no setting changes, and
+    no declaration is edited.
+  - **Nothing below `must-fix` is answered with code here.** A fix would move the head for a finding
+    that does not force it, and the binding would be broken for nothing. A `should-fix` is promoted
+    to tracked work or accepted as residual, on the record — two of the three dispositions the
+    framework offers it, with *fixed in this change* withdrawn for this read alone. A `note` is
+    recorded.
   - **There is never a third summons**, and that is what keeps this from being the round count this
     chapter refused. The predecessor's fifteen-round tail on a single finding
     ([ace #164](https://github.com/wrburgess/ace/issues/164)) ran because every round was answered
-    with code that earned the next one; removing that edge is what makes one further read affordable.
+    with code and every answer earned another round. Here the answer earns no round at all: the
+    summons count is fixed at two, and a `must-fix` answered on the second ends in the HC's merge.
   - **Once the summons owed has returned, the head is final.** The wave's own movement is what the
     further summons exists to cover, so it is not what this clause reaches; every movement after that
     review is — a further fix, an update from the base branch, anything. Where no further summons was
@@ -210,11 +216,14 @@ run again, on the wave's diff alone.
 
   The validation re-summons a malformed response earns is a different thing and stands — that is the
   same review returned to contract, not a new one. **What is given up, and it is real:** a defect the
-  further summons finds that is not a `must-fix` is not fixed in the change that produced it; it is
+  further summons finds below `must-fix` is not fixed in the change that produced it; it is
   tracked or accepted, on the record, and lands in the Findings System like any other defect —
-  evidence for revisiting this trade. That replaces the residual this rule carried until now — *a
-  defect introduced by a fix can now ship past the reviewer* — which is what the further summons
-  closes.
+  evidence for revisiting this trade. And at the top of the scale the residual moves rather than
+  vanishing: a `must-fix` the further summons raises is closed by code that no second party then
+  reads, because there is no third summons. What stands there is the HC's merge and the fail-first
+  anchor — the floor degrading to the human, which is the trade this whole rule is built on. Between
+  them these replace the residual the rule carried until now — *a defect introduced by a fix can now
+  ship past the reviewer* — which the further summons closes for the wave itself.
 - **Escalate on recurrence.** When fix-verification keeps finding defects in the fixes past its
   declared limit, the signal is that the design is wrong, not that one more patch is owed. That is
   a stop, and its sanctioned resolution is Chapter 1's: back to Devise. The limit's number is

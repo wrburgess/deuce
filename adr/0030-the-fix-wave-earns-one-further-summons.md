@@ -11,9 +11,11 @@ Chapter 2's rule that *"the external review runs once per pull request… a fix 
 second"* is narrowed to that extent. The rule is unconditional: it does not wait on which setting the
 Ship gate runs at, and it applies from the ratification that lands it.
 
-**What the further summons cannot do is answer itself with code.** Nothing it finds is fixed in that
-pull request. A `must-fix` sends the pull request to the HC to merge; a `should-fix` is promoted to
-tracked work or accepted as residual, on the record; a `note` is recorded. There is never a third
+**What the further summons cannot do is earn another one.** A `must-fix` it raises is answered as the
+severity framework requires — fixed with fail-first evidence, or refuted with the refuting evidence
+recorded — because no read narrows that framework; fixing it moves the head past the review, and the
+merge returns to the HC's hands. Nothing below `must-fix` is answered with code there: a `should-fix`
+is promoted to tracked work or accepted as residual, a `note` is recorded. There is never a third
 summons.
 
 **And the binding is stated for every cause, not only for fixes.** Once the summons owed has
@@ -58,12 +60,17 @@ that goes wrong.
   predecessor's tail ran to fifteen rounds on a single finding
   ([ace #164](https://github.com/wrburgess/ace/issues/164)), and this costs one more external round on
   roughly three of every four pull requests here. What keeps it from being a round count is that the
-  new round is terminal by construction: it cannot earn a successor, because its findings are never
-  answered with code in that pull request. The fifteen-round tail ran precisely because each round
-  was.
-- **A defect the further summons finds that is not a `must-fix` is not fixed in the change that
-  produced it.** It is tracked or accepted, on the record. That is the replacement residual, and it is
-  the price of the binding holding.
+  new round is terminal: the summons count is fixed at two, and a `must-fix` answered on the second
+  ends in the HC's merge rather than in a third read. The fifteen-round tail ran because every answer
+  earned another round; here no answer earns one.
+- **A defect the further summons finds below `must-fix` is not fixed in the change that produced
+  it.** It is tracked or accepted, on the record. That is the replacement residual, and it is the
+  price of the binding holding.
+- **A `must-fix` the further summons raises is closed by code no second party then reads.** The
+  residual the amendment removes from the first wave reappears one round out, smaller: it arrives only
+  where the second read raised a `must-fix`, and what stands there is the HC's merge and the
+  fail-first anchor rather than another review. How often that happens is unmeasured — the second read
+  has never run — and it is the second thing #127 says to watch.
 
 **What to watch.** How often the `must-fix`-to-the-HC fallback fires. Frequent firing means the
 amendment is not paying, and it is the measurement that would revisit this record.
