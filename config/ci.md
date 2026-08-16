@@ -71,13 +71,19 @@ not exist on `main` yet, so requiring it would block the pull request that creat
    sitting; a row claiming an enforcement the platform does not carry is the defect this file exists
    to prevent.
 
-   The call, for whoever runs it — the `strict` field is the up-to-date requirement, and leaving it
-   `false` is the stale-candidate hole the review named:
+   **The route, for whoever runs it.** `main` carries protection today but carries no required
+   status checks at all, so there is no status-check object to amend — the settings screen is the
+   route that works from that state, and the API's `required_status_checks` endpoint is not, because
+   it edits a block that does not exist yet. Two boxes, both of them:
 
-   ```
-   gh api -X PATCH repos/wrburgess/deuce/branches/main/protection/required_status_checks \
-     -F strict=true -f 'checks[][context]=gate'
-   ```
+   - *Require status checks to pass before merging* → add **`gate`**.
+   - *Require branches to be up to date before merging* — this is the one the review's third
+     finding is about. Without it, a green about a merge candidate that `main` has moved past still
+     satisfies the requirement.
+
+   The API route is a full `PUT .../branches/main/protection`, which replaces every setting at
+   once — so it must carry `enforce_admins`, the force-push block, and the deletion block forward or
+   it silently drops them. That is why the screen is named first here.
 
 **Until step 2, `main` carries no required status check at all** — read from the API on 2026-08-16:
 `enforce_admins` on, force pushes and deletions blocked, and nothing else. So the re-run informs and
