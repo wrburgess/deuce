@@ -141,15 +141,16 @@ setting is in force, which is `config/gates.md`'s alone:
 | Gate | Under `required` | Under the loosened setting |
 |---|---|---|
 | **Direction** | The pass runs Assess, posts the Assessment, and parks the issue at the gate; the HC's choice is the resume | `delegated`: the pass proceeds on the posted recommendation, on Chapter 1's floor, whole |
-| **Ship** | The pass carries the issue to `done-pending-merge`, Delivery Record posted, and parks; the HC merges | `attested`: the pass merges only against Chapter 2's conforming review bound to the merge commit *and* Chapter 3's independent re-run of the gate |
+| **Ship** | The pass carries the issue to `done-pending-merge`, Delivery Record posted, and parks; the HC merges | `attested`: the pass merges only against Chapter 2's conforming review bound to the exact commit being merged *and* Chapter 3's independent re-run of the gate |
 
 - **`delegated`'s second precondition is supplied here.** Chapter 1 made the setting wait on two
   mechanisms: an option set a second party can review (Chapter 2) and somewhere to route a stop —
   this chapter. Both now exist. Whether it is in force stays a governance act, recorded where gate
   settings live.
 - **`attested` gains nothing and loses nothing.** Its floor is Chapter 0's, its review is Chapter
-  2's, and its second leg — the gate re-run by something that is not the AC — is Chapter 3's owed
-  work. A factory pass does not merge until that leg exists, at any setting. And the ceremony
+  2's, and its second leg — the gate re-run by something that is not the AC — is Chapter 3's. That
+  leg was owed work when this chapter was ratified and has since been built (#126). A factory pass
+  does not merge until it is actually in force, at any setting. And the ceremony
   argument runs the other way too: attestation is worth paying for only when its autonomy is used,
   and the factory is the first thing that would use it — the dated reasoning sits with the setting,
   in `config/gates.md`, and moves when the HC moves it, not when this chapter merges.
