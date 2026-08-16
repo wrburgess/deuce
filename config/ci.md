@@ -27,7 +27,7 @@ there.
 | Install | `bash bin/setup` — the repository's one installer |
 | Gate command | `npm run gate` — and nothing else |
 | Check context | `gate`, the job's id and name |
-| Merge enforcement | **Not yet in force.** Branch protection on `main` is to require the `gate` context; until the act below is done, the verdict is readable and blocks nothing |
+| Merge enforcement | **Not yet in force.** Branch protection on `main` is to require the `gate` context **and require the branch to be up to date with `main` before merging** (`strict`); until the act below is done, the verdict is readable and blocks nothing |
 
 - **The workflow enumerates no checks.** It invokes the one command;
   [`checks.md`](checks.md) stays the only place a check joins the gate.
@@ -47,6 +47,16 @@ there.
 - **Why both triggers.** The pull-request event reads GitHub's test merge of the branch into its
   base, which is the merge candidate. The push event reads the merged history, which catches a
   change that was green alone and is not green against a base that moved while it waited.
+- **Why the up-to-date requirement, and not the two triggers alone.** GitHub recomputes the test
+  merge when the *branch* changes, not when `main` moves. So a pull request that went green, then
+  watched `main` advance, carries a verdict about a merge candidate that no longer exists — and the
+  push trigger only re-reads it *after* it has merged, which is a report rather than a guard.
+  Requiring the branch to be up to date is what makes the green on the pull request a green about
+  the code that actually merges. Raised as a must-fix by the contractor review on PR #131, under
+  the lens *does this check measure the invariant it claims, or a proxy for it?*
+- **What it costs, stated:** a rebase whenever `main` moves under an open pull request, and the
+  re-run that follows it. That is the price of the verdict meaning what it says, and it is paid on
+  a repository whose pull requests merge one at a time.
 
 ## The two acts, in order
 
@@ -55,10 +65,19 @@ not exist on `main` yet, so requiring it would block the pull request that creat
 
 1. The workflow merges and reports — its own pull request is the first run, and #126 carries the
    Delivery Record naming it. **Done.**
-2. Branch protection is then updated to require the `gate` context — an act on the platform, by the
-   HC, on the HC's own account. **Outstanding**, and the enforcement row above says so until it is
-   done. Whoever does it updates that row in the same sitting; a row claiming an enforcement the
-   platform does not carry is the defect this file exists to prevent.
+2. Branch protection is then updated to require the `gate` context, with the up-to-date requirement
+   on — an act on the platform, by the HC, on the HC's own account. **Outstanding**, and the
+   enforcement row above says so until it is done. Whoever does it updates that row in the same
+   sitting; a row claiming an enforcement the platform does not carry is the defect this file exists
+   to prevent.
+
+   The call, for whoever runs it — the `strict` field is the up-to-date requirement, and leaving it
+   `false` is the stale-candidate hole the review named:
+
+   ```
+   gh api -X PATCH repos/wrburgess/deuce/branches/main/protection/required_status_checks \
+     -F strict=true -f 'checks[][context]=gate'
+   ```
 
 **Until step 2, `main` carries no required status check at all** — read from the API on 2026-08-16:
 `enforce_admins` on, force pushes and deletions blocked, and nothing else. So the re-run informs and

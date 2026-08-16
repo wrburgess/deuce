@@ -28,13 +28,21 @@
 // ---------------------------------------------------------------------------
 // Declared blind spot (Chapter 3, *Every check declares its blind spot*)
 //
-// It reads the `run:` strings of the workflow's steps. A step that calls a
-// shell script, a composite action, or any `uses:` action that runs checks of
-// its own is not reached — nothing short of executing the workflow decides
-// that, and a deeper probe would only move the proxy, which is the reasoning
-// config/checks.md already records for the prerequisite probe. Whether the
-// verdict GitHub records is the verdict this file describes is likewise out of
-// reach from here; the run on the pull request is what shows that.
+// It reads the document, never a run. Three residues, each narrowed as far as
+// reading gets and then stated:
+//
+//   - A step that calls a shell script, a composite action, or any `uses:`
+//     action is not read. The gate's own invocation is held to equality with
+//     the command, so it cannot hide there; anything else in the file can.
+//   - Bypasses are refused by key — `if` and `continue-on-error` — not by
+//     evaluating expressions. A future key with the same effect is not reached
+//     until it is added to that list.
+//   - Whether GitHub's recorded verdict is the verdict this file describes is
+//     out of reach entirely. The run on each pull request is what shows it,
+//     and no amount of reading substitutes for one.
+//
+// A deeper probe would only move the proxy, which is the reasoning
+// config/checks.md already records for the prerequisite probe.
 
 import { parse as parseYaml } from "yaml";
 
@@ -47,6 +55,19 @@ export interface WorkflowResult {
 }
 
 const GATE_COMMAND = "npm run gate";
+
+// Keys that decide whether something runs at all, or whether its failure
+// counts. Raised by the contractor review on PR #131: `jobs.gate.if: false`
+// leaves a literal gate step in the file for a text scan to approve, and
+// GitHub reports a skipped required job as successful — so the merge guard is
+// bypassed while every string this module reads still says otherwise.
+// `continue-on-error` is the same shape one layer down: the gate runs, fails,
+// and the job succeeds anyway.
+//
+// Refused anywhere in the workflow rather than only where the gate sits. This
+// file runs unconditionally by design; there is no legitimate condition in it,
+// so the broad rule costs nothing and leaves no seam to reason about.
+const BYPASS_KEYS = ["if", "continue-on-error"];
 
 interface Step {
   run?: unknown;
@@ -67,6 +88,52 @@ function jobSteps(doc: Record<string, unknown>): Step[] | string {
     for (const step of declared) steps.push(step as Step);
   }
   return steps;
+}
+
+function bypassViolations(doc: Record<string, unknown>): string[] {
+  const violations: string[] = [];
+  const jobs = doc["jobs"];
+  if (jobs === null || typeof jobs !== "object") return violations;
+  for (const [name, job] of Object.entries(jobs as Record<string, unknown>)) {
+    if (job === null || typeof job !== "object") continue;
+    const record = job as Record<string, unknown>;
+    for (const key of BYPASS_KEYS) {
+      if (key in record) {
+        violations.push(
+          `job "${name}" carries \`${key}:\` — a job that can be skipped or can fail without failing reports as a pass, which is the re-run bypassed rather than run`,
+        );
+      }
+    }
+    const steps = record["steps"];
+    if (!Array.isArray(steps)) continue;
+    for (const step of steps) {
+      if (step === null || typeof step !== "object") continue;
+      for (const key of BYPASS_KEYS) {
+        if (key in (step as Record<string, unknown>)) {
+          violations.push(
+            `a step in job "${name}" carries \`${key}:\` — a step that can be skipped or can fail without failing the job is the re-run bypassed rather than run`,
+          );
+        }
+      }
+    }
+  }
+  return violations;
+}
+
+// The whole of a step's `run:`, with comments and blank lines dropped, must be
+// the command and nothing else. Raised by the contractor review on PR #131
+// against the substring test this replaces: `echo npm run gate`,
+// `if false; then npm run gate; fi`, and `npm run gate || true` all satisfied
+// a substring match, and the last of those reports green after a failed gate.
+// Equality is what makes the difference between running the command and
+// mentioning it decidable at all.
+function invokesGate(run: string): boolean {
+  const body = run
+    .split("\n")
+    .map((l) => l.trim())
+    .filter((l) => l !== "" && !l.startsWith("#"))
+    .join("\n");
+  return body === GATE_COMMAND;
 }
 
 // `on` is a boolean in YAML 1.1 and a plain string key in YAML 1.2. The parser
@@ -188,9 +255,9 @@ export function checkGateWorkflow(workflowYaml: string, declaredCommands: string
     .map((l) => l.trim())
     .filter((l) => l !== "" && !l.startsWith("#"));
 
-  if (!lines.some((line) => line.includes(GATE_COMMAND))) {
+  if (!runs.some(invokesGate)) {
     violations.push(
-      `no step runs \`${GATE_COMMAND}\` — the re-run's whole contract is that it invokes the one command`,
+      `no step's \`run:\` is exactly \`${GATE_COMMAND}\` — the re-run's whole contract is that it invokes the one command, and a step that mentions it, guards it, or swallows its exit code does not`,
     );
   }
 
@@ -204,6 +271,7 @@ export function checkGateWorkflow(workflowYaml: string, declaredCommands: string
     }
   }
 
+  violations.push(...bypassViolations(workflow));
   violations.push(...permissionViolations(workflow));
 
   const on = triggers(workflow);

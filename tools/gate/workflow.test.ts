@@ -188,6 +188,75 @@ test("a commented-out gate does not satisfy the requirement to invoke it", () =>
   assert.match(result.violations[0]!, /npm run gate/);
 });
 
+// Contractor review, PR #131, lens: does any guard fail open or fail silent on
+// input it did not expect? A substring test accepted all three of these. The
+// third is the one that mattered — it reports green after a failed gate.
+for (const [name, run] of [
+  ["a mention of the command", "echo npm run gate"],
+  ["a guarded invocation", "if false; then npm run gate; fi"],
+  ["an invocation whose exit code is swallowed", "npm run gate || true"],
+] as const) {
+  test(`${name} does not satisfy the requirement to invoke the gate`, () => {
+    const workflow = conforming().replace("- run: npm run gate", `- run: ${run}`);
+    const result = checkGateWorkflow(workflow, COMMANDS);
+    assert.equal(result.violations.length, 1, result.violations.join(" | "));
+    assert.match(result.violations[0]!, /exactly/);
+  });
+}
+
+test("a run block carrying the command plus comments and blank lines still invokes it", () => {
+  const workflow = conforming().replace(
+    "- run: npm run gate",
+    "- run: |\n          # the one command\n\n          npm run gate",
+  );
+  assert.deepEqual(checkGateWorkflow(workflow, COMMANDS).violations, []);
+});
+
+// Contractor review, PR #131, permanent lens. GitHub reports a skipped required
+// job as successful, so a condition on the job is a total bypass that leaves
+// every string in the file reading as though the gate runs.
+test("a condition on the job is rejected — a skipped required job reports as a pass", () => {
+  const workflow = conforming().replace(
+    "  gate:\n    runs-on:",
+    "  gate:\n    if: ${{ false }}\n    runs-on:",
+  );
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.equal(result.violations.length, 1, result.violations.join(" | "));
+  assert.match(result.violations[0]!, /job "gate" carries `if:`/);
+});
+
+test("a condition on a step is rejected", () => {
+  const workflow = conforming().replace(
+    "      - run: npm run gate",
+    "      - if: ${{ github.actor != 'nobody' }}\n        run: npm run gate",
+  );
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.ok(
+    result.violations.some((v) => /step in job "gate" carries `if:`/.test(v)),
+    result.violations.join(" | "),
+  );
+});
+
+test("continue-on-error is rejected at the job — a failed gate would report a pass", () => {
+  const workflow = conforming().replace(
+    "  gate:\n    runs-on:",
+    "  gate:\n    continue-on-error: true\n    runs-on:",
+  );
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.equal(result.violations.length, 1, result.violations.join(" | "));
+  assert.match(result.violations[0]!, /continue-on-error/);
+});
+
+test("continue-on-error is rejected at a step", () => {
+  const workflow = conforming().replace(
+    "      - run: bash bin/setup",
+    "      - run: bash bin/setup\n        continue-on-error: true",
+  );
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.equal(result.violations.length, 1, result.violations.join(" | "));
+  assert.match(result.violations[0]!, /continue-on-error/);
+});
+
 test("a comment naming a check is not read as a step running it", () => {
   const workflow = conforming("      - run: |\n          # npm test is the gate's job, not ours\n          echo ok\n");
   assert.deepEqual(checkGateWorkflow(workflow, COMMANDS).violations, []);
