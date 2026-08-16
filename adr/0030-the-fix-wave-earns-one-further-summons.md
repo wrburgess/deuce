@@ -16,9 +16,10 @@ pull request. A `must-fix` sends the pull request to the HC to merge; a `should-
 tracked work or accepted as residual, on the record; a `note` is recorded. There is never a third
 summons.
 
-**And the binding is stated for every cause, not only for fixes.** A head that moves after the last
-conforming review — a further fix, or an update from the base branch — carries no review's binding,
-and that pull request goes to the HC.
+**And the binding is stated for every cause, not only for fixes.** Once the summons owed has
+returned, the head is final: any movement past the last conforming review — a further fix, an update
+from the base branch, anything — leaves no review bound to what merges, and that pull request goes to
+the HC. The wave's own movement is excluded, being the movement the further summons exists to cover.
 
 **What does not move.** The AC's own fix-verification stands whole, at full strength, and the further
 summons adds an examiner rather than replacing one. The one-wave limit is unchanged. Chapter 0's

@@ -190,7 +190,8 @@ run again, on the wave's diff alone.
     bound to the commit being merged, and nothing further is owed.
   - **Scoped to the wave's diff and to the lenses that raised the findings** — never the whole
     change again. Those lenses already ran on the original diff; this is the re-run *Bounded by lens
-    set* already provides for, with the contractor running it rather than the AC.
+    set* already provides for, with the contractor running it rather than the AC. The permanent lens
+    rides this set as it rides every other.
   - **Nothing it finds is fixed in this pull request.** A fix moves the head, and the binding the
     summons was raised to establish is broken again one round down. A `must-fix` puts the merge back
     in the HC's hands, exactly as `required` does — it does not change the setting in force, and no
@@ -200,8 +201,11 @@ run again, on the wave's diff alone.
     chapter refused. The predecessor's fifteen-round tail on a single finding
     ([ace #164](https://github.com/wrburgess/ace/issues/164)) ran because every round was answered
     with code that earned the next one; removing that edge is what makes one further read affordable.
-  - **A head that moves after the last conforming review carries no review's binding** — whether it
-    moved for a further fix or for an update from the base branch. That pull request goes to the HC.
+  - **Once the summons owed has returned, the head is final.** The wave's own movement is what the
+    further summons exists to cover, so it is not what this clause reaches; every movement after that
+    review is — a further fix, an update from the base branch, anything. Where no further summons was
+    owed, the original review is the last one and the same holds from it. A pull request whose head
+    moved past its last conforming review has no review bound to what merges, and it goes to the HC.
     The setting degrades to the human; it never degrades the floor.
 
   The validation re-summons a malformed response earns is a different thing and stands — that is the

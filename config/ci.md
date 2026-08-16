@@ -90,9 +90,9 @@ not exist on `main` yet, so requiring it would block the pull request that creat
 checks are `["gate"]` with `strict` on, `enforce_admins` on, force pushes and deletions blocked. So
 the re-run now prevents rather than informs, which is the promise chosen at the Direction gate.
 
-**What is still only read, not proved:** that the setting refuses a merge rather than reporting one
-has been read from the API and not yet observed. The first pull request to merge under it is the
-observation, and #129's is the first.
+**What is still only read, not proved, as of 2026-08-16:** that the setting refuses a merge rather
+than reporting one has been read from the API and not observed in a run. The first pull request to
+merge under it is that observation; none had at this date.
 
 ## What this does not do
 

@@ -169,8 +169,8 @@ Ratified in Chapter 2.
 **Fix-verification** — The separately bounded verification of code written in response to findings,
 the least-reviewed code in a change. Each fix is anchored to the finding's mechanism with
 fail-first evidence; the accepted fixes are batched into one wave, which the AC verifies itself and
-which earns one further summons bound to the head it produced, never a second; and recurrence past
-the declared limit escalates to re-planning rather than another patch.
+which — where it moved the head — earns one further summons bound to that head, never a second; and
+recurrence past the declared limit escalates to re-planning rather than another patch.
 
 **Fleet** — The set of software projects that run on deuce, receive what the payload manifest ships
 them, and send findings back to it.

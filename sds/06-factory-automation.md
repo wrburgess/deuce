@@ -150,7 +150,7 @@ setting is in force, which is `config/gates.md`'s alone:
 - **`attested` gains nothing and loses nothing.** Its floor is Chapter 0's, its review is Chapter
   2's, and its second leg — the gate re-run by something that is not the AC — is Chapter 3's. That
   leg was owed work when this chapter was ratified and has since been built (#126). A factory pass
-  does not merge until it is actually in force, at any setting. And the ceremony
+  does not merge unless that leg is actually in force, at any setting. And the ceremony
   argument runs the other way too: attestation is worth paying for only when its autonomy is used,
   and the factory is the first thing that would use it — the dated reasoning sits with the setting,
   in `config/gates.md`, and moves when the HC moves it, not when this chapter merges.
