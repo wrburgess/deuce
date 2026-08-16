@@ -1,0 +1,59 @@
+# The independent re-run of the quality gate (#126; Chapter 3, *One definition,
+# two runners*; ADR 0029).
+#
+# This file enumerates no checks. It invokes `npm run gate`, which runs exactly
+# what config/checks.md declares — that is ADR 0015's one definition, and the
+# reason CI has nothing to say about which checks exist. What runs here, on what,
+# and with which versions is declared in config/ci.md; the per-run token's blast
+# radius is declared in config/credentials.md.
+#
+# tools/gate/workflow.test.ts holds this file to three properties: it invokes the
+# gate and enumerates no check of its own, it grants no write, and it still
+# triggers on pull requests.
+name: gate
+
+on:
+  # The pull_request event checks out GitHub's test merge of the branch into the
+  # base — the merge candidate itself, which is what the re-run exists to read.
+  pull_request:
+  # And again on the merged history, which catches a change that was green on
+  # its own and is not green against a base that moved underneath it.
+  push:
+    branches: [main]
+
+# Reads only, and declared rather than inherited: an absent block would take
+# whatever the repository default happens to be, which no declaration binds.
+# tracker-lint is why any grant is needed at all — it reads issues and pull
+# requests through `gh`, and writes nothing.
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+jobs:
+  # The job id is the check context branch protection is to require by name
+  # (config/ci.md, *The two acts, in order*). Renaming it once that is on would
+  # silently detach the requirement, so it does not get renamed.
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned by commit, with the version alongside: a tag can be moved, and a
+      # moved tag would change what runs in the one place that is supposed to be
+      # checking that nothing changed unnoticed.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '26'
+
+      # The repository's one installer, the same command a fresh clone runs. The
+      # gate reports a missing toolchain and never installs it, so something has
+      # to, and a second install path in CI would be its own quiet divergence.
+      - run: bash bin/setup
+
+      - run: npm run gate
+        env:
+          # The token GitHub mints for this run, scoped by the block above and
+          # revoked when the job ends. tracker-lint authenticates `gh` with it.
+          GH_TOKEN: ${{ github.token }}

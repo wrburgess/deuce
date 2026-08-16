@@ -1,6 +1,6 @@
 ---
 date: 2026-08-11
-source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87; the tracker credential and the reviewer's login declared at the Direction gate on #107
+source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87; the tracker credential and the reviewer's login declared at the Direction gate on #107; the continuous-integration token declared at the Direction gate on #126
 ---
 
 # Credentials
@@ -167,6 +167,66 @@ Least privilege, stated as cannots — and split honestly by what holds each one
 
   The permissions line is the HC's transcription from the token screen, confirmed at the sitting;
   the entry above is what binds, and any later mismatch found is a finding, not a shrug.
+
+## The continuous-integration token
+
+The credential the independent re-run of the quality gate runs under
+([`ci.md`](ci.md)): the token GitHub mints for each workflow run, which
+[`.github/workflows/gate.yml`](../.github/workflows/gate.yml) hands to `gh` so that `tracker-lint`
+can read the tracker. Declared here because it is a credential automation uses, and the third
+standing rule admits no exception for a small radius.
+
+**It has one state, not two, and that is the whole of why it was chosen.** There is no attended form
+and no automated form to mint: GitHub issues it when the run starts and revokes it when the run ends.
+It cannot be exercised by the HC, borrowed by a session, or stored anywhere. The alternative — a
+personal access token for the same reads — was declined at the Direction gate on #126 as strictly
+worse on every axis: longer life, wider reach, a value to keep and rotate, and it buys nothing this
+one does not already do.
+
+### What it can reach
+
+- **Repository:** the one the run belongs to. This one, and nothing else — GitHub scopes it to the
+  workflow's own repository and there is no grant that widens it.
+- **Permissions:** contents read, issues read, and pull requests read, declared in the workflow's
+  `permissions:` block. Those three are exactly what
+  [`tools/lint/tracker/fetch.ts`](../tools/lint/tracker/fetch.ts) exercises — `gh repo view`, the
+  issues query, the pull-requests query — and the fetch carries no write path at all.
+- **Deliberately not granted:** every write, and with it everything the other two entries grant —
+  contents write, issues write, pull requests write, workflows, administration, branch-protection
+  settings, releases.
+
+### What it can destroy
+
+- **Nothing.** It holds no write grant, so there is no branch it can move, no comment it can post,
+  and no state it can change. This is the only entry in this file whose answer to this question is
+  nothing, and the reason is the grant, not good behavior.
+- **The residual, stated rather than implied:** a run can read every issue, pull request, and file in
+  this repository. The repository is public, so that is not a disclosure the token creates.
+
+### What breaks if it leaks
+
+- A leaked run token is a read of a public repository, for the minutes until the job ends. There is
+  nothing to revoke afterwards and nothing to rotate.
+- **What a wider grant would have cost is why the narrow one is written down.** The failure this
+  entry guards against is not theft; it is the workflow quietly acquiring a write grant later, at
+  which point every sentence above becomes false while still reading as true.
+  [`tools/gate/workflow.test.ts`](../tools/gate/workflow.test.ts) refuses a workflow that grants any
+  write, so that drift fails the gate rather than the reader's attention.
+
+### What it deliberately cannot do
+
+Least privilege, stated as cannots: push to any branch · open, merge, or comment on a pull request ·
+label or comment on an issue · reach any other repository · touch workflows · administer this
+repository or its protection.
+
+### The minting rule
+
+- **There is nothing to mint, and that is the point.** No sitting, no expiry to track, no row to add
+  later. The declaration is complete on the day it is written, which no other entry in this file can
+  say.
+- **What replaces the minting rule is the workflow's own grant block**, and it is enforced: the test
+  named above fails the gate on any write grant, so this entry cannot go stale by the workflow
+  changing under it.
 
 ## The reviewer's login
 
