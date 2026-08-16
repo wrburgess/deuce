@@ -9,8 +9,11 @@ Who re-runs the quality gate, on what, and with which versions. The rule these v
 canon, at [Chapter 3](../sds/03-quality-gate-and-tooling.md) → *One definition, two runners* and
 [ADR 0015](../adr/0015-one-gate-one-command-local-and-ci.md), and is not restated here; this is
 adaptive configuration under [Chapter 1](../sds/01-lifecycle-and-skills.md) → *The adaptive layer's
-home*, and it is the second of the two declarations
-[Chapter 3](../sds/03-quality-gate-and-tooling.md#the-adaptive-layers-additions) says this work owes.
+home*. It carries two of the three declarations
+[Chapter 3](../sds/03-quality-gate-and-tooling.md#the-adaptive-layers-additions) says this chapter's
+work owes — the continuous-integration provider and its trigger, and the runtime and toolchain
+versions. The third, the gate's command and its checks, is [`checks.md`](checks.md)'s and stays
+there.
 
 ## Declaration
 
@@ -24,7 +27,7 @@ home*, and it is the second of the two declarations
 | Install | `bash bin/setup` — the repository's one installer |
 | Gate command | `npm run gate` — and nothing else |
 | Check context | `gate`, the job's id and name |
-| Merge enforcement | Branch protection on `main` requires the `gate` context to pass |
+| Merge enforcement | **Not yet in force.** Branch protection on `main` is to require the `gate` context; until the act below is done, the verdict is readable and blocks nothing |
 
 - **The workflow enumerates no checks.** It invokes the one command;
   [`checks.md`](checks.md) stays the only place a check joins the gate.
@@ -51,9 +54,16 @@ Turning the enforcement on cannot ride in the change that introduces the workflo
 not exist on `main` yet, so requiring it would block the pull request that creates it. So:
 
 1. The workflow merges and reports — its own pull request is the first run, and #126 carries the
-   Delivery Record naming it.
+   Delivery Record naming it. **Done.**
 2. Branch protection is then updated to require the `gate` context — an act on the platform, by the
-   HC, on the HC's own account.
+   HC, on the HC's own account. **Outstanding**, and the enforcement row above says so until it is
+   done. Whoever does it updates that row in the same sitting; a row claiming an enforcement the
+   platform does not carry is the defect this file exists to prevent.
+
+**Until step 2, `main` carries no required status check at all** — read from the API on 2026-08-16:
+`enforce_admins` on, force pushes and deletions blocked, and nothing else. So the re-run informs and
+does not prevent, which is a weaker promise than the one chosen at the Direction gate and is stated
+here rather than left to be discovered.
 
 ## What this does not do
 

@@ -85,29 +85,49 @@ function triggerNames(on: unknown): string[] {
   return [];
 }
 
-function permissionViolations(doc: Record<string, unknown>): string[] {
-  const permissions = doc["permissions"];
-  // Absent is not "the default is fine" — an absent block inherits whatever the
-  // repository's default happens to be, which no declaration here controls.
-  if (permissions === undefined) {
-    return [
-      "the workflow declares no `permissions:` block — an absent block inherits the repository default, which config/credentials.md does not bind",
-    ];
-  }
+// One block, wherever it sits. A job-level block overrides the workflow-level
+// one, so reading only the top would certify a read-only workflow that hands a
+// job write — the shape that makes the credentials entry false while it still
+// reads as true. Raised against this module's own first draft, which read the
+// top level and nothing else.
+function grantViolations(where: string, permissions: unknown): string[] {
   if (typeof permissions === "string") {
     return permissions === "read-all"
       ? []
-      : [`the workflow grants \`permissions: ${permissions}\` — the entry in config/credentials.md declares reads only`];
+      : [`${where} grants \`permissions: ${permissions}\` — the entry in config/credentials.md declares reads only`];
   }
   if (permissions === null || typeof permissions !== "object") {
-    return ["the workflow's `permissions:` block is neither a scope map nor a known keyword"];
+    return [`${where} carries a \`permissions:\` block that is neither a scope map nor a known keyword`];
   }
   const violations: string[] = [];
   for (const [scope, grant] of Object.entries(permissions as Record<string, unknown>)) {
     if (grant !== "read" && grant !== "none") {
       violations.push(
-        `the workflow grants \`${scope}: ${String(grant)}\` — the entry in config/credentials.md declares reads only`,
+        `${where} grants \`${scope}: ${String(grant)}\` — the entry in config/credentials.md declares reads only`,
       );
+    }
+  }
+  return violations;
+}
+
+function permissionViolations(doc: Record<string, unknown>): string[] {
+  const violations: string[] = [];
+  const top = doc["permissions"];
+  // Absent is not "the default is fine" — an absent block inherits whatever the
+  // repository's default happens to be, which no declaration here controls.
+  if (top === undefined) {
+    violations.push(
+      "the workflow declares no `permissions:` block — an absent block inherits the repository default, which config/credentials.md does not bind",
+    );
+  } else {
+    violations.push(...grantViolations("the workflow", top));
+  }
+
+  const jobs = doc["jobs"];
+  if (jobs !== null && typeof jobs === "object") {
+    for (const [name, job] of Object.entries(jobs as Record<string, unknown>)) {
+      const own = (job as { permissions?: unknown })?.permissions;
+      if (own !== undefined) violations.push(...grantViolations(`job "${name}"`, own));
     }
   }
   return violations;
@@ -158,7 +178,15 @@ export function checkGateWorkflow(workflowYaml: string, declaredCommands: string
 
   // Per line, not per step: a `run:` block is often several commands, and a
   // second check hidden on the second line is the shape this exists to catch.
-  const lines = runs.flatMap((run) => run.split("\n")).map((l) => l.trim()).filter((l) => l !== "");
+  // Comment lines are dropped, and that cuts both ways — it stops a comment
+  // mentioning a check from reading as a second check, and it stops a
+  // commented-out `npm run gate` from satisfying the requirement that the gate
+  // is invoked. The second is the one that mattered: without this, a workflow
+  // could disable itself with a single `#` and still pass.
+  const lines = runs
+    .flatMap((run) => run.split("\n"))
+    .map((l) => l.trim())
+    .filter((l) => l !== "" && !l.startsWith("#"));
 
   if (!lines.some((line) => line.includes(GATE_COMMAND))) {
     violations.push(
@@ -178,11 +206,25 @@ export function checkGateWorkflow(workflowYaml: string, declaredCommands: string
 
   violations.push(...permissionViolations(workflow));
 
-  const on = triggerNames(triggers(workflow));
-  if (!on.includes("pull_request")) {
+  const on = triggers(workflow);
+  if (!triggerNames(on).includes("pull_request")) {
     violations.push(
       "the workflow does not trigger on `pull_request` — the merge candidate is what the re-run exists to read",
     );
+  } else {
+    // Present is not the same as covering. A branch filter narrows the trigger
+    // to some pull requests while the trigger name still reads as there, which
+    // is the silent-narrowing shape one level down from removing it outright.
+    const settings = (on as Record<string, unknown> | null)?.["pull_request"];
+    if (settings !== null && typeof settings === "object") {
+      for (const key of ["branches", "branches-ignore"]) {
+        if (key in (settings as Record<string, unknown>)) {
+          violations.push(
+            `the \`pull_request\` trigger carries a \`${key}\` filter — the re-run covers every pull request, not a subset`,
+          );
+        }
+      }
+    }
   }
 
   return { violations, guard: null, runStepsScanned: runs.length };

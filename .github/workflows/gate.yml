@@ -31,8 +31,9 @@ permissions:
   pull-requests: read
 
 jobs:
-  # The job id is the check context branch protection requires by name. Renaming
-  # it silently detaches the requirement, so it does not get renamed.
+  # The job id is the check context branch protection is to require by name
+  # (config/ci.md, *The two acts, in order*). Renaming it once that is on would
+  # silently detach the requirement, so it does not get renamed.
   gate:
     name: gate
     runs-on: ubuntu-latest

@@ -158,6 +158,81 @@ test("an absent permissions block is rejected — it inherits a default nothing 
   assert.match(result.violations[0]!, /no .permissions:. block/);
 });
 
+// Raised against this module's own first draft during Verify: a job-level block
+// overrides the workflow-level one, so reading only the top certified a
+// read-only workflow that hands its job a write grant.
+test("a job-level write grant is rejected, naming the job", () => {
+  const workflow = conforming().replace(
+    "  gate:\n    runs-on:",
+    "  gate:\n    permissions:\n      contents: write\n    runs-on:",
+  );
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.equal(result.violations.length, 1, result.violations.join(" | "));
+  assert.match(result.violations[0]!, /job "gate"/);
+  assert.match(result.violations[0]!, /contents: write/);
+});
+
+test("a job-level read grant is accepted", () => {
+  const workflow = conforming().replace(
+    "  gate:\n    runs-on:",
+    "  gate:\n    permissions:\n      contents: read\n    runs-on:",
+  );
+  assert.deepEqual(checkGateWorkflow(workflow, COMMANDS).violations, []);
+});
+
+// The single `#` that would have disabled the whole re-run while still passing.
+test("a commented-out gate does not satisfy the requirement to invoke it", () => {
+  const workflow = conforming().replace("- run: npm run gate", "- run: '# npm run gate'");
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.equal(result.violations.length, 1, result.violations.join(" | "));
+  assert.match(result.violations[0]!, /npm run gate/);
+});
+
+test("a comment naming a check is not read as a step running it", () => {
+  const workflow = conforming("      - run: |\n          # npm test is the gate's job, not ours\n          echo ok\n");
+  assert.deepEqual(checkGateWorkflow(workflow, COMMANDS).violations, []);
+});
+
+// One level down from removing the trigger: keep the name, narrow what it
+// covers, and the workflow still reads as watching pull requests.
+test("a branch filter on the pull_request trigger is rejected", () => {
+  const workflow = `name: gate
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  gate:
+    steps:
+      - run: npm run gate
+`;
+  const result = checkGateWorkflow(workflow, COMMANDS);
+  assert.equal(result.violations.length, 1, result.violations.join(" | "));
+  assert.match(result.violations[0]!, /branches. filter/);
+});
+
+test("a branches-ignore filter is rejected too", () => {
+  const workflow = `name: gate
+on:
+  pull_request:
+    branches-ignore: [docs/**]
+permissions:
+  contents: read
+jobs:
+  gate:
+    steps:
+      - run: npm run gate
+`;
+  assert.match(checkGateWorkflow(workflow, COMMANDS).violations[0]!, /branches-ignore. filter/);
+});
+
+// The live workflow filters `push` to main deliberately; only the pull_request
+// trigger is the one that may not be narrowed.
+test("a filter on the push trigger is not a violation", () => {
+  assert.deepEqual(checkGateWorkflow(conforming(), COMMANDS).violations, []);
+});
+
 test("a workflow that stops watching pull requests is rejected", () => {
   const workflow = `name: gate
 on:
