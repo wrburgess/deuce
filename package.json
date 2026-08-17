@@ -9,6 +9,7 @@
     "lint:gates": "node tools/lint/run.ts gates",
     "lint:glossary": "node tools/lint/run.ts glossary",
     "lint:links": "node tools/lint/run.ts links",
+    "lint:payload": "node tools/lint/run.ts payload",
     "lint:tracker": "node tools/lint/tracker/run.ts",
     "measures": "node tools/measures/run.ts",
     "test": "node --test 'tools/**/*.test.ts'",

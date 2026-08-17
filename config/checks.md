@@ -1,6 +1,6 @@
 ---
-date: 2026-08-11
-source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54; the four document-lint checks added at the Direction gate on #55; the tracker lint added at the Direction gate on #56, where Option A was chosen
+date: 2026-08-17
+source: the Direction gate on #52, where Option B was chosen; the dated-and-sourced check added on #54; the four document-lint checks added at the Direction gate on #55; the tracker lint added at the Direction gate on #56, where Option A was chosen; the payload-links check added at the Direction gate on #121, where Option C was chosen
 checks:
   - name: typecheck
     command: npm run typecheck
@@ -11,6 +11,8 @@ checks:
     command: npm run lint:config
   - name: links-resolve
     command: npm run lint:links
+  - name: payload-links
+    command: npm run lint:payload
   - name: class-grammar
     command: npm run lint:classes
   - name: gate-setting

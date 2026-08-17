@@ -1,6 +1,6 @@
-// The document lint, as four named commands: `npm run lint:links`,
-// `lint:classes`, `lint:gates`, `lint:glossary` (#55; Chapter 3, *The
-// configuration lint*).
+// The document lint, as five named commands: `npm run lint:links`,
+// `lint:payload`, `lint:classes`, `lint:gates`, `lint:glossary` (#55; #121;
+// Chapter 3, *The configuration lint*).
 //
 // This file is the wiring only — inventory the tracked documents, hand them
 // to the check named on the command line, report. Every decision lives in
@@ -64,6 +64,38 @@ async function main(): Promise<void> {
       console.log(`links-resolve green — ${scope}`);
       return;
     }
+    case "payload": {
+      const { checkPayloadLinks, BLIND_SPOT } = await import("./payload.ts");
+      const { parseManifest } = await import("../sync/manifest.ts");
+      const declaration = files.find((f) => f.path === "config/payload.md");
+      if (declaration === undefined) {
+        return cannotRun("config/payload.md is not among the tracked documents");
+      }
+      // A malformed manifest is the check unable to run, not a state it
+      // rejects — the reader owns that vocabulary and refuses by name.
+      let result: import("./payload.ts").PayloadLinksResult;
+      try {
+        result = checkPayloadLinks(parseManifest(declaration.content), files);
+      } catch (err) {
+        return cannotRun((err as Error).message);
+      }
+      // The blind spot prints on every run, green or red: a green that does
+      // not carry its own limits reads wider than the check (#55).
+      for (const line of BLIND_SPOT) console.log(line);
+      if (result.guard !== null) return cannotRun(result.guard);
+      // Reported, never failed — a host may adopt one system without the
+      // rest, and that fix needs an answer this check does not have (#121).
+      for (const line of result.crossSystem) console.log(`cross-system: ${line}`);
+      const scope = `${result.internalChecked} internal links checked across ${result.markdownChecked} shipped documents, targets resolved against the ${result.shippedPaths} paths the payload manifest ships; ${result.externalSkipped} external links not probed; ${result.systems.length} systems walked separately, ${result.crossSystem.length} cross-system dead link${result.crossSystem.length === 1 ? "" : "s"} reported and not failed`;
+      if (result.violations.length > 0) {
+        for (const v of result.violations) console.error(v);
+        console.error(`payload-links red — ${scope}`);
+        process.exitCode = EXIT_REJECTED;
+        return;
+      }
+      console.log(`payload-links green — ${scope}`);
+      return;
+    }
     case "classes": {
       const { checkClasses } = await import("./classes.ts");
       const index = files.find((f) => f.path === "findings/classes.md");
@@ -112,7 +144,9 @@ async function main(): Promise<void> {
       return;
     }
     default:
-      cannotRun(`unknown check '${which ?? ""}' — one of: links, classes, gates, glossary`);
+      cannotRun(
+        `unknown check '${which ?? ""}' — one of: links, payload, classes, gates, glossary`,
+      );
   }
 }
 
