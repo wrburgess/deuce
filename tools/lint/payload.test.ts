@@ -114,7 +114,11 @@ test("the same dead link twice in one file is two violations — the count is th
   assert.equal(result.violations.length, 2);
 });
 
-test("a lifecycle file linking a review path is reported, not failed", () => {
+// A host may adopt one system without the rest, so a link dead for that host
+// is dead. Reported without failing in the first draft; raised as a must-fix
+// by the contractor review on PR #133 under *does this check measure the
+// invariant it claims, or a proxy for it?*
+test("a lifecycle file linking a review path fails, naming the adoption that breaks", () => {
   const result = checkPayloadLinks(
     manifest(
       ["a/one.md", "contract", "lifecycle"],
@@ -122,6 +126,7 @@ test("a lifecycle file linking a review path is reported, not failed", () => {
     ),
     files({ "a/one.md": "[summon](../tools/review/summon.ts)" }),
   );
+  // The aggregate walk cannot see it — that is exactly why it is separate.
   assert.deepEqual(result.violations, []);
   assert.equal(result.crossSystem.length, 1);
   assert.match(result.crossSystem[0]!, /system 'lifecycle' alone/);

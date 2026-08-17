@@ -68,7 +68,11 @@ exit — is canon and is not restated here.
    [Chapter 2 → Bounded by lens set](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count),
    prose subjects per
    [Chapter 2 → Verifying prose](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#verifying-prose); run the
-   summons path ([`tools/review/summon.ts`](../../../tools/review/summon.ts)), whose contract is
+   summons path — `tools/review/summon.ts` where the repository took the review tooling; **a
+   repository that adopted the lifecycle without it has no such file, and supplies its own path.**
+   The summons itself is owed either way: it is
+   [Chapter 2 → Verify's external half](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#verifys-external-half-now-written)'s
+   floor, which no adoption reaches. The path's contract is
    [Chapter 2 → The summons, completed](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#the-summons-completed)
    and [→ Validation on return](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#validation-on-return). **A run
    with no reachable reviewer stops and asks.**

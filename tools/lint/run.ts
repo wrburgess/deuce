@@ -83,12 +83,13 @@ async function main(): Promise<void> {
       // not carry its own limits reads wider than the check (#55).
       for (const line of BLIND_SPOT) console.log(line);
       if (result.guard !== null) return cannotRun(result.guard);
-      // Reported, never failed — a host may adopt one system without the
-      // rest, and that fix needs an answer this check does not have (#121).
-      for (const line of result.crossSystem) console.log(`cross-system: ${line}`);
-      const scope = `${result.internalChecked} internal links checked across ${result.markdownChecked} shipped documents, targets resolved against the ${result.shippedPaths} paths the payload manifest ships; ${result.externalSkipped} external links not probed; ${result.systems.length} systems walked separately, ${result.crossSystem.length} cross-system dead link${result.crossSystem.length === 1 ? "" : "s"} reported and not failed`;
-      if (result.violations.length > 0) {
-        for (const v of result.violations) console.error(v);
+      const scope = `${result.internalChecked} internal links checked across ${result.markdownChecked} shipped documents, targets resolved against the ${result.shippedPaths} paths the payload manifest ships; ${result.externalSkipped} external links not probed; the whole payload plus each of ${result.systems.length} systems walked, all blocking`;
+      // A cross-system dead link fails like any other: a host may adopt one
+      // system without the rest, so a link dead for that host is dead
+      // (PR #133's contractor review, must-fix).
+      const failures = [...result.violations, ...result.crossSystem];
+      if (failures.length > 0) {
+        for (const v of failures) console.error(v);
         console.error(`payload-links red — ${scope}`);
         process.exitCode = EXIT_REJECTED;
         return;

@@ -19,13 +19,17 @@
 // ---------------------------------------------------------------------------
 // Declared blind spot (Chapter 3, *Every check declares its blind spot*)
 //
-// It decides that a shipped link's target is shipped. It cannot decide that a
-// receiving repository has written a declaration the prose still names by
+// It decides that a shipped link's target is shipped — for a host taking the
+// whole payload, and for a host taking any one system. It cannot decide that
+// a receiving repository has written a declaration the prose still names by
 // name, nor that the absence clause beside that name is followed — both are
 // prose, and prose has no failing test (Chapter 2, *Verifying prose*). Links
 // in raw HTML are not read, external targets are counted and never probed,
 // and a reference inside a shipped non-markdown file is not a markdown link
-// and is not reached.
+// and is not reached. Combinations of systems are not walked: every subset is
+// a superset of some single system, so a link dead for a combination is dead
+// for one of its members and is already reached — but a link dead only for
+// the empty selection is not a state the manifest can express.
 
 import { shipSet, type Manifest } from "../sync/manifest.ts";
 import type { MarkdownFile } from "./markdown.ts";
@@ -33,12 +37,15 @@ import { checkLinks } from "./links.ts";
 
 export interface PayloadLinksResult {
   violations: string[];
-  // Cross-system dead links: reported, never failed. A host may adopt one
-  // system without the rest (Chapter 0), so a lifecycle file linking a review
-  // path is dead for a lifecycle-only adopter — a real defect with a
-  // different cause and a different fix, which is why it reports here rather
-  // than failing. The `glossary-reverse` check already carries staleness
-  // signals the same way.
+  // Cross-system dead links, kept apart from the aggregate ones so the
+  // message can name which adoption breaks — and blocking, exactly as those
+  // are. A host may adopt one system without the rest (Chapter 0), so a
+  // lifecycle file linking a review path is dead for a lifecycle-only
+  // adopter. An earlier draft reported these without failing; the contractor
+  // review on PR #133 raised it as a must-fix under *does this check measure
+  // the invariant it claims, or a proxy for it?* — a check that finds a real
+  // dead link and exits green is measuring the aggregate payload as a proxy
+  // for the host-facing invariant, and it was right.
   crossSystem: string[];
   // The fail-open state: the manifest has declared contract markdown since
   // #81, so a shipped-markdown set of zero means the manifest reader or the
@@ -54,6 +61,7 @@ export interface PayloadLinksResult {
 export const BLIND_SPOT = [
   "blind spot: whether a receiving repository has written a declaration the shipped prose names, and whether the absence clause beside it is followed, are prose and are not reached",
   "blind spot: links in raw HTML are not read, external targets are counted and never probed, and a reference inside a shipped non-markdown file is not a markdown link",
+  "blind spot: the whole payload and each single system are walked; combinations are not, because every combination is a superset of a single system already walked",
 ];
 
 interface View {
@@ -118,7 +126,7 @@ export function checkPayloadLinks(
 
   // Per-system walks. A violation the whole-payload walk already raised is
   // that walk's to report; what is new here is a link that resolves for a
-  // host taking everything and dies for a host taking one system.
+  // host taking everything and dies for a host taking one system. Both fail.
   const seen = new Set(result.violations);
   const systems = [...new Set(manifest.entries.map((e) => e.system))]
     .filter((s) => s !== "all")
