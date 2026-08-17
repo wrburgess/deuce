@@ -229,7 +229,13 @@ function markdownReferences(file: HostFile, retired: readonly string[]): Referen
       prose(node, node.literal ?? "");
       return;
     }
-    if (node.type === "code_block" || node.type === "html_block") prose(node, node.literal ?? "");
+    // Raw HTML is prose here, inline and block alike. The parser yields no
+    // link node for `<a href="…">` — `tools/lint/links.ts` declares the same
+    // limit — so the choice is between naming it without a claim about its
+    // syntax and not naming it at all. Named.
+    if (node.type === "code_block" || node.type === "html_block" || node.type === "html_inline") {
+      prose(node, node.literal ?? "");
+    }
   });
 
   return references;
@@ -253,14 +259,18 @@ export function findReferences(
   retired: readonly string[],
   excluded: ReadonlySet<string> = new Set(),
 ): Reference[] {
-  if (retired.length === 0) return [];
+  // An empty target matches at every position. The receipt parser already
+  // refuses a checksum with no path, so the sync cannot supply one — the guard
+  // is here because this function is callable without it.
+  const targets = retired.filter((p) => p !== "");
+  if (targets.length === 0) return [];
   const references: Reference[] = [];
   for (const file of files) {
     if (excluded.has(file.path)) continue;
     references.push(
       ...(file.path.endsWith(".md")
-        ? markdownReferences(file, retired)
-        : plainReferences(file, retired)),
+        ? markdownReferences(file, targets)
+        : plainReferences(file, targets)),
     );
   }
   return references;

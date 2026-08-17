@@ -184,7 +184,8 @@ test("the blind spots print with the count of files the scan could not read", ()
   });
   assert.match(body, /Not reached, and named on every run/);
   assert.match(body, /directory with no file name after\s+it/);
-  assert.match(body, /2 file\(s\) not read \(binary or unreadable\)/);
+  assert.match(body, /raw HTML is named, but as prose/);
+  assert.match(body, /2 file\(s\) could not be read \(binary or unreadable\)/);
 });
 
 test("no references, no section — and no bullet either", () => {

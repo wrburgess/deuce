@@ -226,8 +226,9 @@ function referenceSection(input: ReportInput): string[] {
     "  deuce has no standing to change them.",
     "- **Not reached, and named on every run:** a mention of a directory with no file name after",
     "  it · a reference assembled at runtime from parts · a mention written relative to its own",
-    "  directory · a web address written as plain text rather than as a link · " +
-      `${unread} file(s) not read (binary or unreadable).`,
+    "  directory · a web address written as plain text rather than as a link. A link written as",
+    "  raw HTML is named, but as prose — the parser yields no link for it. " +
+      `${unread} file(s) could not be read (binary or unreadable).`,
   );
   return lines;
 }

@@ -174,11 +174,21 @@ function main(): void {
     if (retirement.retired.length > 0) {
       try {
         const text = readHostText(hostRoot);
+        // Every contract path the manifest declares, not only the ones this
+        // run writes: a selected-system sync retires against the whole
+        // manifest, so an out-of-scope contract file stays on the host
+        // unwritten. A stale reference in one is deuce's own defect, and the
+        // report's "every file named is this repository's own" would be false
+        // the moment one appeared.
+        const deuceOwned = [
+          ...manifest.entries.filter((e) => e.class === "contract").map((e) => e.path),
+          ...plan.writes.map((w) => w.entry.path),
+        ];
         hostReferences = {
           references: findReferences(
             text.files,
             retirement.retired,
-            excludedPaths(retirement.retired, plan.writes.map((w) => w.entry.path), receiptPath),
+            excludedPaths(retirement.retired, deuceOwned, receiptPath),
           ),
           unread: text.unread.length,
         };

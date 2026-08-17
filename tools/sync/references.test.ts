@@ -1,6 +1,16 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { findReferences, excludedPaths, type HostFile, type Reference } from "./references.ts";
+import { execFileSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import {
+  findReferences,
+  excludedPaths,
+  readHostText,
+  type HostFile,
+  type Reference,
+} from "./references.ts";
 
 const VERIFY = "skills/verify/SKILL.md";
 const RETIRED = [VERIFY];
@@ -217,6 +227,31 @@ test("excluded files are not scanned at all", () => {
   ]);
 });
 
+// 16 — raw HTML carries no link node, here or in `tools/lint/links.ts`. The
+// choice is between naming it with no claim about its syntax and not naming it
+// at all.
+
+test("a retired path inside raw HTML is named as prose, inline and block alike", () => {
+  const refs = findReferences(
+    [
+      file("inline.md", "text with <a href=\"skills/verify/SKILL.md\">a raw link</a> in it\n"),
+      file("block.md", "<div>\n  <a href=\"skills/verify/SKILL.md\">x</a>\n</div>\n"),
+    ],
+    RETIRED,
+  );
+  assert.deepEqual(shape(refs), [`inline.md:1 prose ${VERIFY}`, `block.md:2 prose ${VERIFY}`]);
+});
+
+// 17 — an empty target matches at every position. The receipt parser refuses a
+// checksum with no path, so the sync cannot supply one; the guard is here
+// because this function is callable without it.
+
+test("an empty retired path is refused rather than matching everywhere", () => {
+  assert.deepEqual(findReferences([file("a.md", "anything at all\n")], [""]), []);
+  const refs = findReferences([file("a.md", "`skills/verify/SKILL.md`\n")], ["", VERIFY]);
+  assert.deepEqual(shape(refs), [`a.md:1 prose ${VERIFY}`]);
+});
+
 test("the exclusion set is the retired paths, the written paths, and the receipt", () => {
   const excluded = excludedPaths(
     ["skills/verify/SKILL.md", "skills/assess/SKILL.md"],
@@ -230,4 +265,68 @@ test("the exclusion set is the retired paths, the written paths, and the receipt
     "skills/assess/SKILL.md",
     "skills/verify/SKILL.md",
   ]);
+});
+
+// The impure half: reading the clone. A real git index, because `git ls-files`
+// is what decides which paths exist — the `drift.test.ts` and `host.test.ts`
+// pattern, and no network is touched.
+
+function tracked(files: Record<string, string>, links: Record<string, string> = {}): string {
+  const root = mkdtempSync(join(tmpdir(), "deuce-refs-"));
+  execFileSync("git", ["init", "--quiet", "--initial-branch=main", root]);
+  for (const [p, content] of Object.entries(files)) {
+    mkdirSync(join(root, p, ".."), { recursive: true });
+    writeFileSync(join(root, p), content);
+  }
+  for (const [p, target] of Object.entries(links)) symlinkSync(target, join(root, p));
+  execFileSync("git", ["-C", root, "add", "--all"]);
+  return root;
+}
+
+test("every tracked file is read, and an untracked one is not", () => {
+  const root = tracked({ "CLAUDE.md": "a\n", "src/x.ts": "b\n" });
+  writeFileSync(join(root, "untracked.md"), "c\n");
+  const text = readHostText(root);
+  assert.deepEqual(text.files.map((f) => f.path).sort(), ["CLAUDE.md", "src/x.ts"]);
+  assert.deepEqual(text.unread, []);
+});
+
+// git grep declines to search a symlink, and both hosts track two of them
+// under `.githooks/`. A symlink's identity is its target string, the same
+// content `drift.ts` already reads it by — so a symlink pointing at a retired
+// path is found rather than skipped.
+
+test("a symlink is read as its target string, not followed", () => {
+  const root = tracked({ "real.md": "x\n" }, { "link.md": "skills/verify/SKILL.md" });
+  const text = readHostText(root);
+  assert.equal(text.files.find((f) => f.path === "link.md")?.content, "skills/verify/SKILL.md");
+  assert.deepEqual(text.unread, []);
+  assert.deepEqual(shape(findReferences(text.files, RETIRED)), [`link.md:1 prose ${VERIFY}`]);
+});
+
+test("a binary file is counted as unread, never scanned as text", () => {
+  const root = mkdtempSync(join(tmpdir(), "deuce-refs-bin-"));
+  execFileSync("git", ["init", "--quiet", "--initial-branch=main", root]);
+  writeFileSync(join(root, "logo.png"), Buffer.from([0x89, 0x50, 0x4e, 0x00, 0x0d, 0x0a]));
+  writeFileSync(join(root, "CLAUDE.md"), "text\n");
+  execFileSync("git", ["-C", root, "add", "--all"]);
+  const text = readHostText(root);
+  assert.deepEqual(text.files.map((f) => f.path), ["CLAUDE.md"]);
+  assert.deepEqual(text.unread, [{ path: "logo.png", reason: "binary" }]);
+});
+
+// A tracked path the working tree does not carry is counted, never thrown on:
+// a report that can stop an update inverts its own purpose.
+
+test("a tracked path missing from the tree is counted as unread", () => {
+  const root = tracked({ "gone.md": "x\n", "here.md": "y\n" });
+  rmSync(join(root, "gone.md"));
+  const text = readHostText(root);
+  assert.deepEqual(text.files.map((f) => f.path), ["here.md"]);
+  assert.deepEqual(text.unread, [{ path: "gone.md", reason: "unreadable" }]);
+});
+
+test("a directory that is not a git repository is a named failure, not an empty read", () => {
+  const root = mkdtempSync(join(tmpdir(), "deuce-refs-nogit-"));
+  assert.throws(() => readHostText(root), /git ls-files/);
 });
