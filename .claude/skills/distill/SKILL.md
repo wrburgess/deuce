@@ -30,11 +30,16 @@ what lands; this file fixes how the session gets there.
 2. **Explore before asking** — canon, [`GLOSSARY.md`](https://github.com/wrburgess/deuce/blob/main/GLOSSARY.md), the live decision
    records, and whatever the problem touches, as the repository actually is. A question the
    repository can answer is never put to the HC.
-3. **Read the session's routing** — which model and effort runs it is
-   [`config/models.md`](../../../config/models.md); what may be offloaded, and in what shape, is
-   [`config/delegation.md`](../../../config/delegation.md).
-4. **Read [`rules/authoring.md`](../../../rules/authoring.md) before the first question** — every
-   question and capture is written for the HC to read.
+3. **Read the session's routing** — which model and effort runs it is `config/models.md`; what may
+   be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a repository
+   that has not declared it has no such file:** with no `config/models.md` the session runs on the
+   one it was launched in, with no `config/delegation.md` nothing is delegated, and the epic brief
+   names whichever it could not read.
+4. **Read the authoring rules before the first question** — `rules/authoring.md` where the
+   repository has grown one; every question and capture is written for the HC to read. **A
+   repository's `rules/` is born empty and grows on its own receipts**
+   ([ADR 0019](https://github.com/wrburgess/deuce/blob/main/adr/0019-rules-admit-on-local-receipts-at-every-source.md)),
+   so an absent file is the design and not a defect — note the absence and write on.
 5. **Open the landing surfaces at the first settlement, not at the end.** On a raw problem:
    restate the problem, agree it with the HC, and open the `EPIC:` with its Problem field — the
    remaining fields fill as answers land
@@ -42,7 +47,9 @@ what lands; this file fixes how the session gets there.
    Ratifying: the chapter's pull request is the surface, amended in place. File-side captures —
    Glossary entries, decision records — ride the chapter's pull request when ratifying; otherwise
    one session, one branch, one pull request, opened at the first capture and merged alongside the
-   brief at the Ship gate's current setting ([`config/gates.md`](../../../config/gates.md)).
+   brief at the Ship gate's current setting — `config/gates.md`. **Absent that declaration the
+   strictest setting governs** — the HC merges — and the epic brief says the setting was
+   undeclared.
 6. **Put one question, with a recommendation and its reasoning** — settling first what other
    questions hang on. Shape every proposal against the SDS as it forms; work no chapter sanctions
    is a request for a chapter, never a workaround

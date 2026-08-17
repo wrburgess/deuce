@@ -27,7 +27,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A check that measures something other than the invariant it claims
 
-14 instances, across 8 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94, PR #110.
+16 instances, across 9 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94, PR #110, PR #133.
 
 - **PR #39, finding 4** — aggregate field counts certified a review whose per-finding blocks were malformed; the count was right and the structure was not.
 - **PR #39, finding 8** — lens coverage matched by substring, so a lens name appearing inside a quotation counted as a lens answered.
@@ -43,10 +43,12 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #110, finding 1** — the links check resolved targets through `existsSync`, so a gitignored file present on one machine passed as a repository link; the delta: caught by the AC's own adversarial pass and proven with a planted link before the fix existed.
 - **PR #110, finding 2** — the class-index grammar accepted an instance lead naming no finding, so a pull request alone counted as an instance; the delta: the defect sat in the very check written to hold this file's grammar.
 - **PR #110, finding 3** — glossary-reverse matched terms as unbounded substrings, so `AI` counted as present inside "plain"; the delta: a report-only check false-greened its report branch, and the word-bounded fix surfaced a real signal the substring had masked.
+- **PR #133, finding 1** — a new payload-links check resolved shipped links against the whole payload, which is a proxy for the host-facing invariant: a host may adopt one system without the rest, so the check printed a real dead link for a lifecycle-only adoption and exited green. The delta: the report-only branch was *designed in and priced* — the Plan named it an accepted risk with its reasoning — and it was still the defect. A limit a Plan accepts is not thereby a limit the check may claim not to have.
+- **PR #133, finding 3** — the per-system walks skipped `all`, treating it as a marker rather than a selection; with exactly one system declared beside it, that one walk carries the target and an `all`-classed file's link into it passes. The delta: the finding's stated mechanism was false and was refuted by a constructed case — an `all` file *is* in every walk — and a narrower residue behind it was real. Recorded because the residue is the class, and because "the mechanism is wrong" is not by itself "the check is right".
 
 ### A guard that fails open or fails silent on input it did not expect
 
-10 instances, across 5 pull requests — PR #39, PR #41, PR #59, PR #112, PR #124.
+11 instances, across 6 pull requests — PR #39, PR #41, PR #59, PR #112, PR #124, PR #133.
 
 - **PR #39, finding 2** — a malformed accepted register parsed as an empty list, so the summons carried no accepted findings and said nothing about it.
 - **PR #39, finding 5** — the register parser read past its own section into whatever followed.
@@ -58,6 +60,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #59, finding 4** — scalars and lists were separate namespaces and each duplicate guard checked only its own, so one key declared twice in two shapes was accepted twice.
 - **PR #112, finding 1** — `codex login status` decides that a login is reachable, never whose: a substituted, authenticated account passes readiness and a run proceeds under an undeclared credential. The delta: the guard is an external CLI's own check, so the closure is a declared blind spot plus machine custody, not a stronger probe.
 - **PR #124, finding 1** — routing values were installed as frontmatter, which reads as machine-read configuration, while nothing parsed them: an unknown model alias, an effort level outside the platform's vocabulary, and two rows naming the same stage all passed green. The delta: the silence was introduced by the change itself, and the AC's own pass *documented* it as a declared blind spot rather than removing it — while ratified canon already carried the answer (Chapter 3, *The declaration schema*: where nothing reads a value, prose is correct and sufficient). A blind spot declared where a rule already forbids the shape is not a disclosure, it is the defect with a label on it.
+- **PR #133, finding 2** — the payload-links walk filtered the tracked documents down to the manifest's declared paths, so a path the manifest ships and the tree does not carry was skipped rather than named: the check would have reported green over a file it never opened. The delta: it was caught by the AC's own pass before the summons, and the same disagreement was already refused three files away in `tools/sync/payload.ts` — the guard existed in the repository and the new reader did not inherit it.
 
 ### An invariant enforced on one path and leaking through another
 

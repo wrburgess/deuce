@@ -33,8 +33,12 @@ target kinds. The reader to write for is the HC returning after time away, holdi
      among them.
    - **The project:** every epic and its state, the open issues by `status:` label, and what
      merged recently.
-3. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing — the Brief
-   is written for exactly the reader the register rule protects.
+3. **Read the authoring rules for what you are about to write**, at the moment of writing —
+   `rules/authoring.md` where the repository has grown one; the Brief is written for exactly the
+   reader the register rule protects. **A repository's `rules/` is born empty and grows on its own
+   receipts**
+   ([ADR 0019](https://github.com/wrburgess/deuce/blob/main/adr/0019-rules-admit-on-local-receipts-at-every-source.md)),
+   so an absent file is the design and not a defect — note the absence and write on.
 4. **Compose per [`formats.md`](formats.md)** — the four parts in order: the fresh-eyes
    description (what it is, why it exists, how it is being pursued), the health verdict from the
    table below, the best next steps, and what the work needs from the HC. Every claim cites its

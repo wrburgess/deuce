@@ -20,9 +20,11 @@ The HC points the AC at an issue —
 1. **Read the issue from the tracker** — title, body, labels, and every existing comment.
 2. **Set `status:in-progress`**
    ([Chapter 1 → Binding to the Work Tracking System](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)).
-3. **Read the stage's routing** — which model and effort runs this stage is
-   [`config/models.md`](../../../config/models.md); what may be offloaded, and in what shape, is
-   [`config/delegation.md`](../../../config/delegation.md).
+3. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
+   what may be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a
+   repository that has not declared it has no such file:** with no `config/models.md` the stage runs
+   on the session it was launched in, with no `config/delegation.md` nothing is delegated, and the
+   Assessment names whichever it could not read.
 4. **Search the tracker for duplicates and related work** — open and closed issues and pull
    requests, on the issue's key terms. Overlap or superseding work found goes into the Assessment
    as an open question — proceed-or-consolidate is the HC's call, never a silent proceed.
@@ -33,7 +35,11 @@ The HC points the AC at an issue —
 6. **Check what already exists before any option proposes custom construction** — the platform's
    built-ins first, then an established, maintained library. List what was considered in the
    Assessment even when rejected: "I couldn't find a fit" is acceptable; "I didn't look" is not.
-7. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing.
+7. **Read the authoring rules for what you are about to write**, at the moment of writing —
+   `rules/authoring.md` where the repository has grown one. **A repository's `rules/` is born empty
+   and grows on its own receipts**
+   ([ADR 0019](https://github.com/wrburgess/deuce/blob/main/adr/0019-rules-admit-on-local-receipts-at-every-source.md)),
+   so an absent file is the design and not a defect — note the absence and write on.
 8. **Draft the Assessment as a Readout** — content per
    [Stage 1](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-1--assess), shape per
    [Chapter 1 → The Readout](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-readout).
@@ -46,9 +52,10 @@ The HC points the AC at an issue —
    why they were rejected —
    [the Direction gate's floor](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-direction-gate-graduated),
    clauses 1 and 2.
-11. **Hold at the Direction gate per its current setting**
-   ([`config/gates.md`](../../../config/gates.md)). The setting is read there, never from this file;
-   the floor no setting reaches is canon
+11. **Hold at the Direction gate per its current setting** — `config/gates.md`. **Absent that
+   declaration the strictest setting governs** — the HC chooses the option — and the Assessment
+   says the setting was undeclared. The setting is read there, never from this file; the floor no
+   setting reaches is canon
    ([Chapter 1 → The Direction gate, graduated](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-direction-gate-graduated)).
 
 ## Terminal artifact
