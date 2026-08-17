@@ -5,6 +5,7 @@
 import type { DriftReport, RetiredFile } from "./drift.ts";
 import type { WritePlan } from "./payload.ts";
 import type { ReceiptState } from "./receipt.ts";
+import type { Reference, ReferenceKind, ReferenceScan } from "./references.ts";
 
 export interface ReportInput {
   deuceCommit: string;
@@ -15,6 +16,7 @@ export interface ReportInput {
   drift: DriftReport;
   retired: RetiredFile[]; // receipt paths the manifest no longer names, each with its host state
   heldBack: string[]; // host-territory receipt paths — dropped from the receipt, never removed
+  hostReferences: ReferenceScan; // places in the host still naming a retired path (#122)
   systems: string[]; // empty = everything declared
 }
 
@@ -52,6 +54,7 @@ export function composeReport(input: ReportInput): string {
       `- **Retired by deuce: ${input.retired.length} path(s)** the manifest no longer names —`,
       "  removed on this branch; the table below names each and what merging does to it.",
     );
+    lines.push(...referenceSummary(input));
   }
   lines.push(
     `- **The receipt** (\`${input.receiptPath}\`) rides this branch and lands only if this pull`,
@@ -102,6 +105,7 @@ export function composeReport(input: ReportInput): string {
       lines.push("| Path | State on the host |");
       lines.push("|---|---|");
       for (const r of input.retired) lines.push(`| \`${r.path}\` | ${retirementLine(r)} |`);
+      lines.push(...referenceSection(input));
     }
     if (input.heldBack.length > 0) {
       lines.push("");
@@ -142,6 +146,113 @@ export function composeReport(input: ReportInput): string {
   );
   lines.push("");
   return lines.join("\n");
+}
+
+// Host references to the retired paths (#122). Rendered only where there is
+// something to say: no retirement, no section — the same rule the retirement
+// table already runs on.
+
+const KIND_ORDER: ReferenceKind[] = ["relative-link", "in-url", "prose", "unparsed"];
+
+const KIND_LABEL: Record<ReferenceKind, string> = {
+  "relative-link": "relative link",
+  "in-url": "inside a URL",
+  prose: "prose",
+  unparsed: "mention (not interpreted)",
+};
+
+// Distinct places, not distinct references: one line carrying both the label
+// and the destination is one place a reader has to look at.
+function places(references: readonly Reference[]): Set<string> {
+  return new Set(references.map((r) => `${r.file}:${r.line}`));
+}
+
+// An empty result over a partial read reads exactly like an empty result over
+// a whole one, and only one of them means "nothing points at these paths". The
+// unread count is reported whether or not anything was found — the contractor
+// review's must-fix on PR #134.
+function referenceSummary(input: ReportInput): string[] {
+  const { references, unread } = input.hostReferences;
+  if (references.length === 0) {
+    if (unread === 0) return [];
+    return [
+      `- **Host references to the retired paths: none found, over an incomplete read** —`,
+      `  ${unread} file(s) could not be read (binary or unreadable), so this is not a clean`,
+      "  \"none\": an unread file could name a retired path. The section below says which.",
+    ];
+  }
+  const files = new Set(references.map((r) => r.file));
+  const live = places(references.filter((r) => r.kind === "relative-link"));
+  const lines = [
+    `- **Host references to the retired paths: ${places(references).size} line(s) in ` +
+      `${files.size} file(s)** — ${live.size} of them carry a live relative link that merging`,
+    "  leaves pointing at nothing. Every file named is this repository's own; the table under",
+    "  *Retired by this sync* names each and its lines.",
+  ];
+  if (unread > 0) {
+    lines.push(`  ${unread} file(s) could not be read, so this count is a floor, not a total.`);
+  }
+  return lines;
+}
+
+function referenceSection(input: ReportInput): string[] {
+  const { references, unread } = input.hostReferences;
+  if (references.length === 0 && unread === 0) return [];
+
+  const order: string[] = [];
+  const byFile = new Map<string, Map<ReferenceKind, Set<number>>>();
+  for (const r of references) {
+    let kinds = byFile.get(r.file);
+    if (kinds === undefined) {
+      kinds = new Map();
+      byFile.set(r.file, kinds);
+      order.push(r.file);
+    }
+    const at = kinds.get(r.kind) ?? new Set<number>();
+    at.add(r.line);
+    kinds.set(r.kind, at);
+  }
+
+  const lines = [
+    "",
+    "### Host references to the retired paths",
+    "",
+    "A reference is a place in this repository that still names a path this sync removes. deuce",
+    "names them and never edits them — every file below is this repository's own.",
+    "",
+  ];
+  if (references.length === 0) {
+    lines.push(
+      "**None found in the files the scan could read**, and the read was not complete — the count",
+      "below says how many files it could not open. An unread file could name a retired path, so",
+      "this is not the same statement as \"nothing points at these paths\".",
+    );
+  } else {
+    lines.push("| File | Kind | Lines |", "|---|---|---|");
+    for (const file of order) {
+      const kinds = byFile.get(file)!;
+      for (const kind of KIND_ORDER) {
+        const at = kinds.get(kind);
+        if (at === undefined) continue;
+        const numbers = [...at].sort((a, b) => a - b).join(", ");
+        lines.push(`| \`${file}\` | ${KIND_LABEL[kind]} | ${numbers} |`);
+      }
+    }
+  }
+  lines.push(
+    "",
+    "- **A dated record naming a retired path is correct as written** — a findings log, a dated",
+    "  plan, a review note. That holds for a *relative link* inside one as much as for a plain",
+    "  mention, so a row here is never by itself a reason to edit.",
+    "- **Every row is a statement, never a task.** These files are this repository's own, and",
+    "  deuce has no standing to change them.",
+    "- **Not reached, and named on every run:** a mention of a directory with no file name after",
+    "  it · a reference assembled at runtime from parts · a mention written relative to its own",
+    "  directory · a web address written as plain text rather than as a link. A link written as",
+    "  raw HTML is named, but as prose — the parser yields no link for it. " +
+      `${unread} file(s) could not be read (binary or unreadable).`,
+  );
+  return lines;
 }
 
 function retirementLine(r: RetiredFile): string {
