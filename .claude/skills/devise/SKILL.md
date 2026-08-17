@@ -22,9 +22,10 @@ exit — is canon and is not restated here.
 1. **Read the issue from the tracker** — title, body, labels, and every existing comment; the
    Assessment and the recorded choice are among the comments.
 2. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
-   what may be offloaded, and in what shape, is `config/delegation.md`. **A repository that has
-   declared neither has no such file:** the stage then runs on the session it was launched in and
-   delegates nothing, and its terminal artifact names the declaration it could not read.
+   what may be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a
+   repository that has not declared it has no such file:** with no `config/models.md` the stage runs
+   on the session it was launched in, with no `config/delegation.md` nothing is delegated, and the
+   Plan names whichever it could not read.
 3. **Right-size the Plan to what is actually known.** The tell that a Plan is being written
    against unknowns: steps that cannot be made concrete without guessing. The move is canon's —
    stop, and recommend a `SPIKE:`

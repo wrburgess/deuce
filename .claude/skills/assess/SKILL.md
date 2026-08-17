@@ -21,9 +21,10 @@ The HC points the AC at an issue —
 2. **Set `status:in-progress`**
    ([Chapter 1 → Binding to the Work Tracking System](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)).
 3. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
-   what may be offloaded, and in what shape, is `config/delegation.md`. **A repository that has
-   declared neither has no such file:** the stage then runs on the session it was launched in and
-   delegates nothing, and its terminal artifact names the declaration it could not read.
+   what may be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a
+   repository that has not declared it has no such file:** with no `config/models.md` the stage runs
+   on the session it was launched in, with no `config/delegation.md` nothing is delegated, and the
+   Assessment names whichever it could not read.
 4. **Search the tracker for duplicates and related work** — open and closed issues and pull
    requests, on the issue's key terms. Overlap or superseding work found goes into the Assessment
    as an open question — proceed-or-consolidate is the HC's call, never a silent proceed.

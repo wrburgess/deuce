@@ -31,9 +31,10 @@ what lands; this file fixes how the session gets there.
    records, and whatever the problem touches, as the repository actually is. A question the
    repository can answer is never put to the HC.
 3. **Read the session's routing** — which model and effort runs it is `config/models.md`; what may
-   be offloaded, and in what shape, is `config/delegation.md`. **A repository that has declared
-   neither has no such file:** the session then runs on the one it was launched in and delegates
-   nothing, and its terminal artifact names the declaration it could not read.
+   be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a repository
+   that has not declared it has no such file:** with no `config/models.md` the session runs on the
+   one it was launched in, with no `config/delegation.md` nothing is delegated, and the epic brief
+   names whichever it could not read.
 4. **Read the authoring rules before the first question** — `rules/authoring.md` where the
    repository has grown one; every question and capture is written for the HC to read. **A
    repository's `rules/` is born empty and grows on its own receipts**

@@ -176,6 +176,28 @@ test("a system whose shipped markdown carries no links is skipped without crashi
   assert.deepEqual(result.systems, ["lifecycle", "tracking"]);
 });
 
+test("a declared markdown path the tree does not carry guards rather than greening", () => {
+  // Without the check, a/one.md's link to two.md resolves — two.md is
+  // declared — and the walk reports green over a file it never opened.
+  const result = checkPayloadLinks(
+    manifest(["a/one.md", "contract", "lifecycle"], ["a/two.md", "contract", "lifecycle"]),
+    files({ "a/one.md": "[two](two.md)" }),
+  );
+  assert.notEqual(result.guard, null);
+  assert.match(result.guard!, /a\/two\.md/);
+  assert.match(result.guard!, /the manifest and the tree disagree/);
+  assert.deepEqual(result.violations, []);
+});
+
+test("a shipped directory entry and a link to it compare as the same path", () => {
+  const result = checkPayloadLinks(
+    manifest(["a/one.md", "contract", "all"], ["tools/", "seed", "all"]),
+    files({ "a/one.md": "the tooling lives in [tools](../tools/)" }),
+  );
+  assert.equal(result.guard, null);
+  assert.deepEqual(result.violations, []);
+});
+
 // The regression that would have caught #121, and the one that keeps it
 // caught. Red before the shipped Skills were edited — 24 violations, the
 // number measured on bryce and nadal — and green after.

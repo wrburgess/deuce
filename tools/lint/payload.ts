@@ -61,8 +61,15 @@ interface View {
   markdown: MarkdownFile[];
 }
 
+// A trailing slash is stripped so a directory entry and a link to it compare
+// as the same string: links.ts normalizes `../config/` to `config`, and a set
+// holding `config/` would not match it. No shipped entry is a directory today
+// — the class that names directories is host, which never ships — so this is
+// a trap closed rather than a bug fixed.
+const normalize = (path: string): string => path.replace(/\/+$/, "");
+
 function view(manifest: Manifest, systems: string[], files: MarkdownFile[]): View {
-  const paths = new Set(shipSet(manifest, systems).map((e) => e.path));
+  const paths = new Set(shipSet(manifest, systems).map((e) => normalize(e.path)));
   return { paths, markdown: files.filter((f) => paths.has(f.path)) };
 }
 
@@ -87,6 +94,22 @@ export function checkPayloadLinks(
     return {
       ...empty,
       guard: `no shipped markdown among ${files.length} tracked documents — the manifest has declared contract markdown since #81, so an empty shipped set must never report green (ADR 0014)`,
+    };
+  }
+
+  // A declared markdown path with no tracked file would narrow the walk in
+  // silence — the check would report green over a file it never opened, which
+  // is the fail-silent class this repository names by name. The sync already
+  // refuses the same disagreement (tools/sync/payload.ts); this refuses it
+  // where the disagreement is first visible.
+  const tracked = new Set(files.map((f) => f.path));
+  const undeclared = [...whole.paths]
+    .filter((p) => p.endsWith(".md") && !tracked.has(p))
+    .sort();
+  if (undeclared.length > 0) {
+    return {
+      ...empty,
+      guard: `the manifest ships ${undeclared.join(", ")}, which the tracked document set does not carry — the manifest and the tree disagree, and a link walk that skipped them would report green over files it never opened`,
     };
   }
 

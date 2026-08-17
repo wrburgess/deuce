@@ -21,9 +21,10 @@ The Plan is posted on the issue —
    the Plan and the gate record are among the comments
    ([Stage 3](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-3--implement)).
 2. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
-   what may be offloaded, and in what shape, is `config/delegation.md`. **A repository that has
-   declared neither has no such file:** the stage then runs on the session it was launched in and
-   delegates nothing, and its terminal artifact names the declaration it could not read.
+   what may be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a
+   repository that has not declared it has no such file:** with no `config/models.md` the stage runs
+   on the session it was launched in, with no `config/delegation.md` nothing is delegated, and the
+   pull request names whichever it could not read.
 3. **Create the feature branch**
    ([Stage 3](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-3--implement)).
 4. **Implement the Plan's steps in order**

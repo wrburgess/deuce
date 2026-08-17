@@ -25,9 +25,10 @@ The Verification on the pull request carries no open must-fix finding —
    record is written from them
    ([Chapter 1 → Stages communicate only through terminal artifacts](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stages-communicate-only-through-terminal-artifacts)).
 3. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
-   what may be offloaded, and in what shape, is `config/delegation.md`. **A repository that has
-   declared neither has no such file:** the stage then runs on the session it was launched in and
-   delegates nothing, and its terminal artifact names the declaration it could not read.
+   what may be offloaded, and in what shape, is `config/delegation.md`. **Either may be absent — a
+   repository that has not declared it has no such file:** with no `config/models.md` the stage runs
+   on the session it was launched in, with no `config/delegation.md` nothing is delegated, and the
+   Delivery Record names whichever it could not read.
 4. **Re-confirm the checks are green on the current head** — green is confirmed here, never
    produced here; a red check re-enters [Verify](../verify/SKILL.md), where the fix loop lives,
    and this stage runs again from its trigger
