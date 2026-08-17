@@ -48,7 +48,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A guard that fails open or fails silent on input it did not expect
 
-11 instances, across 6 pull requests — PR #39, PR #41, PR #59, PR #112, PR #124, PR #133.
+12 instances, across 7 pull requests — PR #39, PR #41, PR #59, PR #112, PR #124, PR #133, PR #134.
 
 - **PR #39, finding 2** — a malformed accepted register parsed as an empty list, so the summons carried no accepted findings and said nothing about it.
 - **PR #39, finding 5** — the register parser read past its own section into whatever followed.
@@ -61,6 +61,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #112, finding 1** — `codex login status` decides that a login is reachable, never whose: a substituted, authenticated account passes readiness and a run proceeds under an undeclared credential. The delta: the guard is an external CLI's own check, so the closure is a declared blind spot plus machine custody, not a stronger probe.
 - **PR #124, finding 1** — routing values were installed as frontmatter, which reads as machine-read configuration, while nothing parsed them: an unknown model alias, an effort level outside the platform's vocabulary, and two rows naming the same stage all passed green. The delta: the silence was introduced by the change itself, and the AC's own pass *documented* it as a declared blind spot rather than removing it — while ratified canon already carried the answer (Chapter 3, *The declaration schema*: where nothing reads a value, prose is correct and sufficient). A blind spot declared where a rule already forbids the shape is not a disclosure, it is the defect with a label on it.
 - **PR #133, finding 2** — the payload-links walk filtered the tracked documents down to the manifest's declared paths, so a path the manifest ships and the tree does not carry was skipped rather than named: the check would have reported green over a file it never opened. The delta: it was caught by the AC's own pass before the summons, and the same disagreement was already refused three files away in `tools/sync/payload.ts` — the guard existed in the repository and the new reader did not inherit it.
+- **PR #134, finding 1** — the host-reference scan counted every file it could not read and carried the count to the report, and the report then dropped it: both renderers returned early on an empty reference list, so a partial read produced a sync message that said nothing at all about the scan. The delta: the silence was in the *reporting* of a guard that worked. The count was computed, carried through two function boundaries, and discarded at the last one by a condition written for a different question — "is there a table to draw?" standing in for "is there anything to say?".
 
 ### An invariant enforced on one path and leaking through another
 

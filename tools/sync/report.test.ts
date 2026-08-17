@@ -188,11 +188,41 @@ test("the blind spots print with the count of files the scan could not read", ()
   assert.match(body, /2 file\(s\) could not be read \(binary or unreadable\)/);
 });
 
-test("no references, no section — and no bullet either", () => {
+test("no references and a complete read — no section, and no bullet either", () => {
   const body = composeReport({ ...BASE, ...RETIRING });
   assert.match(body, /## Retired by this sync/);
   assert.ok(!body.includes("### Host references to the retired paths"));
   assert.ok(!body.includes("Host references to the retired paths:"));
+});
+
+// The contractor review's must-fix on PR #134: an empty result over a partial
+// read reads exactly like an empty result over a whole one. "No references
+// found" is only true of the files the scan could read, and the report has to
+// say which case it is.
+
+test("no references over an incomplete read still says so, loudly", () => {
+  const body = composeReport({
+    ...BASE,
+    ...RETIRING,
+    hostReferences: { references: [], unread: 2 },
+  });
+  const summary = body.split("## What changed upstream")[0]!;
+  assert.match(summary, /none found, over an incomplete read/);
+  assert.match(summary, /2 file\(s\)/);
+  assert.match(body, /### Host references to the retired paths/);
+  assert.match(body, /2 file\(s\) could not be read \(binary or unreadable\)/);
+  assert.ok(!body.includes("| File | Kind | Lines |"));
+});
+
+test("references found over an incomplete read say both", () => {
+  const body = composeReport({
+    ...BASE,
+    ...RETIRING,
+    hostReferences: { references: [ref("CLAUDE.md", 14, "relative-link")], unread: 3 },
+  });
+  const summary = body.split("## What changed upstream")[0]!;
+  assert.match(summary, /\*\*Host references to the retired paths: 1 line\(s\) in 1 file\(s\)\*\*/);
+  assert.match(summary, /3 file\(s\) could not be read, so this count is a floor/);
 });
 
 test("no retirement means no reference section, whatever the scan returned", () => {
