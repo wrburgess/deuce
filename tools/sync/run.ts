@@ -27,6 +27,12 @@ import {
 } from "./payload.ts";
 import { mergeReceiptChecksums, planRetirements } from "./run-helpers.ts";
 import { assessRetirements, computeDrift, sha256Hex } from "./drift.ts";
+import {
+  excludedPaths,
+  findReferences,
+  readHostText,
+  type ReferenceScan,
+} from "./references.ts";
 import { composeReport } from "./report.ts";
 import {
   cloneHost,
@@ -158,6 +164,31 @@ function main(): void {
     }
     const plan = planWrites(files, hostRoot);
 
+    // Host references to the retired paths (#122), read from the same clone
+    // and at the same moment as the drift — before this sync writes anything,
+    // so the report names the tree the host's reader is looking at. Nothing to
+    // retire, nothing to scan: the tree is read only where there is a question
+    // to answer. A read failure here is the host's state rejecting the sync,
+    // the same classification the drift read already carries.
+    let hostReferences: ReferenceScan = { references: [], unread: 0 };
+    if (retirement.retired.length > 0) {
+      try {
+        const text = readHostText(hostRoot);
+        hostReferences = {
+          references: findReferences(
+            text.files,
+            retirement.retired,
+            excludedPaths(retirement.retired, plan.writes.map((w) => w.entry.path), receiptPath),
+          ),
+          unread: text.unread.length,
+        };
+      } catch (e) {
+        console.error(`sync: ${(e as Error).message} (exit 4)`);
+        process.exitCode = 4;
+        return;
+      }
+    }
+
     // Upstream change log over shipped paths since the receipt's commit.
     const changeLog =
       priorReceipt === undefined
@@ -193,12 +224,14 @@ function main(): void {
       drift,
       retired,
       heldBack: retirement.heldBack,
+      hostReferences,
       systems,
     });
 
     console.log(`sync: read config/payload.md (${manifest.date}), receipt state '${receiptState.kind}', ` +
       `payload at ${commit.slice(0, 7)} — ${plan.writes.length} to write, ${plan.skippedSeed.length} seed skipped, ` +
-      `${retirement.retired.length} retired`);
+      `${retirement.retired.length} retired, ${hostReferences.references.length} host reference(s) ` +
+      `(${hostReferences.unread} file(s) not read)`);
 
     if (dryRun) {
       const out = join(mkdtempSync(join(tmpdir(), "deuce-sync-dry-")), "report.md");

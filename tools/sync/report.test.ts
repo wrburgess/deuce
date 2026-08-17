@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { composeReport, type ReportInput } from "./report.ts";
 import type { MaterializedFile } from "./payload.ts";
+import type { Reference, ReferenceKind } from "./references.ts";
 
 function file(path: string, cls: "contract" | "seed", system: string): MaterializedFile {
   return { entry: { path, class: cls, system }, mode: "100644", content: Buffer.from("x") };
@@ -16,6 +17,7 @@ const BASE: ReportInput = {
   drift: { kind: "no-baseline" },
   retired: [],
   heldBack: [],
+  hostReferences: { references: [], unread: 0 },
   systems: [],
 };
 
@@ -102,6 +104,102 @@ test("no retirement, no section — the report does not speak about nothing", ()
   const body = composeReport(BASE);
   assert.ok(!body.includes("## Retired by this sync"));
   assert.ok(!body.includes("Retired by deuce"));
+});
+
+// Host references to the retired paths (#122): each file and each line named,
+// sorted by the reference's own syntax, and never presented as work — deuce
+// cannot edit a host's own files, and a dated record naming a retired path is
+// correct as written.
+
+function ref(file: string, line: number, kind: ReferenceKind): Reference {
+  return { file, line, kind, target: "skills/verify/SKILL.md" };
+}
+
+const RETIRING: Partial<ReportInput> = {
+  receiptState: { kind: "receipt", receipt: { commit: "old", date: "d", checksums: [] } },
+  drift: { kind: "report", drifted: [], cleanCount: 16 },
+  retired: [{ path: "skills/verify/SKILL.md", state: "intact" }],
+};
+
+test("references render one row per file and kind, with every line named", () => {
+  const body = composeReport({
+    ...BASE,
+    ...RETIRING,
+    hostReferences: {
+      references: [
+        ref("CLAUDE.md", 15, "relative-link"),
+        ref("CLAUDE.md", 14, "relative-link"),
+        ref("CLAUDE.md", 14, "prose"),
+        ref("CLAUDE.md", 14, "prose"),
+        ref("docs/findings.md", 322, "prose"),
+        ref("scripts/summon.sh", 634, "unparsed"),
+        ref("PROJECT.md", 445, "in-url"),
+      ],
+      unread: 0,
+    },
+  });
+  assert.match(body, /### Host references to the retired paths/);
+  assert.match(body, /\| `CLAUDE\.md` \| relative link \| 14, 15 \|/);
+  assert.match(body, /\| `CLAUDE\.md` \| prose \| 14 \|/);
+  assert.match(body, /\| `docs\/findings\.md` \| prose \| 322 \|/);
+  assert.match(body, /\| `scripts\/summon\.sh` \| mention \(not interpreted\) \| 634 \|/);
+  assert.match(body, /\| `PROJECT\.md` \| inside a URL \| 445 \|/);
+});
+
+test("the summary counts places and live links, not raw references", () => {
+  const body = composeReport({
+    ...BASE,
+    ...RETIRING,
+    hostReferences: {
+      references: [
+        ref("CLAUDE.md", 14, "relative-link"),
+        ref("CLAUDE.md", 14, "prose"),
+        ref("docs/findings.md", 322, "prose"),
+      ],
+      unread: 0,
+    },
+  });
+  const summary = body.split("## What changed upstream")[0]!;
+  assert.match(summary, /\*\*Host references to the retired paths: 2 line\(s\) in 2 file\(s\)\*\*/);
+  assert.match(summary, /1 of them carry a live relative link/);
+});
+
+test("the section states that a dated record is correct as written, links included", () => {
+  const body = composeReport({
+    ...BASE,
+    ...RETIRING,
+    hostReferences: { references: [ref("docs/findings.md", 322, "prose")], unread: 0 },
+  });
+  assert.match(body, /dated record naming a retired path is correct as written/);
+  assert.match(body, /\*relative link\* inside one/);
+  assert.match(body, /statement, never a task/);
+  assert.match(body, /deuce has no standing to change them/);
+});
+
+test("the blind spots print with the count of files the scan could not read", () => {
+  const body = composeReport({
+    ...BASE,
+    ...RETIRING,
+    hostReferences: { references: [ref("CLAUDE.md", 14, "relative-link")], unread: 2 },
+  });
+  assert.match(body, /Not reached, and named on every run/);
+  assert.match(body, /directory with no file name after\s+it/);
+  assert.match(body, /2 file\(s\) not read \(binary or unreadable\)/);
+});
+
+test("no references, no section — and no bullet either", () => {
+  const body = composeReport({ ...BASE, ...RETIRING });
+  assert.match(body, /## Retired by this sync/);
+  assert.ok(!body.includes("### Host references to the retired paths"));
+  assert.ok(!body.includes("Host references to the retired paths:"));
+});
+
+test("no retirement means no reference section, whatever the scan returned", () => {
+  const body = composeReport({
+    ...BASE,
+    hostReferences: { references: [ref("CLAUDE.md", 14, "relative-link")], unread: 0 },
+  });
+  assert.ok(!body.includes("Host references to the retired paths"));
 });
 
 // The credential's blast-radius declaration (#83) is cited from every composed
