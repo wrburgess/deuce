@@ -1,6 +1,6 @@
 ---
 date: 2026-08-16
-source: the Direction gate on #126, where Option B — the whole gate in continuous integration, blocking the merge — was chosen; the runner was permitted to be software at the distill sitting on #127, recorded at ADR 0029
+source: the Direction gate on #126, where Option B — the whole gate in continuous integration, blocking the merge — was chosen; the runner was permitted to be software at the distill sitting on #127, recorded at ADR 0029; the enforcement row moved to in force when the HC applied the protection setting on 2026-08-16, deferred there and folded in on #129
 ---
 
 # Continuous integration
@@ -27,7 +27,7 @@ there.
 | Install | `bash bin/setup` — the repository's one installer |
 | Gate command | `npm run gate` — and nothing else |
 | Check context | `gate`, the job's id and name |
-| Merge enforcement | **Not yet in force.** Branch protection on `main` is to require the `gate` context **and require the branch to be up to date with `main` before merging** (`strict`); until the act below is done, the verdict is readable and blocks nothing |
+| Merge enforcement | **In force since 2026-08-16.** Branch protection on `main` requires the `gate` context **and requires the branch to be up to date with `main` before merging** (`strict`). A red or missing verdict blocks the merge; it no longer merely reports |
 
 - **The workflow enumerates no checks.** It invokes the one command;
   [`checks.md`](checks.md) stays the only place a check joins the gate.
@@ -66,15 +66,16 @@ not exist on `main` yet, so requiring it would block the pull request that creat
 1. The workflow merges and reports — its own pull request is the first run, and #126 carries the
    Delivery Record naming it. **Done.**
 2. Branch protection is then updated to require the `gate` context, with the up-to-date requirement
-   on — an act on the platform, by the HC, on the HC's own account. **Outstanding**, and the
-   enforcement row above says so until it is done. Whoever does it updates that row in the same
-   sitting; a row claiming an enforcement the platform does not carry is the defect this file exists
-   to prevent.
+   on — an act on the platform, by the HC, on the HC's own account. **Done, 2026-08-16**, and the
+   enforcement row above says so. The row's update was deferred to #129 at the HC's direction in
+   that same sitting, having been told the cost; a row claiming an enforcement the platform does not
+   carry — or denying one it does — is the defect this file exists to prevent, and the gap is
+   recorded rather than tidied away.
 
-   **The route, for whoever runs it.** `main` carries protection today but carries no required
-   status checks at all, so there is no status-check object to amend — the settings screen is the
-   route that works from that state, and the API's `required_status_checks` endpoint is not, because
-   it edits a block that does not exist yet. Two boxes, both of them:
+   **The route that was used, kept for whoever repeats it.** `main` carried protection but no
+   required status checks at all, so there was no status-check object to amend — the settings screen
+   is the route that works from that state, and the API's `required_status_checks` endpoint is not,
+   because it edits a block that does not exist yet. Two boxes, both of them:
 
    - *Require status checks to pass before merging* → add **`gate`**.
    - *Require branches to be up to date before merging* — this is the one the review's third
@@ -85,10 +86,13 @@ not exist on `main` yet, so requiring it would block the pull request that creat
    once — so it must carry `enforce_admins`, the force-push block, and the deletion block forward or
    it silently drops them. That is why the screen is named first here.
 
-**Until step 2, `main` carries no required status check at all** — read from the API on 2026-08-16:
-`enforce_admins` on, force pushes and deletions blocked, and nothing else. So the re-run informs and
-does not prevent, which is a weaker promise than the one chosen at the Direction gate and is stated
-here rather than left to be discovered.
+**Both acts are done, and the state was read back from the API on 2026-08-16:** the required status
+checks are `["gate"]` with `strict` on, `enforce_admins` on, force pushes and deletions blocked. So
+the re-run now prevents rather than informs, which is the promise chosen at the Direction gate.
+
+**What is still only read, not proved, as of 2026-08-16:** that the setting refuses a merge rather
+than reporting one has been read from the API and not observed in a run. The first pull request to
+merge under it is that observation; none had at this date.
 
 ## What this does not do
 

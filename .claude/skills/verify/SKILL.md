@@ -76,21 +76,44 @@ exit — is canon and is not restated here.
    [ADR 0011](https://github.com/wrburgess/deuce/blob/main/adr/0011-findings-type-state-one-way.md)).
 10. **Dispose of each finding; batch the fixes into one wave, and verify the wave yourself** —
    for each accepted finding the mechanism restated in one sentence and the failing test that
-   exercises it, then steps 4–6 re-run on the wave's diff; the reviewer is never re-summoned —
-   bounds and escalation per
+   exercises it, then steps 4–6 re-run on the wave's diff — bounds and escalation per
    [Chapter 2 → Fix-verification, bounded separately](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#fix-verification-bounded-separately),
    the limit's value in [`config/review.md`](../../../config/review.md), the escalation into
    [Devise](../devise/SKILL.md). Re-run the checks to green.
-11. **Answer each finding on the surface it arrived on** — a pull request carries three:
+11. **If the wave moved the head, summon the further review on that head — once, and never twice.**
+    Bound to the head the wave produced, scoped to the wave's diff and to the lenses that raised the
+    findings; a wave that moved nothing owes no further summons, and step 8's review is then the last
+    one:
+
+    ```
+    node tools/review/summon.ts --pr <n> --commit <wave head> --base <reviewed commit> \
+      --lens "<one lens that raised a finding>" --lens "<the next one>"
+    ```
+
+    **`--lens` repeats — one flag per lens, each value matching the menu verbatim.** Passing several
+    lenses as one value is rejected before dispatch, and the run then carries no bound review at all.
+
+    **A `must-fix` is answered as the severity framework requires** — fixed with fail-first evidence,
+    or refuted with the refuting evidence recorded; the change never ships with one open. Fixing it
+    moves the head past this review, so the merge goes to the HC whatever the Ship gate's declared
+    setting ([`config/gates.md`](../../../config/gates.md)). **Nothing below `must-fix` is answered
+    with code here:** a `should-fix` is promoted to tracked work or accepted as residual, on the
+    record; a `note` is recorded. Every one lands on the Verification with its disposition. **Once
+    the summons owed has returned, the head is final** — any movement past the last conforming review,
+    a further fix or an update from the base branch alike, leaves nothing bound to what merges, and
+    that pull request goes to the HC. There is never a third summons; the rule and every clause on it
+    are
+    [Chapter 2 → Fix-verification, bounded separately](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#fix-verification-bounded-separately).
+12. **Answer each finding on the surface it arrived on** — a pull request carries three:
     comments, inline threads, review bodies; a self-raised finding is answered in the
     Verification itself ([Stage 4](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-4--verify)).
-12. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing.
-13. **Draft the Verification as a Readout** — content per
+13. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing.
+14. **Draft the Verification as a Readout** — content per
     [Stage 4](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-4--verify), grown to the record
     [Chapter 2 → Verify's external half, now written](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#verifys-external-half-now-written)
     requires — the reviewer, its model, its mechanism, and the commit named in it; shape per
     [Chapter 1 → The Readout](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-readout).
-14. **Post the Verification on the pull request**
+15. **Post the Verification on the pull request**
     ([Stage 4](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-4--verify)).
 
 ## Terminal artifact

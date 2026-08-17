@@ -1,6 +1,6 @@
 ---
-date: 2026-08-04
-source: the Direction gate on #33; the lens menu, the Direction gate on #47; the fix-verification limit and findings batching, the HC's loop-once direction on #62; machine-read values moved to frontmatter on #54
+date: 2026-08-16
+source: the Direction gate on #33; the lens menu, the Direction gate on #47; the fix-verification limit and findings batching, the HC's loop-once direction on #62; machine-read values moved to frontmatter on #54; the wave's further summons added at the ratification on #129
 lenses:
   - lens: does this check measure the invariant it claims, or a proxy for it?
     class: A check that measures something other than the invariant it claims
@@ -68,14 +68,22 @@ carries only the reasoning behind each value.
 
 ## Fix-verification limit
 
-- **1 wave.** One summons, one batched fix wave, verified by the AC's own fix-verification — the
-  reviewer is never re-summoned, per the chapter. A defect fix-verification finds in a fix
-  escalates straight to Devise — there is never a second fix round.
+- **1 wave.** One summons, one batched fix wave, verified by the AC's own fix-verification. A defect
+  fix-verification finds in a fix escalates straight to Devise — there is never a second fix round.
+- **The wave earns one further summons when it moved the head**, and never a second. The rule and
+  every clause on it are the chapter's; what is configuration here is the number above, which the
+  further summons does not change — one wave, still.
 - Evidence behind the number: the predecessor's costliest defect family was symptom-level fixes
   re-opening one finding across as many as fifteen rounds
   ([ace #164](https://github.com/wrburgess/ace/issues/164)); its efficient successor workflow
   capped every review loop at one round with no exceptions, with the AC's own full-strength
   fix-verification carrying the load — the HC's direction of 2026-08-04, recorded on #62.
+- **Why the never-re-summoned clause this file used to carry is gone**, dated so the reversal reads
+  without archaeology: #62 set it on 2026-08-04, and the ratification on #129 narrowed it on
+  2026-08-16. The measurement that admitted the change: across the pull requests here carrying a
+  review commit on record, the reviewed commit differed from the merged one on 14 of 18. The
+  one-round bound #62 bought is intact — the summons count is fixed at two, and what the second one
+  raises ends in the HC's merge rather than in a third read.
 
 ## Findings batching
 

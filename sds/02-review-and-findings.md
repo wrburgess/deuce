@@ -166,25 +166,64 @@ or leaving the next round's defect ([ace #161](https://github.com/wrburgess/ace/
 its costliest defect family was fixes that addressed a finding's symptom while leaving its
 mechanism, re-opening the same finding across as many as fifteen rounds
 ([ace #164](https://github.com/wrburgess/ace/issues/164)). So fixes get their own verification,
-with its own bound — never borrowed from the original lens set, whose lenses were chosen for the
-original diff.
+with its own bound — not the original lens set's, whose lenses were chosen for the original diff.
+What carries over from that set is narrower, and is fixed below: the lenses that returned findings
+run again, on the wave's diff alone.
 
 - **Anchor the fix to the mechanism, not the symptom.** For each accepted finding: the root-cause
   mechanism restated in one sentence, then the failing test that exercises that mechanism — Chapter
   0's fail-first evidence, applied to review response. A test that would still pass with the defect
   present is the wrong test.
-- **The wave's verification is the AC's own — the reviewer is not re-summoned.** Every accepted
-  fix in the wave lands, then the AC re-runs its own passes on the wave's diff: the mechanism
-  anchor and its failing test above, the drift check, the adversarial pass. The external review
-  runs once per pull request, on the original summons; a fix wave never triggers a second. (The
-  validation re-summons a malformed response earns is a different thing and stands — that is the
-  same review returned to contract, not a new one.) Why the trade is safe to make: the
-  predecessor's efficient lifecycle capped every external loop at one round with the AC's
-  full-strength self-verification carrying fix checking, measured by the HC as cutting contractor
-  findings by roughly 80% — the HC set the trade on #62. What is given up, and it is real: a
-  defect introduced by a fix can now ship past the reviewer. The failing-test anchor and the
-  escalation below stand against it, and one that ships anyway lands in the Findings System like
-  any other defect — evidence for revisiting this trade, on the record.
+- **The wave's verification is the AC's own, and it is no longer the whole of the wave's review.**
+  Every accepted fix in the wave lands, then the AC re-runs its own passes on the wave's diff: the
+  mechanism anchor and its failing test above, the drift check, the adversarial pass. That pass
+  carries as much as it does on measured grounds — the predecessor's efficient lifecycle capped
+  every external loop at one round with the AC's full-strength self-verification carrying fix
+  checking, measured by the HC as cutting contractor findings by roughly 80%, and the HC set that
+  trade on #62. It stands. What changed is what sits after it.
+- **A wave that moves the head earns one further summons, bound to the head it produced.** Fixes are
+  the least-reviewed code in a change, and a review of the pre-wave commit is not a review of the
+  commit being merged — which is the binding Chapter 0 requires. Measured across the pull requests
+  here that carried a review commit on record, the reviewed commit differed from the merged one on
+  14 of 18. So one further summons is owed, and its shape is fixed:
+  - **Owed only when the wave moved the head.** A review that returned nothing to fix is already
+    bound to the commit being merged, and nothing further is owed.
+  - **Scoped to the wave's diff and to the lenses that raised the findings** — never the whole
+    change again. Those lenses already ran on the original diff; this is the re-run *Bounded by lens
+    set* already provides for, with the contractor running it rather than the AC. The permanent lens
+    rides this set as it rides every other.
+  - **A `must-fix` is answered as the severity framework requires, and that framework is not narrowed
+    here.** The change does not ship with one open: it is fixed with fail-first evidence, or refuted
+    with the refuting evidence recorded. Fixing it moves the head past the review that raised it, so
+    the merge returns to the HC's hands exactly as `required` puts it there — no setting changes, and
+    no declaration is edited.
+  - **Nothing below `must-fix` is answered with code here.** A fix would move the head for a finding
+    that does not force it, and the binding would be broken for nothing. A `should-fix` is promoted
+    to tracked work or accepted as residual, on the record — two of the three dispositions the
+    framework offers it, with *fixed in this change* withdrawn for this read alone. A `note` is
+    recorded.
+  - **There is never a third summons**, and that is what keeps this from being the round count this
+    chapter refused. The predecessor's fifteen-round tail on a single finding
+    ([ace #164](https://github.com/wrburgess/ace/issues/164)) ran because every round was answered
+    with code and every answer earned another round. Here the answer earns no round at all: the
+    summons count is fixed at two, and a `must-fix` answered on the second ends in the HC's merge.
+  - **Once the summons owed has returned, the head is final.** The wave's own movement is what the
+    further summons exists to cover, so it is not what this clause reaches; every movement after that
+    review is — a further fix, an update from the base branch, anything. Where no further summons was
+    owed, the original review is the last one and the same holds from it. A pull request whose head
+    moved past its last conforming review has no review bound to what merges, and it goes to the HC.
+    The setting degrades to the human; it never degrades the floor.
+
+  The validation re-summons a malformed response earns is a different thing and stands — that is the
+  same review returned to contract, not a new one. **What is given up, and it is real:** a defect the
+  further summons finds below `must-fix` is not fixed in the change that produced it; it is
+  tracked or accepted, on the record, and lands in the Findings System like any other defect —
+  evidence for revisiting this trade. And at the top of the scale the residual moves rather than
+  vanishing: a `must-fix` the further summons raises is closed by code that no second party then
+  reads, because there is no third summons. What stands there is the HC's merge and the fail-first
+  anchor — the floor degrading to the human, which is the trade this whole rule is built on. Between
+  them these replace the residual the rule carried until now — *a defect introduced by a fix can now
+  ship past the reviewer* — which the further summons closes for the wave itself.
 - **Escalate on recurrence.** When fix-verification keeps finding defects in the fixes past its
   declared limit, the signal is that the design is wrong, not that one more patch is owed. That is
   a stop, and its sanctioned resolution is Chapter 1's: back to Devise. The limit's number is
@@ -359,7 +398,7 @@ use can show, and recurrence catches what any single pass misses.
 
 | Setting | After this chapter |
 |---|---|
-| `attested` — Ship gate | Specified in full: the independent review it requires is a conforming review under this chapter, bound to the exact merge commit. Usable only once the summons machinery has run end-to-end on a real pull request, and the setting itself is then the HC's to change — a governance act, recorded as dated configuration whose source is the HC's decision. Ratifying this chapter flips nothing by itself. |
+| `attested` — Ship gate | Specified in full: the independent review it requires is a conforming review under this chapter, bound to the exact commit being merged. Usable only once the summons machinery has run end-to-end on a real pull request, and the setting itself is then the HC's to change — a governance act, recorded as dated configuration whose source is the HC's decision. Ratifying this chapter flips nothing by itself. |
 | `delegated` — Direction gate | Half-unlocked: an option set is now a reviewable subject. Still waits on Chapter 6 for somewhere to route a stop. |
 | `rules/` growth | Unlocked: the recurrence pipeline is the entry mechanism Chapter 1 named. |
 
