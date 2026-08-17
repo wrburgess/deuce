@@ -24,7 +24,10 @@ export function parse(content: string): Node {
   return new Parser().parse(content);
 }
 
-function walk(root: Node, visit: (node: Node) => void): void {
+// Exported because the sync's reference scan walks the same trees this layer
+// parses (#122) — one parser per format is Chapter 3's rule, and a second
+// walker beside it would be the same tree read two ways.
+export function walk(root: Node, visit: (node: Node) => void): void {
   const walker = root.walker();
   let event = walker.next();
   while (event !== null) {
