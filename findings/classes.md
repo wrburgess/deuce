@@ -27,7 +27,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 
 ### A check that measures something other than the invariant it claims
 
-15 instances, across 9 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94, PR #110, PR #133.
+16 instances, across 9 pull requests — PR #39, PR #41, PR #45, PR #46, PR #51, PR #59, PR #94, PR #110, PR #133.
 
 - **PR #39, finding 4** — aggregate field counts certified a review whose per-finding blocks were malformed; the count was right and the structure was not.
 - **PR #39, finding 8** — lens coverage matched by substring, so a lens name appearing inside a quotation counted as a lens answered.
@@ -44,6 +44,7 @@ Entries are ordered by the evidence that admitted them: pull requests spanned, t
 - **PR #110, finding 2** — the class-index grammar accepted an instance lead naming no finding, so a pull request alone counted as an instance; the delta: the defect sat in the very check written to hold this file's grammar.
 - **PR #110, finding 3** — glossary-reverse matched terms as unbounded substrings, so `AI` counted as present inside "plain"; the delta: a report-only check false-greened its report branch, and the word-bounded fix surfaced a real signal the substring had masked.
 - **PR #133, finding 1** — a new payload-links check resolved shipped links against the whole payload, which is a proxy for the host-facing invariant: a host may adopt one system without the rest, so the check printed a real dead link for a lifecycle-only adoption and exited green. The delta: the report-only branch was *designed in and priced* — the Plan named it an accepted risk with its reasoning — and it was still the defect. A limit a Plan accepts is not thereby a limit the check may claim not to have.
+- **PR #133, finding 3** — the per-system walks skipped `all`, treating it as a marker rather than a selection; with exactly one system declared beside it, that one walk carries the target and an `all`-classed file's link into it passes. The delta: the finding's stated mechanism was false and was refuted by a constructed case — an `all` file *is* in every walk — and a narrower residue behind it was real. Recorded because the residue is the class, and because "the mechanism is wrong" is not by itself "the check is right".
 
 ### A guard that fails open or fails silent on input it did not expect
 

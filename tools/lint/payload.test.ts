@@ -134,6 +134,43 @@ test("a lifecycle file linking a review path fails, naming the adoption that bre
   assert.deepEqual(result.systems, ["lifecycle", "review"]);
 });
 
+// The contractor review's second must-fix on PR #133 claimed an `all`-classed
+// source file is absent from the per-system walks. It is not: `shipSet`
+// ships `all` with every selection, so such a file appears in every walk and
+// its cross-system link dies in the first walk that excludes the target.
+test("an all-classed file's link to a one-system path is caught by another system's walk", () => {
+  const result = checkPayloadLinks(
+    manifest(
+      ["a/one.md", "contract", "all"],
+      ["b/two.md", "contract", "lifecycle"],
+      ["tools/review/summon.ts", "seed", "review"],
+    ),
+    files({
+      "a/one.md": "[summon](../tools/review/summon.ts)",
+      "b/two.md": "[one](../a/one.md)",
+    }),
+  );
+  assert.deepEqual(result.violations, []);
+  assert.ok(
+    result.crossSystem.some((line) => /system 'lifecycle' alone/.test(line)),
+    "the lifecycle walk is what refutes the finding's mechanism",
+  );
+});
+
+// What that finding did reach: with exactly one system besides `all`, that
+// system's walk includes the target, and nothing else would have caught it.
+// `all` is now walked as a selection of its own, which shuts it.
+test("with one system besides all, an all-classed file's link into it still fails", () => {
+  const result = checkPayloadLinks(
+    manifest(["a/one.md", "contract", "all"], ["tools/gate/run.ts", "seed", "gate"]),
+    files({ "a/one.md": "[gate](../tools/gate/run.ts)" }),
+  );
+  assert.deepEqual(result.violations, []);
+  assert.equal(result.crossSystem.length, 1);
+  assert.match(result.crossSystem[0]!, /system 'all' alone/);
+  assert.deepEqual(result.systems, ["all", "gate"]);
+});
+
 test("a contract file linking a seed path resolves — both ship", () => {
   const result = checkPayloadLinks(
     manifest(["a/one.md", "contract", "all"], ["tools/gate/run.ts", "seed", "all"]),

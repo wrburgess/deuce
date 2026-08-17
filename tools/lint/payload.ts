@@ -27,9 +27,8 @@
 // in raw HTML are not read, external targets are counted and never probed,
 // and a reference inside a shipped non-markdown file is not a markdown link
 // and is not reached. Combinations of systems are not walked: every subset is
-// a superset of some single system, so a link dead for a combination is dead
-// for one of its members and is already reached — but a link dead only for
-// the empty selection is not a state the manifest can express.
+// a superset of some single declared system, so a link dead for a combination
+// is dead for one of its members and is already reached.
 
 import { shipSet, type Manifest } from "../sync/manifest.ts";
 import type { MarkdownFile } from "./markdown.ts";
@@ -61,7 +60,7 @@ export interface PayloadLinksResult {
 export const BLIND_SPOT = [
   "blind spot: whether a receiving repository has written a declaration the shipped prose names, and whether the absence clause beside it is followed, are prose and are not reached",
   "blind spot: links in raw HTML are not read, external targets are counted and never probed, and a reference inside a shipped non-markdown file is not a markdown link",
-  "blind spot: the whole payload and each single system are walked; combinations are not, because every combination is a superset of a single system already walked",
+  "blind spot: the whole payload and each single declared system are walked; combinations are not, because every combination is a superset of a single system already walked",
 ];
 
 interface View {
@@ -127,10 +126,14 @@ export function checkPayloadLinks(
   // Per-system walks. A violation the whole-payload walk already raised is
   // that walk's to report; what is new here is a link that resolves for a
   // host taking everything and dies for a host taking one system. Both fail.
+  // `all` is walked as a selection of its own, not skipped as a marker. It
+  // ships with every other selection, so an `all`-classed source file is
+  // already in every walk — but with exactly one system declared beside it,
+  // that one walk carries the target too and nothing else would catch the
+  // link. PR #133's contractor review reached that residue by a mechanism
+  // that does not hold; the residue does, and this is one line.
   const seen = new Set(result.violations);
-  const systems = [...new Set(manifest.entries.map((e) => e.system))]
-    .filter((s) => s !== "all")
-    .sort();
+  const systems = [...new Set(manifest.entries.map((e) => e.system))].sort();
   const crossSystem: string[] = [];
   for (const system of systems) {
     const selection = view(manifest, [system], files);
