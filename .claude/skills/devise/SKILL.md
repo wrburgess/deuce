@@ -21,9 +21,10 @@ exit — is canon and is not restated here.
 
 1. **Read the issue from the tracker** — title, body, labels, and every existing comment; the
    Assessment and the recorded choice are among the comments.
-2. **Read the stage's routing** — which model and effort runs this stage is
-   [`config/models.md`](../../../config/models.md); what may be offloaded, and in what shape, is
-   [`config/delegation.md`](../../../config/delegation.md).
+2. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
+   what may be offloaded, and in what shape, is `config/delegation.md`. **A repository that has
+   declared neither has no such file:** the stage then runs on the session it was launched in and
+   delegates nothing, and its terminal artifact names the declaration it could not read.
 3. **Right-size the Plan to what is actually known.** The tell that a Plan is being written
    against unknowns: steps that cannot be made concrete without guessing. The move is canon's —
    stop, and recommend a `SPIKE:`
@@ -36,7 +37,11 @@ exit — is canon and is not restated here.
    invalid input, duplicates, boundary values, concurrent operations — each covered or ruled out
    by name. A fixture or helper the strategy needs is **part of the work**, never a reason to skip
    the test.
-5. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing.
+5. **Read the authoring rules for what you are about to write**, at the moment of writing —
+   `rules/authoring.md` where the repository has grown one. **A repository's `rules/` is born empty
+   and grows on its own receipts**
+   ([ADR 0019](https://github.com/wrburgess/deuce/blob/main/adr/0019-rules-admit-on-local-receipts-at-every-source.md)),
+   so an absent file is the design and not a defect — note the absence and write on.
 6. **Draft the Plan as a Readout** — content per
    [Stage 2](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-2--devise), shape per
    [Chapter 1 → The Readout](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-readout).

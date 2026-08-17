@@ -24,9 +24,10 @@ exit — is canon and is not restated here.
 2. **Read the posted Plan from the issue the pull request links** — where a re-plan
    superseded one, the latest posted Plan is the Plan
    ([Stops](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stops), trigger 2).
-3. **Read the stage's routing** — which model and effort runs this stage is
-   [`config/models.md`](../../../config/models.md); what may be offloaded is nothing — **every step
-   below runs in the AC's own loop, on the whole diff**
+3. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`; **a
+   repository that has not declared one has no such file**, and the stage then runs on the session
+   it was launched in and says so on the Verification. What may be offloaded is nothing — **every
+   step below runs in the AC's own loop, on the whole diff**
    ([Stage 4](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-4--verify)).
 4. **Hunt drift in both directions** — the diff against the Plan for the unplanned, the Plan
    against the diff for the missing
@@ -60,8 +61,9 @@ exit — is canon and is not restated here.
    restatement of content another document owns. Fix it before the summons, so the review
    *confirms* rather than *corrects*. Why the step exists: run at full strength under the
    predecessor, this pass cut contractor findings by roughly 80% — the measurement behind the
-   one-wave limit in [`config/review.md`](../../../config/review.md), which this step is what makes
-   affordable.
+   one-wave limit in `config/review.md`, which this step is what makes affordable. **Absent that
+   declaration the floor governs** — the summons runs, one wave, and any escalation goes on the
+   record — and the Verification says the limit was undeclared.
 8. **Declare the lens set fit for the subject, then summon the contractor review** — the set per
    [Chapter 2 → Bounded by lens set](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#bounded-by-lens-set-not-by-round-count),
    prose subjects per
@@ -78,7 +80,7 @@ exit — is canon and is not restated here.
    for each accepted finding the mechanism restated in one sentence and the failing test that
    exercises it, then steps 4–6 re-run on the wave's diff — bounds and escalation per
    [Chapter 2 → Fix-verification, bounded separately](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#fix-verification-bounded-separately),
-   the limit's value in [`config/review.md`](../../../config/review.md), the escalation into
+   the limit's value in `config/review.md`, the escalation into
    [Devise](../devise/SKILL.md). Re-run the checks to green.
 11. **If the wave moved the head, summon the further review on that head — once, and never twice.**
     Bound to the head the wave produced, scoped to the wave's diff and to the lenses that raised the
@@ -96,7 +98,9 @@ exit — is canon and is not restated here.
     **A `must-fix` is answered as the severity framework requires** — fixed with fail-first evidence,
     or refuted with the refuting evidence recorded; the change never ships with one open. Fixing it
     moves the head past this review, so the merge goes to the HC whatever the Ship gate's declared
-    setting ([`config/gates.md`](../../../config/gates.md)). **Nothing below `must-fix` is answered
+    setting — `config/gates.md`; **absent that declaration the strictest setting governs**, the HC
+    merges, and the Verification says the setting was undeclared. **Nothing below `must-fix` is
+    answered
     with code here:** a `should-fix` is promoted to tracked work or accepted as residual, on the
     record; a `note` is recorded. Every one lands on the Verification with its disposition. **Once
     the summons owed has returned, the head is final** — any movement past the last conforming review,
@@ -107,7 +111,11 @@ exit — is canon and is not restated here.
 12. **Answer each finding on the surface it arrived on** — a pull request carries three:
     comments, inline threads, review bodies; a self-raised finding is answered in the
     Verification itself ([Stage 4](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-4--verify)).
-13. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing.
+13. **Read the authoring rules for what you are about to write**, at the moment of writing —
+    `rules/authoring.md` where the repository has grown one. **A repository's `rules/` is born empty
+    and grows on its own receipts**
+    ([ADR 0019](https://github.com/wrburgess/deuce/blob/main/adr/0019-rules-admit-on-local-receipts-at-every-source.md)),
+    so an absent file is the design and not a defect — note the absence and write on.
 14. **Draft the Verification as a Readout** — content per
     [Stage 4](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-4--verify), grown to the record
     [Chapter 2 → Verify's external half, now written](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#verifys-external-half-now-written)

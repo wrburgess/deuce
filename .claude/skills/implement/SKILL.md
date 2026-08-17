@@ -20,9 +20,10 @@ The Plan is posted on the issue —
 1. **Re-read the posted Plan from the issue** — title, body, labels, and every existing comment;
    the Plan and the gate record are among the comments
    ([Stage 3](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-3--implement)).
-2. **Read the stage's routing** — which model and effort runs this stage is
-   [`config/models.md`](../../../config/models.md); what may be offloaded, and in what shape, is
-   [`config/delegation.md`](../../../config/delegation.md).
+2. **Read the stage's routing** — which model and effort runs this stage is `config/models.md`;
+   what may be offloaded, and in what shape, is `config/delegation.md`. **A repository that has
+   declared neither has no such file:** the stage then runs on the session it was launched in and
+   delegates nothing, and its terminal artifact names the declaration it could not read.
 3. **Create the feature branch**
    ([Stage 3](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-3--implement)).
 4. **Implement the Plan's steps in order**
@@ -39,7 +40,11 @@ The Plan is posted on the issue —
    deferred-work marker (a TODO, a "needs manual testing"). Fix it now — the same defect found in
    [Verify](../verify/SKILL.md) costs
    a recorded finding and the fix wave. This pass narrows Verify's noise; it never replaces it.
-8. **Read [`rules/authoring.md`](../../../rules/authoring.md)** at the moment of writing.
+8. **Read the authoring rules for what you are about to write**, at the moment of writing —
+   `rules/authoring.md` where the repository has grown one. **A repository's `rules/` is born empty
+   and grows on its own receipts**
+   ([ADR 0019](https://github.com/wrburgess/deuce/blob/main/adr/0019-rules-admit-on-local-receipts-at-every-source.md)),
+   so an absent file is the design and not a defect — note the absence and write on.
 9. **Commit and push the feature branch**
    ([Stage 3](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-3--implement)).
 10. **Open the pull request linked to the issue, its body per
