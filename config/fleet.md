@@ -32,10 +32,12 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
   [`config/sync.md`](sync.md) → *The receipt's home*.
 - The proving ground held: the manifest represented the canary's real state — 37 files written,
   5 seed paths skipped as bryce's own — with nothing the sort could not express.
-- **Label vocabulary, measured 2026-08-17 (#123): 0 of the 10** `type:` and `status:` names the
-  shipped files assign exist on bryce's tracker at all — so no issue among its 107 carries one —
-  while all six issue forms are byte-identical to deuce's. Every issue opened from a form therefore
-  arrives with no labels, and nothing reports it.
+- **Label vocabulary, measured 2026-08-17 (#123): 0 of the 10** `type:` and `status:` names deuce's
+  shipped files use exist on bryce's tracker at all — so no issue among its 107 carries one — while
+  all six issue forms are byte-identical to deuce's. The forms assign six of the ten, one `type:`
+  value each plus `status:ready`, and the lifecycle Skills set the other four. So every issue opened
+  from a form arrives with no labels and nothing reports it, and every Skill that advances an
+  issue's status names a label the tracker does not have.
   bryce also holds deuce's `labels.yml` verbatim, declaring a set its tracker never created — the
   seed class working exactly as designed on a host that never did the rewriting the class assumes.
   Tracked
@@ -53,7 +55,8 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
   seeded copies with its own checks — is #86's record, answered host-side by
   [nadal PR #145](https://github.com/wrburgess/nadal/pull/145).
 - **Label vocabulary, measured 2026-08-17 (#123):** the same measurement — **0 of 10** on a tracker
-  of 84 issues, six forms byte-identical. Unlike bryce, nadal's `labels.yml` is its own and says so, which
+  of 84 issues, six forms byte-identical, the same six-assigned/four-set split as bryce's row above.
+  Unlike bryce, nadal's `labels.yml` is its own and says so, which
   is why nadal's failure is the louder of the two. Tracked host-side at
   [wrburgess/nadal#159](https://github.com/wrburgess/nadal/issues/159), re-pointed at the Direction
   gate on #123 to its option A: the `type:` axis absorbs nadal's own words by in-place rename, the

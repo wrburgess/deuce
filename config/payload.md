@@ -225,7 +225,8 @@ path itself.
   cries teaches its readers to ignore it. Which half of the file is whose is Chapter 0's and not
   this file's to restate; the consequence that belongs here is where a host reads it. **The seed
   copy is the only thing an adopting host has in front of it before its first issue, so its header
-  carries the precondition above and the one command that creates the set** (#123).
+  carries the precondition above and what creating the set actually costs — one `gh label create`
+  per entry, 17 of them today** (#123).
 
 ## Host — the host's, never shipped
 

@@ -10,9 +10,13 @@
 # where a bare `feature` is a different label the issue forms deuce ships will not find; the area:
 # block below is deuce's own chapters, for you to replace.
 #
-# CREATE THESE ON THE TRACKER BEFORE THE FIRST TEMPLATED ISSUE. The forms deuce ships name these
-# labels by name, and GitHub drops a label the repository does not have — silently, with the issue
-# opening fine. Creating them is one pass of one command, once per entry below:
+# CREATE THESE ON THE TRACKER BEFORE THE FIRST TEMPLATED ISSUE. The forms deuce ships name six of
+# them — one type: value each, plus status:ready — and GitHub drops a label the repository does not
+# have, silently, with the issue opening fine. The six lifecycle Skills name the other four when
+# they advance an issue's status. So the whole set is wanted, not the six.
+#
+# It is one `gh label create` per entry below — 17 of them for this file as it stands — and the
+# three flags map to the three fields one to one:
 #
 #   gh label create "type:task" --color 0E8A16 --description "One branch, one PR of feature/improvement work"
 #
@@ -20,8 +24,8 @@
 # and the tracker lint that reads it in deuce is not among the files deuce ships. It is
 # documentation of the tracker, never a source the tracker is built from. Why it is spelled out:
 # measured on wrburgess/deuce#123, 2026-08-17, two hosts carried deuce's forms and none of the ten
-# names those forms assign, so every issue opened from a form arrived with no labels at all and
-# nothing reported it.
+# names deuce's shipped files use, so every issue opened from a form arrived with no labels at all
+# and nothing reported it.
 #
 # Discipline: every issue carries exactly one label per axis.
 axes:
