@@ -1,6 +1,6 @@
 ---
-date: 2026-08-11
-source: the Direction gate on #85 for bryce's row, earned in by bryce PR #211's merge; the Direction gate on #86 for nadal's, earned in by nadal PR #143's merge
+date: 2026-08-17
+source: the Direction gate on #85 for bryce's row, earned in by bryce PR #211's merge; the Direction gate on #86 for nadal's, earned in by nadal PR #143's merge; the label-vocabulary measurements added at the Direction gate on #123
 hosts:
   - host: bryce
     repository: wrburgess/bryce
@@ -32,6 +32,14 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
   [`config/sync.md`](sync.md) → *The receipt's home*.
 - The proving ground held: the manifest represented the canary's real state — 37 files written,
   5 seed paths skipped as bryce's own — with nothing the sort could not express.
+- **Label vocabulary, measured 2026-08-17 (#123): 0 of the 10** `type:` and `status:` names the
+  shipped files assign exist on bryce's tracker, across 107 issues, while all six issue forms are
+  byte-identical to deuce's — so every templated issue opens with no labels and nothing reports it.
+  bryce also holds deuce's `labels.yml` verbatim, declaring a set its tracker never created — the
+  seed class working exactly as designed on a host that never did the rewriting the class assumes.
+  Tracked
+  host-side at [wrburgess/bryce#215](https://github.com/wrburgess/bryce/issues/215), which also asks
+  the prior question nothing records — whether bryce runs the Work Tracking System at all.
 
 ## nadal — the second host
 
@@ -43,3 +51,9 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
   as nadal's own. Its one finding — a host whose product surface includes `tools/` sweeps the
   seeded copies with its own checks — is #86's record, answered host-side by
   [nadal PR #145](https://github.com/wrburgess/nadal/pull/145).
+- **Label vocabulary, measured 2026-08-17 (#123):** the same measurement — **0 of 10**, six forms
+  byte-identical, across 84 issues. Unlike bryce, nadal's `labels.yml` is its own and says so, which
+  is why nadal's failure is the louder of the two. Tracked host-side at
+  [wrburgess/nadal#159](https://github.com/wrburgess/nadal/issues/159), re-pointed at the Direction
+  gate on #123 to its option A: the `type:` axis absorbs nadal's own words by in-place rename, the
+  `status:` axis is adopted, and the backfill is forward-only.

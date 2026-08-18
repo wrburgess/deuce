@@ -1,4 +1,33 @@
-# Source of truth for deuce's labels. Synced by hand until config-lint (Ch 3) automates it.
+# deuce's label set — and the starting copy an adopting repository receives.
+#
+# Class: seed. A host takes this file once and owns it from that moment; deuce never overwrites it
+# again — https://github.com/wrburgess/deuce/blob/main/sds/05-distribution.md, What ships. What a
+# host may change, and what it may not, is the split below.
+#
+# FIXED BY THE STANDARD — not a host's to rename:
+#   - The three axes and their prefixes, type: / status: / area:, and the rule that every issue
+#     carries exactly one label from each.
+#   - The five status: values below. Chapter 0 enumerates them and does not mark them extensible.
+#   https://github.com/wrburgess/deuce/blob/main/sds/00-identity-and-governance.md — Work Tracking System
+#
+# THE HOST'S OWN:
+#   - type: VALUES are extensible. A host adds its own alongside the standard's five — type:feature,
+#     type:phase — and adds them under the type: prefix. A bare `feature` is a different label, and
+#     the issue forms deuce ships will not find it.
+#   - The whole area: block below is deuce's own chapters. An adopting repository replaces it.
+#
+# CREATE THESE ON THE TRACKER BEFORE THE FIRST TEMPLATED ISSUE. The forms deuce ships name these
+# labels by name, and GitHub drops a label the repository does not have — silently, with the issue
+# opening fine. Creating them is one pass of one command, once per entry below:
+#
+#   gh label create "type:task" --color 0E8A16 --description "One branch, one PR of feature/improvement work"
+#
+# Nothing generates them from this file, and on a host nothing reads it at all: it is hand-synced,
+# and the tracker lint that reads it in deuce is not among the files deuce ships. So this file is
+# documentation of the tracker, never a source the tracker is built from. Why it is spelled out:
+# measured on wrburgess/deuce#123, 2026-08-17, two hosts carried deuce's forms and none of the ten
+# names those forms assign, so every templated issue opened with no labels and nothing reported it.
+#
 # Discipline: every issue carries exactly one label per axis.
 axes:
   type:

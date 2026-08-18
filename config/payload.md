@@ -1,6 +1,6 @@
 ---
-date: 2026-08-12
-source: the Direction gate on #117 — brief enters as contract; superseding the same-day declaration sourced to the Direction gate on #115, and before it the Direction gate on #81, where Option A — contract-forward — was chosen
+date: 2026-08-17
+source: the Direction gate on #123, where the shipped forms' label names were confirmed canon-fixed rather than per-host and no class moved; before it the Direction gate on #117 — brief enters as contract; superseding the same-day declaration sourced to the Direction gate on #115, and before it the Direction gate on #81, where Option A — contract-forward — was chosen
 payload:
   - path: .claude/skills/assess/SKILL.md
     class: contract
@@ -191,7 +191,14 @@ The sorting test, answered yes: these are the paths deuce must be able to fix ev
   and it must reach every host.
 - **The issue templates** (`.github/ISSUE_TEMPLATE/*`, system `tracking`) — they transcribe
   Chapter 0's fields and never originate one, so when the Work Tracking System amends, the
-  transcription must follow everywhere at once.
+  transcription must follow everywhere at once. **The label names they assign are canon-fixed, not
+  per-host values, so the class is unchanged** (the Direction gate on #123): Chapter 0 fixes the
+  three axes and enumerates the five `status:` values, and Chapter 5 has every host run the schema
+  whole — `type:task` and `status:ready` are therefore names every conforming host carries. What
+  follows is a precondition rather than a class: **a host adopting system `tracking` creates the
+  axes' labels before its first templated issue.** GitHub drops a label a form names but the
+  repository does not have — silently, the issue opening fine — and both hosts were measured in
+  exactly that state on 2026-08-17 (#123).
 - **`AGENTS.md`** (system `review`) — the reviewer boundary. Its terms are Chapter 2's, and a host
   summoning a contractor reviewer must hand it the same contract this repository does.
 
@@ -216,7 +223,12 @@ path itself.
 - **`labels.yml`** (system `tracking`) — the `type:` and `status:` axes are the standard's, but the
   `area:` axis is per-project by design, so every host rewrites this file on day one. Classing it
   contract would put permanent drift on the same file at every host, and a drift report that always
-  cries teaches its readers to ignore it.
+  cries teaches its readers to ignore it. The split under "rewrites" is sharper than the word: the
+  axes and the five `status:` values are canon's and a host renames neither, the `type:` values are
+  extensible, and the `area:` block is the host's to replace whole. **The file's own header now
+  carries that split and names the one command that creates the set** — the seed copy is the only
+  thing an adopting host reads before its first issue, so it is where the precondition has to be
+  (#123).
 
 ## Host — the host's, never shipped
 
