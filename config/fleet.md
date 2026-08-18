@@ -33,8 +33,9 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
 - The proving ground held: the manifest represented the canary's real state — 37 files written,
   5 seed paths skipped as bryce's own — with nothing the sort could not express.
 - **Label vocabulary, measured 2026-08-17 (#123): 0 of the 10** `type:` and `status:` names the
-  shipped files assign exist on bryce's tracker, across 107 issues, while all six issue forms are
-  byte-identical to deuce's — so every templated issue opens with no labels and nothing reports it.
+  shipped files assign exist on bryce's tracker at all — so no issue among its 107 carries one —
+  while all six issue forms are byte-identical to deuce's. Every issue opened from a form therefore
+  arrives with no labels, and nothing reports it.
   bryce also holds deuce's `labels.yml` verbatim, declaring a set its tracker never created — the
   seed class working exactly as designed on a host that never did the rewriting the class assumes.
   Tracked
@@ -51,8 +52,8 @@ treats a host absent from this roster, per [`config/sync.md`](sync.md).
   as nadal's own. Its one finding — a host whose product surface includes `tools/` sweeps the
   seeded copies with its own checks — is #86's record, answered host-side by
   [nadal PR #145](https://github.com/wrburgess/nadal/pull/145).
-- **Label vocabulary, measured 2026-08-17 (#123):** the same measurement — **0 of 10**, six forms
-  byte-identical, across 84 issues. Unlike bryce, nadal's `labels.yml` is its own and says so, which
+- **Label vocabulary, measured 2026-08-17 (#123):** the same measurement — **0 of 10** on a tracker
+  of 84 issues, six forms byte-identical. Unlike bryce, nadal's `labels.yml` is its own and says so, which
   is why nadal's failure is the louder of the two. Tracked host-side at
   [wrburgess/nadal#159](https://github.com/wrburgess/nadal/issues/159), re-pointed at the Direction
   gate on #123 to its option A: the `type:` axis absorbs nadal's own words by in-place rename, the
