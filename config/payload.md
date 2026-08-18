@@ -1,6 +1,6 @@
 ---
-date: 2026-08-12
-source: the Direction gate on #117 — brief enters as contract; superseding the same-day declaration sourced to the Direction gate on #115, and before it the Direction gate on #81, where Option A — contract-forward — was chosen
+date: 2026-08-17
+source: the Direction gate on #117 — brief enters as contract; superseding the same-day declaration sourced to the Direction gate on #115, and before it the Direction gate on #81, where Option A — contract-forward — was chosen; no class has moved since, and the Direction gate on #123 added the tracking precondition below after confirming the shipped forms' label names canon-fixed rather than per-host
 payload:
   - path: .claude/skills/assess/SKILL.md
     class: contract
@@ -191,7 +191,13 @@ The sorting test, answered yes: these are the paths deuce must be able to fix ev
   and it must reach every host.
 - **The issue templates** (`.github/ISSUE_TEMPLATE/*`, system `tracking`) — they transcribe
   Chapter 0's fields and never originate one, so when the Work Tracking System amends, the
-  transcription must follow everywhere at once.
+  transcription must follow everywhere at once. **The label names they assign are canon-fixed rather
+  than per-host, so the class is unchanged** — Chapter 0 → *Work Tracking System* and Chapter 5 →
+  *The Work Tracking System, across projects*, read at the Direction gate on #123 and not restated
+  here. What belongs here is the consequence: **a host adopting system `tracking` creates the axes'
+  labels before its first templated issue.** GitHub drops a label a form names but the repository
+  does not have — silently, with the issue opening fine — and both hosts were measured in exactly
+  that state on 2026-08-17 (#123).
 - **`AGENTS.md`** (system `review`) — the reviewer boundary. Its terms are Chapter 2's, and a host
   summoning a contractor reviewer must hand it the same contract this repository does.
 
@@ -216,7 +222,11 @@ path itself.
 - **`labels.yml`** (system `tracking`) — the `type:` and `status:` axes are the standard's, but the
   `area:` axis is per-project by design, so every host rewrites this file on day one. Classing it
   contract would put permanent drift on the same file at every host, and a drift report that always
-  cries teaches its readers to ignore it.
+  cries teaches its readers to ignore it. Which half of the file is whose is Chapter 0's and not
+  this file's to restate; the consequence that belongs here is where a host reads it. **The seed
+  copy is the only thing an adopting host has in front of it before its first issue, so its header
+  carries the precondition above and what creating the set actually costs — one `gh label create`
+  per entry, 17 of them today** (#123).
 
 ## Host — the host's, never shipped
 
