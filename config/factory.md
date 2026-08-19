@@ -101,6 +101,10 @@ that agree by convention. The body below carries only the reasoning behind each 
   state — the documented one being a commit signer invoked with nobody to answer it.
 - The number is two hours because no pass has ever been measured; the first several passes are the
   measurement, and a re-declaration here is one dated edit.
+- **Zero is refused, and not as a formality.** Node reads a timeout of zero as *no timeout*, so a
+  `0` here would parse cleanly and silently remove the watchdog this row exists to declare — and a
+  hung pass would then hold the lock forever while every later pass reported it busy. The reader
+  refuses anything under one second by name ([`declaration.ts`](../tools/factory/declaration.ts)).
 
 ## Pass scope
 

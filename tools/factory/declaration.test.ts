@@ -161,6 +161,19 @@ test("a deadline that is not a whole number is refused", () => {
   );
 });
 
+// A deadline of zero parses as a whole number and reads as "no limit", but
+// node's spawnSync treats timeout: 0 as no timeout at all — measured, not
+// assumed: `spawnSync('sleep', ['2'], {timeout: 0})` runs the full two seconds
+// and returns signal null. So a zero here silently removes the watchdog, and a
+// hung pass then holds the lock forever while every later pass reports busy.
+// The one numeric field in this declaration that was not bounded by name.
+test("a deadline of zero is refused — it would disable the watchdog silently", () => {
+  assert.throws(
+    () => parseFactoryDeclaration(full(["deadline-seconds: 0"], ["deadline-seconds"]), HOME),
+    /at least 1/,
+  );
+});
+
 test("weekday ranges, lists, and single days all expand", () => {
   assert.deepEqual(parseWeekdays("1-5"), [1, 2, 3, 4, 5]);
   assert.deepEqual(parseWeekdays("1,3,7"), [1, 3, 7]);

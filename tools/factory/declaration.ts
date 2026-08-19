@@ -83,6 +83,20 @@ function wholeNumber(raw: string, what: string): number {
   return Number(raw);
 }
 
+// The watchdog's own bound, and the only reason it is not just `wholeNumber`:
+// node reads `timeout: 0` as no timeout at all, so a zero here parses cleanly
+// and silently removes the deadline it declares. Measured rather than assumed —
+// `spawnSync('sleep', ['2'], {timeout: 0})` runs the full two seconds and
+// returns signal null. A pass that then hangs holds the lock forever, and every
+// later pass reports busy with nobody able to tell why (#108).
+function atLeastOne(raw: string, what: string): number {
+  const value = wholeNumber(raw, what);
+  if (value < 1) {
+    throw new Error(`${what} must be at least 1 second: ${raw}`);
+  }
+  return value;
+}
+
 function bounded(raw: string, what: string, low: number, high: number): number {
   const value = wholeNumber(raw, what);
   if (value < low || value > high) {
@@ -197,7 +211,7 @@ export function parseFactoryDeclaration(markdown: string, home: string): Factory
     lock: absolute(expandHome(required(scalars, "lock"), home), "lock"),
     logPath: absolute(expandHome(required(scalars, "log"), home), "log"),
     keychainService: required(scalars, "keychain-service"),
-    deadlineSeconds: wholeNumber(
+    deadlineSeconds: atLeastOne(
       required(scalars, "deadline-seconds"),
       "the factory declaration's 'deadline-seconds'",
     ),
