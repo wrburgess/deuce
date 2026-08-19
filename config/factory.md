@@ -38,6 +38,19 @@ that agree by convention. The body below carries only the reasoning behind each 
   [`bin/factory`](../bin/factory) on weekday mornings at 07:47. Installed and removed by
   [`bin/factory-install`](../bin/factory-install), which is the only sanctioned writer of the
   installed copy.
+- **Arming binds the checkout declared above, and the installer enforces it.** `bin/factory-install`
+  refuses to arm from anywhere else unless `--this-checkout` is passed, which names the exception
+  out loud and logs it. Why the enforcement rather than the note it used to be: the agent points at
+  whatever directory armed it, and the wrapper only *logged* a mismatch — so an unattended trigger
+  could work an undeclared checkout while holding the factory credential. Found by the contractor
+  review on PR #136. The override exists because proving a branch before it merges means arming
+  that branch's checkout, which is how every pass to date was proven.
+- **It also refuses to arm a PATH the agent cannot use.** launchd's own environment holds neither
+  the version-managed `node` nor the homebrew `claude`, so the installer captures its own PATH into
+  the agent — a snapshot that a runtime upgrade can invalidate. Both names are checked at arm time
+  ([`executables.ts`](../tools/factory/executables.ts)), because the failure it prevents is the
+  silent one: launchd fails the exec at 07:47, the wrapper never runs, and so nothing posts a death
+  notice or a run record.
 - **Why this machine and not a hosted runner.** The reviewer Verify summons is `codex exec` under
   the HC's ChatGPT login on this Mac ([`review.md`](review.md) → the roster;
   [`credentials.md`](credentials.md) → *The reviewer's login*). A pass that reaches Verify anywhere

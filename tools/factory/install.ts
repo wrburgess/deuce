@@ -13,6 +13,7 @@ import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { parseFactoryDeclaration } from "./declaration.ts";
+import { missingFromPath, NEEDED_ON_PATH } from "./executables.ts";
 import { renderPlist } from "./plist.ts";
 
 const DECLARATION = "config/factory.md";
@@ -60,12 +61,47 @@ function main(): void {
     return;
   }
 
+  // Arming binds a checkout, and the declaration names which one. Without this
+  // the agent points wherever `factory-install` happened to run, and run.ts only
+  // *logs* the mismatch — so an unattended trigger could work a checkout nobody
+  // declared, holding the factory credential (PR #136's review).
+  //
+  // Not simply forbidden: proving a branch before it merges means arming that
+  // branch's checkout, which is how every pass to date was proven. So the
+  // override exists, is named at the call site, and says so in the log — the
+  // difference between a decision and an accident.
+  const elsewhere = process.argv.includes("--this-checkout");
+  if (cwd !== declaration.checkout && !elsewhere) {
+    console.error(
+      `nothing installed — this is ${cwd}, and the declared checkout is ${declaration.checkout}.\n` +
+        "Arm the declared one, or pass --this-checkout to arm this one deliberately (a proving run).",
+    );
+    process.exitCode = EXIT_CANNOT_RUN;
+    return;
+  }
+
+  const path = process.env["PATH"] ?? "";
+  const missing = missingFromPath(NEEDED_ON_PATH, path);
+  if (missing.length > 0) {
+    console.error(
+      `nothing installed — the agent would carry this PATH, and ${missing.join(" and ")} ` +
+        "cannot be found on it. A trigger that cannot start its wrapper fails before anything " +
+        "can report it.",
+    );
+    process.exitCode = EXIT_CANNOT_RUN;
+    return;
+  }
+
+  if (elsewhere) {
+    console.log(`arming ${cwd}, which is not the declared ${declaration.checkout} — a proving run`);
+  }
+
   const xml = renderPlist(declaration.trigger, {
     program: resolve(cwd, "bin/factory"),
     workingDirectory: cwd,
     // launchd's own environment holds neither the version-managed node nor the
     // homebrew claude, so the PATH that works interactively is captured here.
-    path: process.env["PATH"] ?? "",
+    path,
     stdoutPath: declaration.logPath,
     stderrPath: declaration.logPath,
   });

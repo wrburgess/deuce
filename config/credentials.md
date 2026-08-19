@@ -179,7 +179,11 @@ Least privilege, stated as cannots — and split honestly by what holds each one
   The token arrives on stdin — never on a command line, where shell history and `ps` would carry
   it — is classified, is probed against this repository, and only then written to the keychain,
   trusting `security` itself so [`tools/factory/run.ts`](../tools/factory/run.ts)'s read needs no
-  prompt. The read at run time fails closed: no item, a value that does not work, or a locked
+  prompt. **It reaches `security` on stdin too, and that is a correction with a receipt:** until
+  2026-08-19 the value rode `security`'s own argv, briefly visible to `ps`, which the code named in
+  a comment while this line said *never*. Two statements of one fact, disagreeing — found by the
+  contractor review on PR #136. `-w` with no value reads the password from stdin, twice, so the
+  fix was to write it twice and close the pipe. The read at run time fails closed: no item, a value that does not work, or a locked
   keychain starts nothing ([`factory.md`](factory.md) → *The credential, at run time*).
 - **Why a command and not the raw `security` prompt, with its receipt.** `security -w` prompts
   twice, silently, and stores whatever it is given: a word typed where a token belonged looked

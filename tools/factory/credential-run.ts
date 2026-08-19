@@ -97,10 +97,17 @@ function main(): void {
     return;
   }
 
-  // The value rides argv rather than a shell line, so it never reaches shell
-  // history — but it is briefly visible to `ps`. Named rather than hidden:
-  // `security` takes a password only from argv or its own tty prompt, and the
-  // prompt is the silent path this command exists to replace.
+  // The value never reaches argv, so `ps` never carries it and neither does
+  // shell history. `-w` with no value reads the password from stdin, and it
+  // reads it twice — the confirmation its interactive prompt asks for — so the
+  // value is written twice and the pipe closed.
+  //
+  // The earlier form passed the token as the `-w` argument and named the `ps`
+  // exposure in a comment, which is the honest version of a property
+  // config/credentials.md states without qualification: the value never goes on
+  // a command line. Two statements of one fact, disagreeing. The contractor
+  // review on PR #136 caught the disagreement; this closes it on the side that
+  // makes the declaration true.
   const store = spawnSync(
     "security",
     [
@@ -115,9 +122,8 @@ function main(): void {
       "/usr/bin/security",
       "-U",
       "-w",
-      token,
     ],
-    { encoding: "utf8" },
+    { encoding: "utf8", input: `${token}\n${token}\n` },
   );
   if (store.error || store.status !== 0) {
     console.error(`the token works, but storing it failed: ${store.stderr?.trim() ?? ""}`);
