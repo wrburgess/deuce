@@ -1,16 +1,17 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawn, spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { readSwitch } from "./killswitch.ts";
 import { claim, reapGroup, release, takenAt } from "./lock.ts";
 import { deathNotice, decide, describeAge, parseRemote, type Observation } from "./preflight.ts";
 
 const NOW = new Date("2026-08-13T07:47:00Z");
 
 const clear: Observation = {
-  killSwitchPresent: false,
+  killSwitch: "absent",
   lockTakenAt: null,
   checkoutClean: true,
   branch: "main",
@@ -23,7 +24,7 @@ test("a clear observation starts a pass", () => {
 
 test("the kill switch outranks every other state", () => {
   const worst: Observation = {
-    killSwitchPresent: true,
+    killSwitch: "present",
     lockTakenAt: new Date("2026-08-13T07:00:00Z"),
     checkoutClean: false,
     branch: "task/108",
@@ -32,6 +33,65 @@ test("the kill switch outranks every other state", () => {
   const verdict = decide(worst, NOW);
   assert.equal(verdict.kind, "killed");
   assert.match(verdict.message, /re-arm/i);
+});
+
+// The defect this pins, from PR #136's second read: `existsSync` answers false
+// for absent *and* for unreadable, so a permission change or an I/O error on the
+// switch read exactly like the HC not having thrown it — the emergency control
+// failing open, which is the one direction it must never fail.
+test("a kill switch that cannot be read refuses, and does not read as absent", () => {
+  const verdict = decide({ ...clear, killSwitch: "unreadable" }, NOW);
+  assert.equal(verdict.kind, "refused", "unreadable must never fall through to start");
+  assert.match(verdict.message, /cannot be shown to be clear/);
+  assert.notEqual(
+    verdict.message,
+    decide({ ...clear, killSwitch: "present" }, NOW).message,
+    "thrown and unreadable must not share a message — they have different fixes",
+  );
+});
+
+test("an unreadable kill switch outranks every other state, as a thrown one does", () => {
+  const worst: Observation = {
+    killSwitch: "unreadable",
+    lockTakenAt: new Date("2026-08-13T07:00:00Z"),
+    checkoutClean: false,
+    branch: "task/108",
+    token: "absent",
+  };
+  assert.equal(decide(worst, NOW).kind, "refused");
+  assert.match(decide(worst, NOW).message, /kill switch/);
+});
+
+test("reading the switch tells absence from unreadability against a real filesystem", () => {
+  const dir = mkdtempSync(join(tmpdir(), "deuce-switch-"));
+  try {
+    const path = join(dir, "off");
+    assert.equal(readSwitch(path), "absent", "nothing there is absence");
+
+    writeFileSync(path, "");
+    assert.equal(readSwitch(path), "present");
+
+    rmSync(path);
+    // An ancestor that is a file, not a directory: the path cannot exist, and
+    // that is an answer rather than an uncertainty.
+    const notADir = join(dir, "file");
+    writeFileSync(notADir, "");
+    assert.equal(readSwitch(join(notADir, "off")), "absent");
+
+    // An ancestor with no search permission: the path may or may not exist and
+    // this process cannot tell. That is the case that must not read as absent.
+    const closed = join(dir, "closed");
+    mkdirSync(closed);
+    writeFileSync(join(closed, "off"), "");
+    chmodSync(closed, 0o000);
+    try {
+      assert.equal(readSwitch(join(closed, "off")), "unreadable");
+    } finally {
+      chmodSync(closed, 0o755);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 test("a held lock is busy, never a failure, and carries the lock's age", () => {

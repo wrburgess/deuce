@@ -6,6 +6,8 @@
 // switch outranks everything, because an emergency act that loses to a lock or
 // a dirty tree is not one act (Chapter 6, *The kill switch*).
 
+import type { SwitchState } from "./killswitch.ts";
+
 // Presence and usability are different facts, and only one of them is what a
 // pass needs. The receipt is this build's own first proving run: a keychain
 // item holding 18 characters of something else passed a presence check, and the
@@ -14,7 +16,9 @@
 export type TokenState = "absent" | "unusable" | "usable";
 
 export interface Observation {
-  killSwitchPresent: boolean;
+  // Three states, not two: see killswitch.ts for why absence and unreadability
+  // must not share an answer.
+  killSwitch: SwitchState;
   // When the lock directory was created; null when the lock is free.
   lockTakenAt: Date | null;
   // Null when the checkout could not be read at all — a different state from
@@ -55,7 +59,19 @@ export function describeAge(taken: Date, now: Date): string {
 }
 
 export function decide(observed: Observation, now: Date): Verdict {
-  if (observed.killSwitchPresent) {
+  // "Could not be read" is not "absent", and it outranks everything the switch
+  // itself outranks. A pass that spawned here would be one the HC could not
+  // prove they had not stopped — the emergency control failing open, which is
+  // the one direction it must never fail (PR #136's second read).
+  if (observed.killSwitch === "unreadable") {
+    return {
+      kind: "refused",
+      message:
+        "the kill switch could not be read, so it cannot be shown to be clear — nothing started. " +
+        "Fix the path's readability, or throw the switch deliberately.",
+    };
+  }
+  if (observed.killSwitch === "present") {
     return {
       kind: "killed",
       message: "the kill switch is present — nothing started. Delete the file to re-arm.",

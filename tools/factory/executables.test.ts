@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { missingFromPath, NEEDED_ON_PATH, resolvesOnPath } from "./executables.ts";
@@ -44,6 +44,45 @@ test("a name that is absent, or present and not executable, does not resolve", (
     assert.equal(resolvesOnPath("readable", f.other), false);
   } finally {
     f.cleanup();
+  }
+});
+
+// The defect this pins, from PR #136's second read: the execute bit means
+// *searchable* on a directory, so accessSync(dir, X_OK) succeeds for a directory
+// named `node`. The guard reported green while the shell could not execute it,
+// and launchd then failed at 07:47 before anything could report it.
+test("a directory bearing the name is not an executable", () => {
+  const dir = mkdtempSync(join(tmpdir(), "deuce-path-"));
+  try {
+    // Exactly the impostor: a searchable directory called `node` on the PATH.
+    mkdirSync(join(dir, "node"));
+    chmodSync(join(dir, "node"), 0o755);
+    assert.equal(
+      resolvesOnPath("node", dir),
+      false,
+      "a directory is searchable, not executable — accepting it is the false green",
+    );
+    assert.deepEqual(missingFromPath(["node"], dir), ["node"]);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("a symlink to a real executable does resolve", () => {
+  const dir = mkdtempSync(join(tmpdir(), "deuce-path-"));
+  try {
+    // The ordinary shape of a version-managed toolchain, so it must not be
+    // caught by the file-type test above: what matters is what it resolves to.
+    writeFileSync(join(dir, "real"), "#!/bin/sh\n");
+    chmodSync(join(dir, "real"), 0o755);
+    symlinkSync(join(dir, "real"), join(dir, "linked"));
+    assert.equal(resolvesOnPath("linked", dir), true);
+
+    // A dangling link resolves to nothing and must not count.
+    symlinkSync(join(dir, "absent"), join(dir, "dangling"));
+    assert.equal(resolvesOnPath("dangling", dir), false);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
   }
 });
 

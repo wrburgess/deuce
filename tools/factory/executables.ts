@@ -14,7 +14,7 @@
 // silent in the one place silence is worst, which is the whole reason the
 // deadline and the death notice exist (PR #136's review).
 
-import { accessSync, constants } from "node:fs";
+import { accessSync, constants, statSync } from "node:fs";
 import { join } from "node:path";
 
 // The wrapper's shim is `exec node tools/factory/run.ts`, and the pass it starts
@@ -28,8 +28,19 @@ export function resolvesOnPath(name: string, path: string): boolean {
     // Refused rather than honored: what the agent resolves must not depend on
     // where it happens to be standing.
     if (dir === "") continue;
+    const candidate = join(dir, name);
     try {
-      accessSync(join(dir, name), constants.X_OK);
+      // The file-type test comes first, and it is not pedantry. The execute bit
+      // means *searchable* on a directory, so `accessSync(dir, X_OK)` succeeds
+      // for a directory named `node` — the guard would report green while the
+      // shell could not execute it, and launchd would then fail at 07:47 before
+      // anything could report it. Found by PR #136's second read.
+      //
+      // `statSync` follows symlinks, deliberately: a symlink to the real binary
+      // is the ordinary shape of a version-managed toolchain, and what matters
+      // is what the link resolves to. A dangling one throws here and is skipped.
+      if (!statSync(candidate).isFile()) continue;
+      accessSync(candidate, constants.X_OK);
       return true;
     } catch {
       // Absent here, or present and not executable, or a directory that cannot

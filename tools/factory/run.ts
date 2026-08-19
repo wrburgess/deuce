@@ -10,11 +10,12 @@
 // `execute` Skill's, and a wrapper that decided anything about the work would be
 // a second authority beside the artifacts (ADR 0024).
 
-import { existsSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync, type SpawnSyncOptions } from "node:child_process";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseFactoryDeclaration } from "./declaration.ts";
+import { readSwitch } from "./killswitch.ts";
 import { claim, reapGroup, release, takenAt } from "./lock.ts";
 import {
   decide,
@@ -58,14 +59,10 @@ function readToken(service: string, account: string): string | null {
   return token === "" ? null : token;
 }
 
-// Presence is not usability, and a pass needs the second. One call at the door
-// costs a round trip and saves a whole pass — the receipt is this build's first
-// proving run, which reached the queue read before learning the keychain held a
-// placeholder (#108).
-// One probe, called from both doors: the observation before the lock and the
-// re-check after it. Kept as one function so the two can never drift into
-// testing different things — which is exactly how a re-check comes to certify
-// something the first check did not (PR #136's review).
+// One probe, called from all three doors: the observation before the lock, the
+// re-check after it, and tokenState below. Kept as one function so they cannot
+// drift into testing different things — which is exactly how a re-check comes to
+// certify something the first check did not (PR #136's review).
 function works(token: string, cwd: string): boolean {
   // Probe the repository, not the account. The minted credential is scoped to
   // this repository only, so `gh api user` could 401 a token that works
@@ -81,6 +78,10 @@ function works(token: string, cwd: string): boolean {
   return !probe.error && probe.status === 0;
 }
 
+// Presence is not usability, and a pass needs the second. One call at the door
+// costs a round trip and saves a whole pass — the receipt is this build's first
+// proving run, which reached the queue read before learning the keychain held a
+// placeholder (#108).
 function tokenState(cwd: string, service: string, account: string): TokenState {
   const token = readToken(service, account);
   if (token === null) return "absent";
@@ -96,19 +97,11 @@ function observe(
 ): Observation {
   const lockTakenAt = takenAt(lock);
 
-  let killSwitchPresent = false;
-  try {
-    statSync(killSwitch);
-    killSwitchPresent = true;
-  } catch {
-    killSwitchPresent = false;
-  }
-
   const status = git(cwd, ["status", "--porcelain"]);
   const branch = git(cwd, ["rev-parse", "--abbrev-ref", "HEAD"]);
 
   return {
-    killSwitchPresent,
+    killSwitch: readSwitch(killSwitch),
     lockTakenAt,
     checkoutClean: status === null ? null : status.trim() === "",
     branch: branch === null ? null : branch.trim(),
@@ -187,14 +180,20 @@ function main(): void {
   // be used. The observation above ran before the lock existed, so each of these
   // covers the window between the two — small, and the contractor review on
   // PR #136 was right that small is not none.
-  if (existsSync(declaration.killSwitch)) {
-    // The switch is an emergency act; "thrown while the wrapper was starting"
-    // is exactly when it will be thrown, and a pass that spawned anyway would
-    // have read the guarantee (config/factory.md, *The kill switch*) as
-    // covering only the tidy case.
+  // The switch is an emergency act; "thrown while the wrapper was starting" is
+  // exactly when it will be thrown, and a pass that spawned anyway would have
+  // read the guarantee (config/factory.md, *The kill switch*) as covering only
+  // the tidy case. Read through the same three-state reader as the observation,
+  // so this door cannot be more permissive than that one.
+  const switchNow = readSwitch(declaration.killSwitch);
+  if (switchNow !== "absent") {
     release(declaration.lock);
-    log("the kill switch appeared while this wrapper was starting — nothing started");
-    process.exitCode = EXIT_OK;
+    log(
+      switchNow === "present"
+        ? "the kill switch appeared while this wrapper was starting — nothing started"
+        : "the kill switch stopped being readable while this wrapper was starting — nothing started",
+    );
+    process.exitCode = switchNow === "present" ? EXIT_OK : EXIT_CANNOT_RUN;
     return;
   }
 
