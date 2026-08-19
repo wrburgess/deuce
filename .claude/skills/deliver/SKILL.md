@@ -75,10 +75,13 @@ The Verification on the pull request carries no open must-fix finding —
     | An independent review covers the code that is actually merging | A returned review bound to the current head. Where a fix wave moved the head past the first review, that binding is the further summons [Chapter 2](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#fix-verification-bounded-separately) earns it; once the summons owed has returned, the head is final |
     | Neither has since gone stale | The head has not moved since both of the above were taken |
 
-    **The Delivery Record names both, every time — the independent verdict and the commit the
-    review is bound to** — whether they held or not. A merge whose record does not carry them is
-    indistinguishable afterwards from one that never established them, which is the whole thing the
-    looser setting is trusted not to become.
+    **Establishing them is this step's work; recording them is not, and that is canon's call rather
+    than a shortcut.** Both facts sit durably on the pull request — the check run and the review
+    bound to the head — so restating them in the Record is what
+    [Chapter 1 → The Delivery Record](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#the-delivery-record)
+    calls volume rather than record: *carry only what the repository cannot reconstruct*. The field
+    list there governs what the Record carries, and this file does not extend it. The timing says
+    the same thing — the Record posts before the merge, so it could not report on one anyway.
 
     **If any one of them cannot be established, the pull request parks for the HC exactly as at the
     strictest setting**, and the Delivery Record says which one and why. The looser setting degrades
