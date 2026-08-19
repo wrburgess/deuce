@@ -60,11 +60,27 @@ The Verification on the pull request carries no open must-fix finding —
    ([Stage 5](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-5--deliver);
    [Chapter 1 → Binding to the Work Tracking System](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#binding-to-the-work-tracking-system)).
 9. **Post the reference on the issue** — a link to the Record — then **act on the Ship gate per its
-   current setting** — `config/gates.md`. **Absent that declaration the strictest setting governs**
+   current setting** — `config/gates.md`; where that setting puts the merge in the AC's hands,
+   **step 10 runs before the merge, not after**. **Absent that declaration the strictest setting governs**
    — the HC merges — and the Delivery Record says the setting was undeclared. The setting is read
    there, never from this file; the floor no setting reaches is canon
    ([Chapter 0 → Governance](https://github.com/wrburgess/deuce/blob/main/sds/00-identity-and-governance.md#governance) → *Merge
    authority*; [Stage 5](https://github.com/wrburgess/deuce/blob/main/sds/01-lifecycle-and-skills.md#stage-5--deliver)).
+10. **Where the declared setting puts the merge in the AC's hands, establish all three of these
+    first — on the current head, in this order, and never from memory of an earlier state:**
+
+    | Establish | From |
+    |---|---|
+    | The whole gate was re-run on the merge candidate by something that is not the AC, and it is green | The check run recorded on the pull request by the declared continuous-integration provider (`config/ci.md`) — never a local run, however recent |
+    | An independent review covers the code that is actually merging | A returned review bound to the current head. Where a fix wave moved the head past the first review, that binding is the further summons [Chapter 2](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md#fix-verification-bounded-separately) earns it; once the summons owed has returned, the head is final |
+    | Neither has since gone stale | The head has not moved since both of the above were taken |
+
+    **If any one of them cannot be established, the pull request parks for the HC exactly as at the
+    strictest setting**, and the Delivery Record says which one and why. The looser setting degrades
+    to the human; it never degrades what the merge rests on. This step adds no requirement of its
+    own — it carries out, in the place that acts on them, requirements
+    [Chapter 0](https://github.com/wrburgess/deuce/blob/main/sds/00-identity-and-governance.md#governance) and
+    [Chapter 2](https://github.com/wrburgess/deuce/blob/main/sds/02-review-and-findings.md) already state.
 
 ## Terminal artifact
 
