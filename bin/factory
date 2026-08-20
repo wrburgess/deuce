@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# bin/factory — what the launchd agent runs (config/factory.md, "The trigger").
+# Two lines on purpose: everything decidable lives in tools/factory/, where it
+# is tested without spawning anything.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+exec node tools/factory/run.ts

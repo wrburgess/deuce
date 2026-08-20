@@ -1,6 +1,6 @@
 ---
-date: 2026-08-11
-source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87; the tracker credential and the reviewer's login declared at the Direction gate on #107; the continuous-integration token declared at the Direction gate on #126
+date: 2026-08-13
+source: the Direction gate on #83, where Option A — the credential registry — was chosen; the fleet corrected to bryce and nadal at the Direction gate on #87; the tracker credential and the reviewer's login declared at the Direction gate on #107; the unattended session declared, and the tracker token's resting place made concrete, at the Direction gate on #108; the continuous-integration token declared at the Direction gate on #126
 ---
 
 # Credentials
@@ -163,10 +163,46 @@ Least privilege, stated as cannots — and split honestly by what holds each one
   | Repository access | This repository only |
   | Permissions granted | Contents read/write · Issues read/write · Pull requests read/write (Metadata read, automatic) |
   | Expiry | 2027-08-11 |
-  | Where the value lives | The HC's secret store — never the tracker, the repository, or a session |
+  | Where the value lives | The HC's secret store: the login-keychain item `deuce-factory-tracker` on this machine — never the tracker, the repository, or a session |
 
   The permissions line is the HC's transcription from the token screen, confirmed at the sitting;
   the entry above is what binds, and any later mismatch found is a finding, not a shrug.
+
+- **The keychain item is the HC's to create, and the value never passes through a session.** One
+  command stores it, and refuses to store one that does not work:
+
+  ```
+  pbpaste | bash bin/factory-credential
+  op read "op://<vault>/<item>/credential" | bash bin/factory-credential
+  ```
+
+  The token arrives on stdin — never on a command line, where shell history and `ps` would carry
+  it — is classified, is probed against this repository, and only then written to the keychain,
+  trusting `security` itself so [`tools/factory/run.ts`](../tools/factory/run.ts)'s read needs no
+  prompt. **It reaches `security` on stdin too, and that is a correction with a receipt:** until
+  2026-08-19 the value rode `security`'s own argv, briefly visible to `ps`, which the code named in
+  a comment while this line said *never*. Two statements of one fact, disagreeing — found by the
+  contractor review on PR #136. `-w` with no value reads the password from stdin, twice, so the
+  fix was to write it twice and close the pipe. The read at run time fails closed: no item, a value that does not work, or a locked
+  keychain starts nothing ([`factory.md`](factory.md) → *The credential, at run time*).
+- **Why a command and not the raw `security` prompt, with its receipt.** `security -w` prompts
+  twice, silently, and stores whatever it is given: a word typed where a token belonged looked
+  identical to a good paste and stayed hidden until a pass spent its start on a 401. That happened
+  twice on #108. Storing and verifying are now one act, which is the only arrangement in which a
+  bad credential cannot survive its own storage.
+- **Why the keychain is the runtime copy and a password manager is not.** The login keychain
+  unlocks at login and stays unlocked for the life of the HC's session, which makes it the one
+  store on this machine a pass can read with nobody there. Every 1Password path fails that test:
+  the desktop-app integration prompts, and a prompt with nobody to answer it is the hang this
+  design refuses; a `op signin` session expires within the hour; and a service account's own token
+  would have to rest somewhere readable non-interactively — the keychain, holding a different
+  secret. **The manager is the copy of record and the keychain is the runtime copy**, bridged by
+  the attended command above whenever the token rotates. Recorded so that a later reader improving
+  the wrapper into an `op read` at run time finds the reason it is not one.
+- **What "unattended" therefore means here, exactly:** the HC logged in and away from the desk —
+  the pass runs. The HC logged out, or the machine shut down — the keychain is locked, the read
+  fails closed, and the log says so; a launchd user agent would not have fired in that state
+  either.
 
 ## The continuous-integration token
 
@@ -251,3 +287,76 @@ minted form is OpenAI's to issue, not this repository's.
 - **The floor:** no unattended pass summons a reviewer before this declaration exists. This entry
   is that declaration; the summons inherits the attended state's posture whole, and there is no
   second, wider state to bind.
+
+## The unattended session
+
+The headless AC session a factory pass runs inside — `claude -p "/execute" --permission-mode
+bypassPermissions`, started by launchd in the declared checkout
+([`factory.md`](factory.md) → *The trigger*). It is not a credential, and that is exactly why it
+owes an entry: the two entries above bound what their tokens reach, and neither bounds the process
+that holds both at once. Chapter 0's third standing rule is about what automation can reach.
+Declared at the Direction gate on #108, before the first pass ran under it.
+
+### What it can reach
+
+- **This machine, as the HC's own account.** The declared checkout, and every file that account
+  can read or write. `--permission-mode bypassPermissions` turns off the AC tool's approval
+  prompts; it is not a sandbox, and nothing here implies it is one.
+- **The tracker, as the minted tracker credential** — that entry's reach, whole, and nothing past
+  it. The token is placed in one child process's environment and nowhere else.
+- **OpenAI's service as the HC's ChatGPT account**, through `codex exec` when a pass reaches
+  Verify — the reviewer's-login entry's reach, unchanged by being summoned unattended.
+- **The network**, as any stage's research needs it.
+
+### What it can destroy
+
+- **Anything on this machine the HC's account can destroy.** What stands between a pass and the
+  HC's own work is the wrapper's refusal to start on an unclean checkout, the one-issue pass scope,
+  and the lifecycle's artifact discipline — not a permission boundary.
+- **On the tracker: exactly what the tracker credential can destroy**, and platform protection on
+  `main` is what holds there, as that entry states.
+
+### What breaks if it leaks
+
+- **A session is not a secret and does not leak; what it holds does,** and both are bound above.
+- **The failure with no analogue in the entries above is a session that behaves wrongly rather
+  than one that is stolen** — a pass improvising past a stop, or writing tracker state nobody
+  asked for. What stands there is canon's stop rule, the run record, and the kill switch. None of
+  them is a scope on a token, and pretending otherwise would be the fiction this file exists to
+  refuse.
+- **The thinnest place, named: text the session reads.** This repository is public, so anyone can
+  write an issue body or a comment, and a pass reads both at every stage. Admission is bounded —
+  `status:ready` moves only under triage permission, which is
+  [Chapter 6](../sds/06-factory-automation.md) → *The front door*'s whole argument — so an
+  outsider cannot start work. But an admitted issue's thread carries text from anyone, and with
+  the approval prompts off there is no boundary between that text and this machine. What stands
+  there is the AC's own handling of instructions arriving inside material it was asked to read,
+  plus the three controls above. That is thinner than a scope, and it is written here rather than
+  left for an incident to write.
+
+### What it deliberately cannot do
+
+Least privilege, stated as cannots and split by what actually holds each one:
+
+- **Platform-held: nothing.** The approval prompts are off and macOS grants this session what the
+  HC's own session has. Stated first because it is the uncomfortable half.
+- **Standard-held:** merge (the Ship gate's floor) · self-answer a stop · run a compressed path ·
+  start while another pass holds the lock · fall back to the ambient `gh` login. Held by canon, by
+  [`execute`](../.claude/skills/execute/SKILL.md), and by the wrapper.
+- **The honest residual:** the strongest controls here are the kill switch and custody of the
+  machine. A factory that is one act from off, with a run record for every pass, is what makes
+  this reach acceptable — not a sandbox that does not exist.
+
+### The precondition
+
+- **This entry precedes the first pass that runs under it,** which is the whole of Chapter 0's
+  rule: a reach that is written down can be argued with, and one that is not is discovered from
+  its consequences.
+- **Narrowing it later is one dated edit** — a curated `--allowedTools` set in place of the
+  permission mode, or a sandbox profile around the child. Deliberately not guessed at before a
+  pass exists to measure: an allowlist covering what a lifecycle stage actually does — git, npm,
+  `gh`, `codex`, edits anywhere in the checkout, network research — is barely narrower than the
+  mode it replaces, and one guessed too tight fails as a stage that stops mid-run.
+- **What would move it sooner:** the reading surface above. A narrowing bought by measurement is a
+  later edit; one bought by an untrusted-text incident is a finding, and this entry is what makes
+  the difference visible in advance.
